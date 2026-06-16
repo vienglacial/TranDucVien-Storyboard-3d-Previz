@@ -4,6 +4,8 @@ Công cụ dựng **storyboard 3D / previz** chạy hoàn toàn trong trình duy
 
 — *by Tran Duc Vien*
 
+> 📖 **Hướng dẫn chi tiết từng chức năng** (kho model, máy quay, AI, API, storyboard…): [HUONG-DAN-CHUC-NANG.md](HUONG-DAN-CHUC-NANG.md)
+
 ## Tính năng
 
 - **Không cần internet:** thư viện model, camera, tư thế, monitor, chụp shot.
