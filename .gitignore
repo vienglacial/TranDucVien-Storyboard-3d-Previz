@@ -1,0 +1,12 @@
+# Google Drive / Windows system junk
+desktop.ini
+Thumbs.db
+ehthumbs.db
+.DS_Store
+
+# Online-only file (chưa tải về máy, không commit được)
+gpt-image-app.zip
+
+# Editor / OS
+*.tmp
+*.log
