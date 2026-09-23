@@ -3574,12 +3574,15 @@ function buildC2Horn(){
   const g=new THREE.Group();
   const ny=C2_NOSE_Y-C2_HEAD.chin, nz=3.4;
   // khoang phòng bida 8 × 8 × 4 m (set 3 nằm đúng chỗ này)
-  const room=new THREE.Mesh(new THREE.BoxGeometry(8,4,8),
-    new THREE.MeshBasicMaterial({color:EG.warm,transparent:true,opacity:.14,depthWrite:false}));
-  room.position.set(0,ny+.4,-1.6);room.userData.__anno=true;g.add(room);
-  const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(8,4,8)),
+  // phòng bida đã nới lên 12×12×5 — LỚN HƠN đầu tượng 10 m. Khung vẽ đúng cỡ để thấy chênh lệch:
+  // hoặc chấp nhận cheat hoạt hình (trong rộng hơn ngoài), hoặc phóng đầu tượng lên ~14 m.
+  const room=new THREE.Mesh(new THREE.BoxGeometry(12,5,12),
+    new THREE.MeshBasicMaterial({color:EG.warm,transparent:true,opacity:.12,depthWrite:false}));
+  room.position.set(0,ny+.9,-2.2);room.userData.__anno=true;g.add(room);
+  const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(12,5,12)),
     new THREE.LineBasicMaterial({color:EG.warm}));
   edge.position.copy(room.position);edge.userData.__anno=true;g.add(edge);
+  g.add(tag('KHOANG PHÒNG BIDA 12×12×5 — rộng hơn đầu 10 m (cheat hoạt hình hoặc phóng đầu ~14 m)',0,ny+4.2,-2.2,1.2,EG.warm));
   // Hai lỗ mũi ĐỔ THẲNG vào phòng (chỉ đạo: cửa hang chính là hai lỗ mũi).
   // Phòng bida là khoang cộng hưởng: tiếng xì vào mũi trái, vang trong phòng, phụt ra mũi phải.
   const curve=new THREE.CatmullRomCurve3([
@@ -3809,71 +3812,76 @@ const BD={
   gold:'#e6bf45', gold2:'#bf962b', chalk:'#3f7fa8',
   fire:'#ff9a3c', dust:'#cfc6ae', web:'#d8d4c8'
 };
-const BDR={w:8, d:8, h:4};                 // phòng 8 × 8, cao 4
+const BDR={w:12, d:12, h:5};               // phòng 12 × 12, cao 5 (nới rộng theo yêu cầu, bàn/cơ giữ nguyên)
 const BDT={w:3.4, d:1.7, top:1.0};         // bàn bida: 3.4 × 1.7, MẶT BÀN CAO ĐÚNG 1.0 m = chiều cao Pipo
 const BD_POCKET=[-1.7,0.85];               // LỖ KÍCH HOẠT: góc gần camera, trái khung
 const BD_NOSE_Y=1.6;                       // tâm hai cửa hang so với sàn phòng
 
-/* ---- VỎ PHÒNG: sàn + 4 tường + chữ tượng hình ---- */
+/* ---- VỎ PHÒNG: sàn + 4 tường + chữ tượng hình ----
+   Tường và trần là MẶT ĐƠN quay vào trong (như vỏ khoang máy bay): đứng trong
+   thì thấy tường, đứng ngoài thì tường tàng hình → camera ngoài phòng vẫn nhìn
+   xuyên vào, khỏi phải chui qua tường. Sàn vẫn đặc để nhìn từ trên xuống.    */
+function bdWallMat(c){return new THREE.MeshStandardMaterial({color:c,roughness:.85,metalness:.02,flatShading:true,side:THREE.FrontSide});}
 function buildBdShell(){
   const g=new THREE.Group();
   const W=BDR.w/2,D=BDR.d/2,H=BDR.h;
   // sàn đá lát
-  for(let i=-2;i<2;i++)for(let j=-2;j<2;j++){
-    const t=box(BDR.w/4-.06,.3,BDR.d/4-.06,(i+j)%2?BD.floor:BD.wall2);
-    t.position.set(i*2+1,-.15,j*2+1);g.add(t);
+  const nx=Math.round(BDR.w/2),nz=Math.round(BDR.d/2);
+  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){
+    const t=box(2-.06,.3,2-.06,(i+j)%2?BD.floor:BD.wall2);
+    t.position.set(-W+1+i*2,-.15,-D+1+j*2);g.add(t);
   }
-  // 4 tường (chừa cửa hang ở -Z và cửa phòng ở +X thì khoét bằng cách ghép mảng)
-  const wall=(x,z,w,d)=>{const m=box(w,H,d,BD.wall);m.position.set(x,H/2,z);g.add(m);return m;};
-  wall(0, D+.4, BDR.w+1.6, .8);                       // tường sau (phía camera)
-  wall(-W-.4,0, .8, BDR.d);                           // tường trái (giá gác cơ)
-  // tường phải: chừa ô cửa phòng 2.6 rộng × 3.2 cao ở giữa
-  wall(W+.4,-2.7, .8, 2.6);
-  wall(W+.4, 2.7, .8, 2.6);
-  const lintelR=box(.8,H-3.2,2.6,BD.wall);lintelR.position.set(W+.4,3.2+(H-3.2)/2,0);g.add(lintelR);
-  // tường trước (-Z): chừa hai lỗ tròn -> ghép 5 mảng
-  const fz=-D-.4;
-  wall(-3.1,fz, 1.8, .8);
-  wall( 3.2,fz, 1.6, .8);
-  wall( -.1,fz, 1.0, .8);
-  const bandTop=box(BDR.w+1.6,H-(BD_NOSE_Y+1.6),.8,BD.wall);
-  bandTop.position.set(0,(BD_NOSE_Y+1.6)+(H-(BD_NOSE_Y+1.6))/2,fz);g.add(bandTop);
-  const bandBot=box(BDR.w+1.6,BD_NOSE_Y-1.6,.8,BD.wall);
-  bandBot.position.set(0,(BD_NOSE_Y-1.6)/2,fz);g.add(bandBot);
-  // gờ chân tường + gờ trần
+  // tường sau (+Z) & tường trái (−X): mặt phẳng đơn
+  const back=new THREE.Mesh(new THREE.PlaneGeometry(BDR.w,H),bdWallMat(BD.wall));
+  back.rotation.y=Math.PI;back.position.set(0,H/2,D);back.receiveShadow=true;g.add(back);
+  const left=new THREE.Mesh(new THREE.PlaneGeometry(BDR.d,H),bdWallMat(BD.wall));
+  left.rotation.y=Math.PI/2;left.position.set(-W,H/2,0);left.receiveShadow=true;g.add(left);
+  // tường phải (+X): khoét ô cửa phòng 2.6 × 3.2
+  const shR=new THREE.Shape();shR.moveTo(-D,0);shR.lineTo(D,0);shR.lineTo(D,H);shR.lineTo(-D,H);shR.closePath();
+  const door=new THREE.Path();door.moveTo(-1.3,0);door.lineTo(1.3,0);door.lineTo(1.3,3.2);door.lineTo(-1.3,3.2);door.closePath();
+  shR.holes.push(door);
+  const right=new THREE.Mesh(new THREE.ShapeGeometry(shR),bdWallMat(BD.wall));
+  right.rotation.y=-Math.PI/2;right.position.set(W,0,0);right.receiveShadow=true;g.add(right);
+  // tường trước (−Z): khoét HAI LỖ TRÒN = hai lỗ mũi
+  const shF=new THREE.Shape();shF.moveTo(-W,0);shF.lineTo(W,0);shF.lineTo(W,H);shF.lineTo(-W,H);shF.closePath();
+  const h1=new THREE.Path();h1.absarc(-1.8,BD_NOSE_Y,1.5,0,Math.PI*2,true);
+  const h2=new THREE.Path();h2.absarc( 1.4,BD_NOSE_Y,.9,0,Math.PI*2,true);
+  shF.holes.push(h1,h2);
+  const front=new THREE.Mesh(new THREE.ShapeGeometry(shF,24),bdWallMat(BD.wall));
+  front.position.set(0,0,-D);front.receiveShadow=true;g.add(front);
+  // gờ chân tường (đặc, nhỏ — không che tầm nhìn)
   [[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sz])=>{
-    const w=sx?.5:BDR.w, d=sz?.5:BDR.d;
-    const b=box(w,.35,d,BD.wall2);b.position.set(sx*(W-.2),.17,sz*(D-.2));g.add(b);
-    const t=box(w,.3,d,BD.wall2);t.position.set(sx*(W-.2),H-.15,sz*(D-.2));g.add(t);
+    const w=sx?.3:BDR.w, d=sz?.3:BDR.d;
+    const b=box(w,.3,d,BD.wall2);b.position.set(sx*(W-.15),.15,sz*(D-.15));g.add(b);
   });
-  // chữ tượng hình khắc chìm: 3 hàng ô trên mỗi tường
+  // chữ tượng hình: ô mỏng ốp mặt tường, cũng quay vào trong
   const R=rnd(101);
   const glyphRow=(x,z,ry,len)=>{
     for(let r=0;r<3;r++)for(let i=0;i<len;i++){
-      const s=.34;
-      const gl=box(s,s,.07,BD.glyph);
+      const gl=new THREE.Mesh(new THREE.PlaneGeometry(.34,.34),bdWallMat(R()>.55?BD.wall3:BD.glyph));
       const off=(i-(len-1)/2)*.52;
       gl.position.set(x+Math.cos(ry)*off, 1.1+r*.82, z-Math.sin(ry)*off);
       gl.rotation.y=ry;gl.castShadow=false;g.add(gl);
-      if(R()>.55){const d2=box(.12,.12,.08,BD.wall3);d2.position.copy(gl.position);d2.position.y+=.02;d2.rotation.y=ry;d2.castShadow=false;g.add(d2);}
     }
   };
-  glyphRow(0, D-.05, 0, 12);            // tường sau
-  glyphRow(-W+.05, 0, Math.PI/2, 12);   // tường trái
-  glyphRow( W-.05, 0, Math.PI/2, 4);    // tường phải (né ô cửa)
+  glyphRow(0, D-.04, Math.PI, 20);           // tường sau, quay về −Z
+  glyphRow(-W+.04, 0, Math.PI/2, 20);        // tường trái, quay về +X
+  glyphRow( W-.04, -3.9, -Math.PI/2, 6);     // tường phải, hai bên ô cửa
+  glyphRow( W-.04,  3.9, -Math.PI/2, 6);
   g.userData.h=BDR.h;
   return g;
 }
 
-/* ---- TRẦN (tách riêng: tắt đi để đặt camera & lấy sáng cho dễ) ---- */
+/* ---- TRẦN: mặt đơn quay xuống — nhìn từ trên xuống vẫn thấy trong phòng ---- */
 function buildBdCeil(){
   const g=new THREE.Group();
-  const c=box(BDR.w+1.6,.6,BDR.d+1.6,BD.wall2);c.position.y=BDR.h+.3;g.add(c);
-  // dầm đá ngang
-  for(let i=-1;i<=1;i++){
-    const b=box(BDR.w+1.6,.4,.6,BD.wall3);b.position.set(0,BDR.h-.2,i*2.4);g.add(b);
+  const c=new THREE.Mesh(new THREE.PlaneGeometry(BDR.w,BDR.d),bdWallMat(BD.wall2));
+  c.rotation.x=Math.PI/2;c.position.y=BDR.h;g.add(c);
+  for(let i=-2;i<=2;i++){
+    const b=new THREE.Mesh(new THREE.PlaneGeometry(BDR.w,.5),bdWallMat(BD.wall3));
+    b.rotation.x=Math.PI/2;b.position.set(0,BDR.h-.02,i*2.4);g.add(b);
   }
-  g.userData.h=BDR.h+.6;
+  g.userData.h=BDR.h;
   return g;
 }
 
@@ -3996,14 +4004,14 @@ function buildBdRack(){
 /* ---- CỬA SẬP Ở SÀN 2 × 2, mở làm hai cánh (1:03 và 3:44) ---- */
 function buildBdTrap(){
   const g=new THREE.Group();
-  const frame=box(2.4,.12,2.4,BD.wall3);frame.position.set(0,.06,2.6);g.add(frame);
-  const pit=box(2.0,.5,2.0,'#141210');pit.position.set(0,-.25,2.6);g.add(pit);
+  const frame=box(2.4,.12,2.4,BD.wall3);frame.position.set(0,.06,3.0);g.add(frame);
+  const pit=box(2.0,.5,2.0,'#141210');pit.position.set(0,-.25,3.0);g.add(pit);
   // hai cánh đang hé mở
   [-1,1].forEach(s=>{
     const leaf=box(.98,.1,2.0,BD.floor);
-    leaf.position.set(s*.52,.1,2.6);leaf.rotation.z=s*.55;g.add(leaf);
+    leaf.position.set(s*.52,.1,3.0);leaf.rotation.z=s*.55;g.add(leaf);
     const hinge=cyl(.05,.05,2.0,BD.rail2,8);hinge.rotation.x=Math.PI/2;
-    hinge.position.set(s*1.0,.06,2.6);g.add(hinge);
+    hinge.position.set(s*1.0,.06,3.0);g.add(hinge);
   });
   g.userData.h=.6;
   return g;
@@ -4107,7 +4115,8 @@ function buildBdStateB(){
   leaf.scale.set(1,.1,.72);leaf.position.y=1.6;fan.add(leaf);
   g.add(fan);
   // ĐUỐC TƯỜNG
-  [[-3.7,-2.2],[-3.7,2.2],[3.7,-2.6],[0,3.7]].forEach(([x,z])=>{
+  const TW=BDR.w/2-.3,TD=BDR.d/2-.3;
+  [[-TW,-2.6],[-TW,2.6],[TW,-3.2],[0,TD]].forEach(([x,z])=>{
     const t=new THREE.Group();t.position.set(x,2.1,z);
     const br=cyl(.05,.05,.4,BD.rail2,6);br.rotation.z=Math.PI/2.4;t.add(br);
     const cup=cyl(.12,.07,.22,BD.rail2,8);cup.position.set(0,.22,0);t.add(cup);
@@ -4120,9 +4129,10 @@ function buildBdStateB(){
     g.add(t);
   });
   // HAI THỢ ĐỤC đang khắc tường sau
-  g.add(peopleField([{x:-1.9,z:3.1,ry:Math.PI,lean:.18,s:1.0},
-                     {x:.9,z:3.1,ry:Math.PI,lean:.22,s:1.03}],'stand'));
-  [[-1.9,3.1],[.9,3.1]].forEach(([x,z])=>{
+  const CZ=BDR.d/2-.9;
+  g.add(peopleField([{x:-1.9,z:CZ,ry:Math.PI,lean:.18,s:1.0},
+                     {x:.9,z:CZ,ry:Math.PI,lean:.22,s:1.03}],'stand'));
+  [[-1.9,CZ],[.9,CZ]].forEach(([x,z])=>{
     const ch=cyl(.03,.03,.34,BD.rail2,6);ch.position.set(x+.3,1.5,z-.35);ch.rotation.x=1.1;g.add(ch);
     const ham=box(.12,.12,.22,EG.wood);ham.position.set(x-.32,1.35,z-.3);g.add(ham);
   });
@@ -4190,11 +4200,11 @@ function buildBdZones(){
   g.add(tag('CỬA HANG 1 — lỗ mũi TRÁI của tượng (nhìn từ trong hóa PHẢI khung) · chui vào 0:43',1.4,3.1,fz+1.2,1.45));
   z(1.5,-1.8,0,fz+3.2,'#7fd88f');
   g.add(tag('CỬA HANG 2 — lỗ mũi PHẢI của tượng (nhìn từ trong hóa TRÁI khung) · bắn ra 3:48',-1.8,3.6,fz+1.2,1.45,'#7fd88f'));
-  z(1.4,0,0,2.6,EG.warm);
-  g.add(tag('Z_CỬA SẬP 2×2 — sàn mở, cả hai rớt xuống',0,1.5,3.5,1.2,EG.warm));
+  z(1.4,0,0,3.0,EG.warm);
+  g.add(tag('Z_CỬA SẬP 2×2 — sàn mở, cả hai rớt xuống',0,1.5,3.9,1.2,EG.warm));
   g.add(tag('MẶT BÀN CAO ĐÚNG 1.0 m = CHIỀU CAO PIPO → C8 Pipo phải trèo lên thành bàn',0,2.35,-1.6,1.55,EG.red));
-  g.add(tag('PHÒNG ĐÁ 8 × 8 m · CAO 4 m',-3.4,3.7,3.4,1.3));
-  g.add(tag('C2b / C8 · INT. PHÒNG BIDA TRONG ĐẦU NHÂN SƯ — 0:45→1:05 · 3:15→3:45',0,4.5,3.9,1.9,EG.mark));
+  g.add(tag('PHÒNG ĐÁ 12 × 12 m · CAO 5 m — tường tàng hình khi nhìn từ ngoài',-4.4,4.6,4.6,1.3));
+  g.add(tag('C2b / C8 · INT. PHÒNG BIDA TRONG ĐẦU NHÂN SƯ — 0:45→1:05 · 3:15→3:45',0,5.5,5.4,1.9,EG.mark));
   g.userData.h=BDR.h;
   return g;
 }
@@ -4330,7 +4340,7 @@ const SET_DEFS={
   },
   setBida:{
     label:'C2b + C8 · Phòng bida trong đầu nhân sư',
-    note:'Phòng đá 8×8×4 m, MỘT model hai state. Hai cửa hang chính là hai lỗ mũi tượng — nhìn từ trong ra thì trái/phải ĐẢO so với nhìn mặt tượng từ ngoài. Bật/tắt STATE A (C2b) và STATE B (C8) trong danh sách bộ phận.',
+    note:'Phòng đá 12×12×5 m (đã nới rộng), tường tàng hình khi nhìn từ ngoài. MỘT model hai state. Hai cửa hang chính là hai lỗ mũi tượng — nhìn từ trong ra thì trái/phải ĐẢO so với nhìn mặt tượng từ ngoài. Bật/tắt STATE A (C2b) và STATE B (C8) trong danh sách bộ phận.',
     small:true,
     parts:[
       {k:'bd_shell',  p:[0,0,0]},
@@ -4344,21 +4354,22 @@ const SET_DEFS={
       {k:'bd_glow',   p:[0,0,0], hidden:true},
       {k:'bd_traj',   p:[0,0,0]},
       {k:'bd_zones',  p:[0,0,0]},
-      {k:'bd_ceil',   p:[0,0,0], hidden:true},
-      {k:'eg_scaleref',p:[-2.6,0,3.2]}
+      {k:'bd_ceil',   p:[0,0,0]},
+      {k:'eg_scaleref',p:[-4.2,0,4.6]}
     ],
     cams:[
-      {t:'—',   n:'Tổng thể phòng (từ cửa sập nhìn vào)',p:[0,2.6,3.4],  tg:[0,1.1,-.6], f:24},
+      {t:'—',   n:'Tổng thể — đứng NGOÀI nhìn xuyên tường',p:[9,7.5,13],   tg:[0,1,0],     f:28},
+      {t:'—',   n:'Tổng thể — trong phòng nhìn ra 2 cửa',p:[0,2.8,4.8],  tg:[0,1.1,-1],  f:24},
       {t:'0:47',n:'Zippo bật — reveal bàn',           p:[2.7,1.8,3.3],  tg:[.1,1.02,.1], f:24},
       {t:'0:55',n:'Medium Coppa nhắm cơ',             p:[2.5,1.35,1.5], tg:[1.0,1.08,.3],f:50},
       {t:'1:00',n:'Insert bi vào lỗ kích hoạt',       p:[-1.0,1.35,1.8],tg:[-1.7,1.02,.85],f:50},
-      {t:'1:03',n:'Sàn mở — top-down',                p:[0,3.7,2.62],   tg:[0,0,2.6],   f:35},
-      {t:'3:15',n:'C8 wide phòng mới + ngai',         p:[-1.6,2.4,3.3], tg:[2.2,1.1,.4], f:28},
+      {t:'1:03',n:'Sàn mở — top-down',                p:[0,4.5,3.02],   tg:[0,0,3.0],   f:35},
+      {t:'3:15',n:'C8 wide phòng mới + ngai',         p:[-2.6,2.6,4.8], tg:[2.2,1.1,.4], f:28},
       {t:'3:25',n:'C8 Pipo trên thành bàn với cơ',    p:[.5,1.6,2.6],   tg:[1.4,1.22,.85],f:50},
       {t:'3:32',n:'C8 reverse — Coppa dừng nho',      p:[1.2,1.5,.5],   tg:[3.2,1.15,.6],f:50},
-      {t:'3:38',n:'C8 cầu đá phá cửa',                p:[-2.6,2.2,2.2], tg:[3.6,1.8,.2], f:28},
+      {t:'3:38',n:'C8 cầu đá phá cửa',                p:[-3.4,2.4,2.8], tg:[5.6,1.8,.2], f:28},
       {t:'3:41',n:'C8 Coppa trượt trên nỉ',           p:[1.0,1.5,2.4],  tg:[.2,1.1,.3],  f:35},
-      {t:'3:44',n:'C8 sàn mở',                        p:[.8,3.2,3.6],   tg:[0,.3,2.6],   f:28}
+      {t:'3:44',n:'C8 sàn mở',                        p:[.8,3.6,4.2],   tg:[0,.3,3.0],   f:28}
     ]
   },
   setC2:{
