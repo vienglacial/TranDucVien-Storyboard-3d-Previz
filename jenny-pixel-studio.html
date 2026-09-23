@@ -83,7 +83,8 @@
   .topbtn.disabled{opacity:.35;pointer-events:none}
   .multi-banner{background:rgba(88,166,255,.12);border:1px solid var(--accent);border-radius:8px;padding:9px 11px;margin-bottom:12px;font-family:'JetBrains Mono';font-size:12px;line-height:1.5;color:var(--ink-dim)}
   .multi-banner b{color:var(--accent)}
-  .multi-banner #clearSel{color:var(--accent);cursor:pointer;text-decoration:underline;white-space:nowrap}
+  .multi-banner #clearSel,.multi-banner #groupSel{color:var(--accent);cursor:pointer;text-decoration:underline;white-space:nowrap}
+  .multi-banner #groupSel{font-weight:600}
 
   /* ── Panels ── */
   .panel{background:var(--panel);overflow-y:auto;overflow-x:hidden}
@@ -4607,6 +4608,47 @@ function detachOne(setObj,child){
   if(typeof pushHistory==='function')pushHistory();
 }
 
+// GỘP các vật đang chọn thành MỘT khối (ngược với tách). Giữ nguyên vị trí thế giới.
+// Chỉ nhận vật dựng lại được từ tên builder (bộ phận set, model kho) để lưu/nạp không mất gì.
+function groupSelection(){
+  const list=selection.slice();
+  if(list.length<2){toast('Chọn ít nhất 2 vật (Shift + bấm) rồi gộp');return;}
+  const bad=list.find(o=>o.userData.isSet||o.userData.figure||o.userData.fixedChar||o.userData.key==='__custom'||o.userData.key==='cardchar'||!BUILDERS[o.userData.key]);
+  if(bad){toast('Không gộp được "'+bad.userData.label+'" — nhân vật/khối AI/khối đã gộp thì để riêng');return;}
+  const g=new THREE.Group();
+  const c=new THREE.Vector3();list.forEach(o=>c.add(o.position));c.divideScalar(list.length);
+  g.position.set(c.x,0,c.z);
+  scene.add(g);
+  list.forEach((o,i)=>{
+    g.attach(o);                                   // giữ nguyên toạ độ thế giới
+    const j=objects.indexOf(o);if(j>=0)objects.splice(j,1);
+    o.userData.partKey=o.userData.key;o.userData.partLabel=o.userData.label;o.userData.partIdx=i;
+    setOutline(o,false);
+  });
+  g.userData.key='__group';g.userData.isSet='__group';g.userData.noTint=true;
+  g.userData.label='Khối gộp ('+list.length+')';g.userData.id=++idCounter;
+  objects.push(g);
+  select(g);
+  toast('Đã gộp '+list.length+' vật thành một khối — bấm "Tách rời" để tách lại');
+  if(typeof autosave==='function')autosave();
+  if(typeof pushHistory==='function')pushHistory();
+}
+// dựng lại khối gộp từ danh sách con đã lưu
+function buildGroupFromKids(kids){
+  const g=new THREE.Group();
+  (kids||[]).forEach((k,i)=>{
+    const c=BUILDERS[k.key]?BUILDERS[k.key]():null;if(!c)return;
+    c.position.set(k.pos[0],k.pos[1],k.pos[2]);
+    c.rotation.set(k.rotX||0,k.rotY||0,k.rotZ||0);
+    c.scale.setScalar(k.scale||1);
+    c.userData.key=k.key;c.userData.label=k.label;c.userData.noTint=true;
+    c.userData.partKey=k.key;c.userData.partLabel=k.label;c.userData.partIdx=i;
+    g.add(c);
+  });
+  g.userData.isSet='__group';g.userData.noTint=true;
+  return g;
+}
+
 // khung cảnh lớn: nới xa camera, sương mù và vùng đổ bóng cho set cỡ 300 m
 let bigSetOn=false;
 function bigSetEnv(){
@@ -4632,6 +4674,7 @@ function setEnvRestore(){
 function updateSetEnv(){
   const has=objects.some(o=>{
     if(!o.userData)return false;
+    if(o.userData.isSet==='__group')return o.children.some(c=>!!SET_PART_LABEL[c.userData.partKey]&&!/^bd_/.test(c.userData.partKey||''));
     if(o.userData.isSet)return !(SET_DEFS[o.userData.isSet]||{}).small;
     return !!SET_PART_LABEL[o.userData.key]&&!/^bd_/.test(o.userData.key||'');
   });
@@ -4985,7 +5028,7 @@ function renderInspector(){
   let firstMesh=null;selected.traverse(o=>{if(o.isMesh && !o.userData.__decal && !firstMesh)firstMesh=o;});
   const curCol=firstMesh && firstMesh.material && firstMesh.material.color ? '#'+firstMesh.material.color.getHexString() : '#c9d1d9';
   const paxSel=countPax(selection), paxAll=countPax(objects);   // hành khách còn dính trong ghế
-  const multiSel=selection.length>1?`<div class="multi-banner">Đang chọn <b>${selection.length}</b> vật — di chuyển / xoay / tỉ lệ sẽ áp cho cả nhóm. <span id="clearSel">Bỏ chọn nhóm</span></div>`:'';
+  const multiSel=selection.length>1?`<div class="multi-banner">Đang chọn <b>${selection.length}</b> vật — di chuyển / xoay / tỉ lệ sẽ áp cho cả nhóm. <span id="groupSel" title="Gộp các vật đang chọn thành MỘT khối (Ctrl+G) — tách lại được, lưu/nạp được">Gộp thành một khối</span> · <span id="clearSel">Bỏ chọn nhóm</span></div>`:'';
   el.innerHTML=`
     ${multiSel}
     <div class="insp-name">
@@ -5395,6 +5438,7 @@ function renderInspector(){
     nameEnInp.onkeydown=e=>{if(e.key==='Enter')e.target.blur();};
   }
   const cs=document.getElementById('clearSel');if(cs)cs.onclick=()=>select(null);
+  const gs=document.getElementById('groupSel');if(gs)gs.onclick=groupSelection;
 }
 function refreshRot(){const l=document.getElementById('vObjRotY');if(l)l.textContent=Math.round(((selected.rotation.y*180/Math.PI)%360+360)%360)+'°';}
 function refreshSc(){const l=document.getElementById('vObjScale');if(l)l.textContent=selected.scale.x.toFixed(2)+'×';}
@@ -5515,6 +5559,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Y')&&!typing){e.preventDefault();redo();return;}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='g'||e.key==='G')&&!typing){e.preventDefault();groupSelection();return;}
   if(typing)return;
   if(e.key==='Delete'||e.key==='Backspace'){if(selected){e.preventDefault();deleteSelected();}}
   if(e.key==='w')document.querySelector('[data-tool=move]').click();
@@ -5997,6 +6042,8 @@ function gatherSceneData(){
       if(o.userData.charImg){rec.charImg=o.userData.charImg;rec.charH=o.userData.h;}
       if(o.userData.key==='__custom'||o.userData.fixedChar)rec.parts=o.userData.parts;
       if(o.userData.noTint)rec.noTint=1;
+      if(o.userData.isSet==='__group')rec.kids=o.children.map(c=>({key:c.userData.partKey,label:c.userData.partLabel,
+        pos:[c.position.x,c.position.y,c.position.z],rotX:c.rotation.x,rotY:c.rotation.y,rotZ:c.rotation.z,scale:c.scale.x}));
       if(o.userData.isSet){
         rec.setParts=o.children.map(c=>c.userData.partIdx);
         rec.setHidden=o.children.filter(c=>!c.visible).map(c=>c.userData.partIdx);
@@ -6036,6 +6083,7 @@ function applySceneData(d){
     let g;
     if((od.key==='__custom'||od.fixedChar)&&od.parts)g=buildFromParts(od.parts);
     else if(od.figure)g=makeFigure({...od.figure,color:od.color,pose:od.pose,poseName:od.poseName,features:od.features||[]});
+    else if(od.key==='__group')g=buildGroupFromKids(od.kids);
     else g=BUILDERS[od.key]?BUILDERS[od.key](od.variant):null;
     if(g&&g.userData.extras)delete g.userData.extras; // khoang máy bay: các dãy ghế đã được lưu thành vật riêng
     if(g)delete g.userData.camOnAdd;
