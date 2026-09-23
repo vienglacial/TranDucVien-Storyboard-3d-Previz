@@ -102,6 +102,8 @@ Các nhóm có sẵn:
 - **Bấm vật thể** — chọn để chỉnh
 - **Shift + bấm** — chọn thêm nhiều vật, di chuyển/xoay cả nhóm (cần ở chế độ Orbit)
 - **Phím T** — ẩn/hiện chữ chú thích previz của các khối bối cảnh
+- **Nâng lên / hạ xuống** — chọn vật, bấm **W** (Di chuyển) rồi **giữ Alt và kéo chuột lên/xuống**; hoặc gõ thẳng số vào ô **Độ cao** ở panel phải (vd `-6` để xuống đáy hố nhân sư)
+- **Phím End** (hoặc nút **⤓ Thả xuống bề mặt**) — đặt vật xuống đúng mặt nền ngay bên dưới: đáy hố, mặt dốc, mặt bục, sàn phòng
 - **Phím G** — gộp các vật đang chọn thành **một khối** (di chuyển/xoay/tỉ lệ/lưu như một vật); **Shift+G** — tách khối đang chọn ra lại
 - Khi chọn nhiều vật (Shift+bấm), các thanh trượt Xoay / Độ cao / Tỉ lệ ở panel phải áp cho **cả nhóm**
 

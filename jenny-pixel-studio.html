@@ -579,6 +579,12 @@
   .tex-blk .jlabel{font-size:12.5px;font-weight:600;color:var(--ink-dim)}
   .tex-mode button,.tex-src button{font-size:12.5px;border-radius:8px;padding:8px 4px}
   .delbtn{font-size:12.5px;height:38px;border-radius:8px;background:#2A1B1E;border-color:#4A2A2E}
+  .dropbtn{width:100%;margin-top:8px;height:34px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:500;
+    color:var(--ink-dim);background:var(--panel-2);border:1px solid var(--line);transition:.14s}
+  .dropbtn:hover{color:var(--accent);border-color:var(--accent)}
+  .ctrl label .val input[type=number]{width:62px;background:var(--bg);border:1px solid var(--line);border-radius:6px;
+    color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:12px;padding:2px 6px;outline:none;text-align:right}
+  .ctrl label .val input[type=number]:focus{border-color:var(--accent)}
   .multi-banner{font-size:12.5px;border-radius:9px}
   .empty-insp{font-size:13px;line-height:1.7}
   .no-result{font-size:13px}
@@ -5124,6 +5130,38 @@ function detachOne(setObj,child){
   if(typeof pushHistory==='function')pushHistory();
 }
 
+// Thả vật đang chọn xuống MẶT NỀN ngay bên dưới (đáy hố, mặt dốc, mặt bục, sàn phòng…).
+// Bắn tia thẳng đứng từ đáy vật xuống; không trúng gì thì về mặt sàn y=0.
+const _dropRay=new THREE.Raycaster();
+function dropToSurface(list){
+  const sel=(list&&list.length?list:selection).slice();
+  if(!sel.length){toast('Chọn vật thể trước đã');return;}
+  const down=new THREE.Vector3(0,-1,0);
+  let moved=0;
+  sel.forEach(o=>{
+    const bb=new THREE.Box3().setFromObject(o);
+    if(!isFinite(bb.min.y))return;
+    const c=bb.getCenter(new THREE.Vector3());
+    const targets=[];
+    objects.forEach(t=>{
+      if(t===o||sel.indexOf(t)>=0)return;                       // bỏ qua chính nó và các vật cùng chọn
+      if(!t.visible)return;
+      t.traverse(m=>{if(m.isMesh&&m.visible&&!m.userData.__anno&&!m.userData.__zone)targets.push(m);});
+    });
+    _dropRay.set(new THREE.Vector3(c.x,bb.min.y+.08,c.z),down);
+    _dropRay.far=400;
+    const hit=_dropRay.intersectObjects(targets,false)[0];
+    const y=hit?hit.point.y:0;
+    o.position.y+=y-bb.min.y;
+    moved++;
+  });
+  if(!moved)return;
+  renderInspector();
+  toast(moved>1?('Đã thả '+moved+' vật xuống bề mặt'):'Đã thả xuống bề mặt');
+  if(typeof autosave==='function')autosave();
+  if(typeof pushHistory==='function')pushHistory();
+}
+
 // GỘP các vật đang chọn thành MỘT khối (ngược với tách). Giữ nguyên vị trí thế giới.
 // Chỉ nhận vật dựng lại được từ tên builder (bộ phận set, model kho) để lưu/nạp không mất gì.
 function groupSelection(){
@@ -5574,8 +5612,11 @@ function renderInspector(){
       <input type="range" id="objRotZ" min="-180" max="180" step="1" data-default="0" value="${Math.round(selected.rotation.z*180/Math.PI)}">
     </div>
     <div class="ctrl">
-      <label>Độ cao (lên/xuống) <span class="val" id="vObjY">${selected.position.y.toFixed(2)}m</span></label>
-      <input type="range" id="objY" min="-4" max="8" step="0.05" value="${selected.position.y}">
+      <label>Độ cao (lên/xuống)
+        <span class="val"><input type="number" id="objYNum" step="0.1" value="${selected.position.y.toFixed(2)}"> m</span>
+      </label>
+      <input type="range" id="objY" min="${Math.min(-10,Math.floor(selected.position.y)-12)}" max="${Math.max(14,Math.ceil(selected.position.y)+12)}" step="0.05" value="${selected.position.y}">
+      <button id="dropBtn" class="dropbtn" title="Đặt vật xuống đúng mặt nền ngay bên dưới — đáy hố, mặt dốc, mặt bục… (phím End)">⤓ Thả xuống bề mặt</button>
     </div>
     <div class="ctrl">
       <label>Tỉ lệ <span class="val" id="vObjScale">${selected.scale.x.toFixed(2)}×</span></label>
@@ -5737,7 +5778,18 @@ function renderInspector(){
   const rotZ=document.getElementById('objRotZ');
   if(rotZ){rotZ.oninput=e=>{const ang=e.target.value*Math.PI/180;selection.forEach(o=>o.rotation.z=ang);updRange(rotZ);const v=document.getElementById('vObjRotZ');if(v)v.textContent=Math.round(+e.target.value)+'°';};updRange(rotZ);}
   const oy=document.getElementById('objY');
-  if(oy){oy.oninput=e=>{const d=(+e.target.value)-selected.position.y;selection.forEach(o=>o.position.y+=d);updRange(oy);document.getElementById('vObjY').textContent=(+e.target.value).toFixed(2)+'m';};updRange(oy);}
+  const oyNum=document.getElementById('objYNum');
+  if(oyNum)oyNum.onchange=e=>{
+    const d=(+e.target.value)-selected.position.y;
+    if(!isFinite(d))return;
+    selection.forEach(o=>o.position.y+=d);
+    renderInspector();pushHistory&&pushHistory();autosave&&autosave();
+  };
+  const db=document.getElementById('dropBtn');
+  if(db)db.onclick=()=>dropToSurface();
+  if(oy){oy.oninput=e=>{const d=(+e.target.value)-selected.position.y;selection.forEach(o=>o.position.y+=d);updRange(oy);
+    const nb=document.getElementById('objYNum');if(nb)nb.value=selected.position.y.toFixed(2);document.getElementById('vObjY').textContent=(+e.target.value).toFixed(2)+'m';};updRange(oy);}
+  if(oy)oy.onchange=()=>{renderInspector();pushHistory&&pushHistory();autosave&&autosave();};
   const sc=document.getElementById('objScale');
   sc.oninput=e=>{const v=+e.target.value;selection.forEach(o=>o.scale.setScalar(v));updRange(sc);refreshSc();};
   updRange(sc);
@@ -6043,10 +6095,11 @@ window.addEventListener('mousemove',e=>{
   if(tool==='move'){
     if(e.altKey){
       // giữ Alt: nâng/hạ theo trục Y (lên-xuống) cho cả nhóm
-      const ny=Math.max(-4,startPos.y-dy*0.012);
-      const off=ny-startPos.y;
-      dragGroupStart.forEach(g=>{g.o.position.y=Math.max(-4,g.p.y+off);});
-      const r=document.getElementById('objY');if(r){r.value=selected.position.y;updRange(r);const v=document.getElementById('vObjY');if(v)v.textContent=selected.position.y.toFixed(2)+'m';}
+      const spd=Math.max(.012,0.0016*orbit.sph.radius);   // bước theo tầm zoom
+      const off=-dy*spd;
+      dragGroupStart.forEach(g=>{g.o.position.y=g.p.y+off;});
+      const r=document.getElementById('objY');if(r){r.value=selected.position.y;updRange(r);}
+      const nb=document.getElementById('objYNum');if(nb)nb.value=selected.position.y.toFixed(2);
     }else{
       // di chuyển trên mặt sàn (X-Z): tính delta của vật chính rồi áp cho cả nhóm
       ndc(e);ray.setFromCamera(mouse,camera);
@@ -6095,6 +6148,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='q')document.querySelector('[data-tool=orbit]').click();
   if(e.key==='m'||e.key==='M')document.getElementById('monToggle').click();
   if(e.key==='t'||e.key==='T')toggleAnno();
+  if(e.key==='End'){e.preventDefault();dropToSurface();return;}
   // F = lấp đầy khung bằng vật đang chọn (hoặc cả cảnh nếu không chọn gì)
   if(e.key.startsWith('Arrow')){
     e.preventDefault();
