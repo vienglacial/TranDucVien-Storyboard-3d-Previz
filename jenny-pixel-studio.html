@@ -3468,7 +3468,7 @@ const C2={
 const C2_PIT={w:60,d:40,deep:6};              // hố 60 × 40, sâu 6 m
 const C2_HEAD={h:9,w:10,dp:10,chin:-3};       // đầu 9 m, cằm y=-3, đỉnh bờm y=+6
 const C2_FACE_Z=15.3;                         // mặt trước mõm ngựa + lỗ mũi nhô ra
-const C2_NOSE_L=[-1.6,4.2,7.4], C2_NOSE_R=[1.4,4.2,7.4];   // lỗ mũi trái (ø1.2) / phải (loe ø3), cục bộ đầu
+const C2_NOSE_L=[-1.5,4.2,7.4], C2_NOSE_R=[1.5,4.2,7.4];   // HAI LỖ MŨI BẰNG NHAU ø1.5 (theo ref), cục bộ đầu; loa kèn nằm bên trong
 const C2_NOSE_Y=1.2;                          // cao độ hai lỗ mũi
 const C2_TAPE_Z=28;                           // dây phong tỏa: cách chân tượng (z=+18) 10 m
 const C2_POST_Z=26;                           // bục gác, ngay TRONG dây
@@ -3627,20 +3627,15 @@ function buildC2Head(){
   const muzzle=box(4.8,3.6,6.4,C2.lime);muzzle.position.set(0,4.1,4.0);muzzle.rotation.x=.06;g.add(muzzle);
   const tip=gmesh(new THREE.SphereGeometry(2.6,14,10),C2.lime);tip.scale.set(1.12,.7,.55);tip.position.set(0,4.15,5.85);g.add(tip);   // mặt trước ~z 7.3
   const bridge=box(2.2,.7,5.6,C2.lime2);bridge.position.set(0,5.75,3.2);bridge.rotation.x=.1;g.add(bridge);   // sống mũi — đường leo
-  // ── HAI LỖ MŨI ở đầu mõm + GỜ ĐỨNG ──
-  const [lx,ny,nz]=C2_NOSE_L,[rx]=C2_NOSE_R;
-  const lnose=new THREE.Group();lnose.position.set(lx,ny,nz);
-  const ltube=gmesh(new THREE.CylinderGeometry(.72,.68,.9,18,1,true),C2.lime2);ltube.rotation.x=Math.PI/2;ltube.position.z=.45;ltube.material.side=THREE.DoubleSide;lnose.add(ltube);
-  const lrim=gmesh(new THREE.TorusGeometry(.68,.22,8,20),C2.lime2);lrim.position.z=.9;lnose.add(lrim);
-  const lhole=gmesh(new THREE.CircleGeometry(.6,18),'#2b2720');lhole.position.z=.02;lnose.add(lhole);               // miệng lỗ tối (ø1.2)
-  const lledge=box(1.5,.28,1.1,C2.lime2);lledge.position.set(0,-.74,1.2);lnose.add(lledge);          // gờ đứng phía trước, mặt trên y = ny-0.6
-  g.add(lnose);
-  const rnose=new THREE.Group();rnose.position.set(rx,ny,nz);
-  const bell=gmesh(new THREE.CylinderGeometry(1.5,.6,2.2,22,1,true),C2.lime2);bell.rotation.x=-Math.PI/2;bell.position.z=1.1;bell.material.side=THREE.DoubleSide;rnose.add(bell);   // loe ra ngoài, miệng ø3 ở z+2.2
-  const bellRim=gmesh(new THREE.TorusGeometry(1.5,.22,8,26),C2.lime);bellRim.position.z=2.2;rnose.add(bellRim);
-  const throat=gmesh(new THREE.CircleGeometry(.58,16),'#241f19');throat.position.z=.02;rnose.add(throat);          // họng tối trong loa
-  const rledge=box(2.4,.28,1.1,C2.lime2);rledge.position.set(0,-1.64,2.5);rnose.add(rledge);         // gờ đứng dưới miệng loa
-  g.add(rnose);
+  // ── HAI LỖ MŨI BẰNG NHAU ø1.5 ở đầu mõm, mỗi lỗ một GỜ ĐỨNG (ref: hai lỗ tròn to giống hệt) ──
+  [C2_NOSE_L,C2_NOSE_R].forEach(([nx,ny,nz])=>{
+    const n=new THREE.Group();n.position.set(nx,ny,nz);
+    const tube=gmesh(new THREE.CylinderGeometry(.9,.85,.9,20,1,true),C2.lime2);tube.rotation.x=Math.PI/2;tube.position.z=.45;tube.material.side=THREE.DoubleSide;n.add(tube);
+    const rim=gmesh(new THREE.TorusGeometry(.85,.24,8,22),C2.lime2);rim.position.z=.9;n.add(rim);
+    const hole=gmesh(new THREE.CircleGeometry(.75,20),'#2b2720');hole.position.z=.02;n.add(hole);          // miệng lỗ tối ø1.5
+    const ledge=box(1.8,.28,1.1,C2.lime2);ledge.position.set(0,-.89,1.2);n.add(ledge);                       // gờ đứng, mặt trên = ny-0.75
+    g.add(n);
+  });
   // MẮT LÉ LỒI: hai cầu to hai bên sọ, con ngươi dồn vào giữa; mắt phải có MẢNG TỐI quanh
   [-1,1].forEach(sx=>{
     const eye=gmesh(new THREE.SphereGeometry(1.25,14,11),C2.bone);eye.position.set(sx*2.2,7.1,2.1);g.add(eye);
@@ -3704,7 +3699,7 @@ function buildC2Horn(){
     new THREE.Vector3( 1.4,ny+.1,2.0),
     new THREE.Vector3(C2_NOSE_R[0],ny,nz-.9)
   ]);
-  const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,50,.62,10,false),
+  const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,50,.75,10,false),
     new THREE.MeshStandardMaterial({color:'#6f6355',roughness:.9,flatShading:true,side:THREE.DoubleSide}));
   tube.castShadow=true;g.add(tube);
   [0.16,0.5,0.84].forEach(t=>{
@@ -3894,8 +3889,8 @@ function buildC2Zones(){
   axis.rotation.x=-Math.PI/2;axis.position.set(0,.09,(C2_POST_Z+C2_FACE_Z)/2);g.add(axis);
   g.add(tag('TRỤC CHỒNG KHUNG — mặt Coppa ⟷ mặt tượng (50–85 mm)',-17,1.5,19,1.6,EG.red));
   z(2.0,0,0,C2_POST_Z,EG.warm); g.add(tag('Z_BỤC GÁC — Pipo + Coppa (0:20)',0,2.6,C2_POST_Z+2.6,1.35,EG.warm));
-  z(1.3,C2_NOSE_L[0],C2_NOSE_Y,C2_FACE_Z+.8); g.add(tag('Z_MŨI TRÁI ø1.2 — có GỜ ĐỨNG: đặt Coppa lên đây (0:30) rồi chui vào (0:43)',-8.5,4.4,C2_FACE_Z+1,1.5));
-  z(2.0,C2_NOSE_R[0],C2_NOSE_Y,C2_FACE_Z+.8,'#7fd88f'); g.add(tag('Z_MŨI PHẢI ø3 — kèn nổ (0:35) · phun cát (3:48)',9.5,5.6,C2_FACE_Z+1,1.5,'#7fd88f'));
+  z(1.4,C2_NOSE_L[0],C2_NOSE_Y,C2_FACE_Z+.8); g.add(tag('Z_MŨI TRÁI ø1.5 — có GỜ ĐỨNG: đặt Coppa lên đây (0:30) rồi chui vào (0:43)',-8.5,4.4,C2_FACE_Z+1,1.5));
+  z(1.4,C2_NOSE_R[0],C2_NOSE_Y,C2_FACE_Z+.8,'#7fd88f'); g.add(tag('Z_MŨI PHẢI ø1.5 — kèn nổ (0:35) · phun cát (3:48); loa kèn khuếch đại nằm BÊN TRONG đầu',9.5,5.6,C2_FACE_Z+1,1.5,'#7fd88f'));
   z(1.2,7,-C2_PIT.deep,19); g.add(tag('Z_BẢNG KHẢO CỔ — insert 0:38',9,-3.6,19,1.2));
   z(3.0,0,0,34,'#7fd88f'); g.add(tag('Z_ĐÁM ĐÔNG — ngoài dây, 36 người',0,3.0,38,1.4,'#7fd88f'));
   z(3.0,0,0,31,EG.warm); g.add(tag('Z_RƠI C9 — hai đứa bắn ra mũi phải, rơi ở đây (3:45)',0,2.2,29.5,1.4,EG.warm));
@@ -3956,8 +3951,8 @@ function buildBdShell(){
   right.rotation.y=-Math.PI/2;right.position.set(W,0,0);right.receiveShadow=true;g.add(right);
   // tường trước (−Z): khoét HAI LỖ TRÒN = hai lỗ mũi
   const shF=new THREE.Shape();shF.moveTo(-W,0);shF.lineTo(W,0);shF.lineTo(W,H);shF.lineTo(-W,H);shF.closePath();
-  const h1=new THREE.Path();h1.absarc(-1.8,BD_NOSE_Y,1.5,0,Math.PI*2,true);
-  const h2=new THREE.Path();h2.absarc( 1.4,BD_NOSE_Y,.9,0,Math.PI*2,true);
+  const h1=new THREE.Path();h1.absarc(-1.5,BD_NOSE_Y,1.2,0,Math.PI*2,true);
+  const h2=new THREE.Path();h2.absarc( 1.5,BD_NOSE_Y,1.2,0,Math.PI*2,true);
   shF.holes.push(h1,h2);
   const front=new THREE.Mesh(new THREE.ShapeGeometry(shF,24),bdWallMat(BD.wall));
   front.position.set(0,0,-D);front.receiveShadow=true;g.add(front);
@@ -4001,30 +3996,18 @@ function buildBdCeil(){
 function buildBdHoles(){
   const g=new THREE.Group();
   const fz=-BDR.d/2;
-  // cửa TRÁI KHUNG (x=-1.8) = lỗ mũi PHẢI của tượng — loe loa kèn ø3, lối bắn ra C9
-  const R1=1.5;
-  const bell=gmesh(new THREE.CylinderGeometry(R1,R1*.62,2.4,24,1,true),BD.wall2);
-  bell.rotation.x=Math.PI/2;bell.position.set(-1.8,BD_NOSE_Y,fz-.6);
-  bell.material.side=THREE.DoubleSide;g.add(bell);
-  const rim1=gmesh(new THREE.TorusGeometry(R1,.18,8,24),BD.wall);
-  rim1.position.set(-1.8,BD_NOSE_Y,fz+.35);g.add(rim1);
-  // ánh sáng ngoài lọt vào
-  const day1=new THREE.Mesh(new THREE.CircleGeometry(R1*.62,24),
-    new THREE.MeshBasicMaterial({color:'#ffe6b0',transparent:true,opacity:.85}));
-  day1.position.set(-1.8,BD_NOSE_Y,fz-1.75);g.add(day1);
-
-  // cửa PHẢI KHUNG (x=+1.4) = lỗ mũi TRÁI của tượng — nhỏ ø1.2 ngoài, loe ø1.8 trong
-  const R2=.9;
-  const chute=gmesh(new THREE.CylinderGeometry(R2,.6,2.4,20,1,true),BD.wall2);
-  chute.rotation.x=Math.PI/2;chute.position.set(1.4,BD_NOSE_Y,fz-.6);
-  chute.material.side=THREE.DoubleSide;g.add(chute);
-  const rim2=gmesh(new THREE.TorusGeometry(R2,.16,8,20),BD.wall);
-  rim2.position.set(1.4,BD_NOSE_Y,fz+.35);g.add(rim2);
-  const day2=new THREE.Mesh(new THREE.CircleGeometry(.6,20),
-    new THREE.MeshBasicMaterial({color:'#ffe6b0',transparent:true,opacity:.85}));
-  day2.position.set(1.4,BD_NOSE_Y,fz-1.75);g.add(day2);
+  // HAI CỬA HANG BẰNG NHAU ø2.4 (ref: hai lỗ mũi giống hệt). Trái khung x=-1.5 = lỗ mũi PHẢI tượng (bắn ra C9),
+  // phải khung x=+1.5 = lỗ mũi TRÁI tượng (chui vào). Ống thu dần ra ngoài tới ø1.5 ở mặt tượng.
+  const R1=1.2;
+  [-1.5,1.5].forEach(x=>{
+    const tube=gmesh(new THREE.CylinderGeometry(R1,.75,2.4,24,1,true),BD.wall2);
+    tube.rotation.x=Math.PI/2;tube.position.set(x,BD_NOSE_Y,fz-.6);tube.material.side=THREE.DoubleSide;g.add(tube);
+    const rim=gmesh(new THREE.TorusGeometry(R1,.18,8,24),BD.wall);rim.position.set(x,BD_NOSE_Y,fz+.35);g.add(rim);
+    const day=new THREE.Mesh(new THREE.CircleGeometry(.75,24),new THREE.MeshBasicMaterial({color:'#ffe6b0',transparent:true,opacity:.85}));
+    day.position.set(x,BD_NOSE_Y,fz-1.75);g.add(day);
+  });
   // máng đá xoắn ngắn dẫn xuống sàn (kịch bản: "trượt theo ống đá xoắn, rớt bịch")
-  const pts=[new THREE.Vector3(1.4,BD_NOSE_Y-.3,fz+.4),
+  const pts=[new THREE.Vector3(1.5,BD_NOSE_Y-.3,fz+.4),
              new THREE.Vector3(1.9,BD_NOSE_Y-.9,fz+1.5),
              new THREE.Vector3(1.4,.55,fz+2.6),
              new THREE.Vector3(.7,.18,fz+3.4)];
@@ -4034,12 +4017,12 @@ function buildBdHoles(){
       side:THREE.DoubleSide,transparent:true,opacity:.55}));
   g.add(slide);
   // đèn thật: ánh ngày lọt qua hai cửa hang — nguồn sáng nền của phòng
-  [[-1.8,1.5],[1.4,1.0]].forEach(([x,pw])=>{
+  [[-1.5,1.3],[1.5,1.3]].forEach(([x,pw])=>{
     const L=new THREE.PointLight('#ffe0ae',pw,16,1.6);
     L.position.set(x,BD_NOSE_Y,fz+1.2);g.add(L);
   });
   // vệt sáng hắt lên sàn từ hai cửa
-  [[-1.8,R1*.9],[1.4,R2*.9]].forEach(([x,r])=>{
+  [[-1.5,R1*.9],[1.5,R1*.9]].forEach(([x,r])=>{
     const p=new THREE.Mesh(new THREE.CircleGeometry(r,20),
       new THREE.MeshBasicMaterial({color:'#ffe0a8',transparent:true,opacity:.18,depthWrite:false}));
     p.rotation.x=-Math.PI/2;p.position.set(x*1.5,.04,fz+3.2);g.add(p);
@@ -4313,10 +4296,10 @@ function buildBdZones(){
   const g=new THREE.Group();
   const fz=-BDR.d/2;
   const z=(r,x,y,zz,c)=>{const m=zoneRing(r,c);m.position.set(x,(y||0)+.06,zz);g.add(m);};
-  z(1.1,1.4,0,fz+3.2,EG.mark);
-  g.add(tag('CỬA HANG 1 — lỗ mũi TRÁI của tượng (nhìn từ trong hóa PHẢI khung) · chui vào 0:43',1.4,3.1,fz+1.2,1.45));
-  z(1.5,-1.8,0,fz+3.2,'#7fd88f');
-  g.add(tag('CỬA HANG 2 — lỗ mũi PHẢI của tượng (nhìn từ trong hóa TRÁI khung) · bắn ra 3:48',-1.8,3.6,fz+1.2,1.45,'#7fd88f'));
+  z(1.4,1.5,0,fz+3.2,EG.mark);
+  g.add(tag('CỬA HANG 1 — lỗ mũi TRÁI của tượng (nhìn từ trong hóa PHẢI khung) · chui vào 0:43',1.5,3.1,fz+1.2,1.45));
+  z(1.4,-1.5,0,fz+3.2,'#7fd88f');
+  g.add(tag('CỬA HANG 2 — lỗ mũi PHẢI của tượng (nhìn từ trong hóa TRÁI khung) · bắn ra 3:48 — hai cửa BẰNG NHAU',-1.5,3.6,fz+1.2,1.45,'#7fd88f'));
   z(1.4,0,0,3.0,EG.warm);
   g.add(tag('Z_CỬA SẬP 2×2 — sàn mở, cả hai rớt xuống',0,1.5,3.9,1.2,EG.warm));
   g.add(tag('MẶT BÀN CAO ĐÚNG 1.0 m = CHIỀU CAO PIPO → C8 Pipo phải trèo lên thành bàn',0,2.35,-1.6,1.55,EG.red));
@@ -4934,7 +4917,7 @@ const SET_DEFS={
   },
   setBida:{
     label:'C2b + C8 · Phòng bida trong đầu nhân sư',
-    note:'Phòng đá 12×12×5 m (đã nới rộng), tường tàng hình khi nhìn từ ngoài. MỘT model hai state. Hai cửa hang chính là hai lỗ mũi tượng — nhìn từ trong ra thì trái/phải ĐẢO so với nhìn mặt tượng từ ngoài. Bật/tắt STATE A (C2b) và STATE B (C8) trong danh sách bộ phận.',
+    note:'Phòng đá 12×12×5 m (đã nới rộng), tường tàng hình khi nhìn từ ngoài. MỘT model hai state. Hai cửa hang BẰNG NHAU chính là hai lỗ mũi tượng — nhìn từ trong ra thì trái/phải ĐẢO so với nhìn mặt tượng từ ngoài. Bật/tắt STATE A (C2b) và STATE B (C8) trong danh sách bộ phận.',
     small:true,
     parts:[
       {k:'bd_shell',  p:[0,0,0]},
@@ -5060,7 +5043,7 @@ const SET_DEFS={
       {t:'0:38',n:'Insert bảng khảo cổ',            p:[7.6,-4.0,22.5],tg:[7,-4.9,19.3],f:50},
       {t:'0:43',n:'Coppa chui mũi trái',            p:[-5.2,1.6,19.5],tg:[-1.6,1.2,15.3],f:50},
       {t:'3:45',n:'C9 wide - đám đông nhặt nón',    p:[-22,5,50],    tg:[0,1,26],    f:35},
-      {t:'3:48',n:'C9 mũi phải phun cát',           p:[10,2.4,25.5], tg:[1.4,1.2,15.5],f:50},
+      {t:'3:48',n:'C9 mũi phải phun cát',           p:[10,2.4,25.5], tg:[1.5,1.2,15.5],f:50},
       {t:'3:55',n:'C9 Coppa vỗ móng - đám đông quỳ',p:[0,1.7,26],    tg:[0,1.5,36],  f:35}
     ]
   },
