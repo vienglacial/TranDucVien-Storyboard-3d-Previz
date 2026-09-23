@@ -90,6 +90,8 @@ Các nhóm có sẵn:
 - **Ctrl/Alt + lăn** — zoom bước thô (30%/nấc) để nhảy nhanh giữa hai cỡ cảnh
 - **Bấm đúp vào đâu** — lấy đúng chỗ đó làm **tâm xoay**, camera tự lại gần. Đây là cách nhanh nhất để soi một chi tiết trong set lớn
 - **Phím F** — lấp đầy khung bằng vật đang chọn; không chọn gì thì khung vừa toàn cảnh
+- **Lăn tiếp khi đã sát tường** — camera **đi xuyên qua** tường/vỏ khối để vào trong (phòng bida, khoang máy bay)
+- **Mũi tên ↑↓←→** — đi bộ tới/lùi/ngang; **PageUp/PageDown** — lên/xuống; giữ **Shift** để bước nhỏ
 - **Chuột phải kéo** — lia (pan), tốc độ tự co theo độ xa gần
 - **Bấm vật thể** — chọn để chỉnh
 - **Shift + bấm** — chọn thêm nhiều vật, di chuyển/xoay cả nhóm (cần ở chế độ Orbit)

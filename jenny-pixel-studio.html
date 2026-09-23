@@ -1036,6 +1036,13 @@ class Orbit{
       if(dir<0&&this.onZoomPick){
         const now=performance.now();
         if(now-lastPickT>60){lastPick=this.onZoomPick(e);lastPickT=now;}
+        const hitDist=lastPick?lastPick.distanceTo(this.cam.position):Infinity;
+        // Đã sát bề mặt (tường, vỏ khối) mà còn lăn tiếp = muốn ĐI XUYÊN QUA:
+        // đẩy cả tâm xoay lẫn máy tiến tới theo hướng nhìn, không bám mặt nữa.
+        if(hitDist<1.2||r0<=this.minR*1.05){
+          this.dolly(Math.max(.35,r0*step));
+          return;
+        }
         if(lastPick){
           const t=Math.min(.9,1-r1/r0);          // phần khoảng cách vừa rút ngắn
           this.target.lerp(lastPick,t);
@@ -1058,6 +1065,16 @@ class Orbit{
     this.target.copy(center);
     this.sph.radius=Math.max(this.minR,Math.min(this.maxR,radius*3));
     this._update();
+  }
+  // đi tới/lùi theo hướng nhìn (giữ nguyên bán kính, dời cả tâm) — xuyên tường được
+  dolly(d){
+    const fwd=this.cam.getWorldDirection(new THREE.Vector3());
+    this.target.addScaledVector(fwd,d);this._update();
+  }
+  // đi ngang / lên xuống
+  strafe(dx,dy){
+    const right=new THREE.Vector3().setFromMatrixColumn(this.cam.matrix,0);
+    this.target.addScaledVector(right,dx);this.target.y+=dy;this._update();
   }
   // đặt tâm xoay vào đúng một điểm (bấm đúp) — từ đó zoom/xoay quanh chi tiết đó
   focusPoint(p,radius){
@@ -5366,6 +5383,17 @@ document.addEventListener('keydown',e=>{
   if(e.key==='m'||e.key==='M')document.getElementById('monToggle').click();
   if(e.key==='t'||e.key==='T')toggleAnno();
   // F = lấp đầy khung bằng vật đang chọn (hoặc cả cảnh nếu không chọn gì)
+  if(e.key.startsWith('Arrow')){
+    e.preventDefault();
+    const st=e.shiftKey?Math.max(.15,orbit.sph.radius*.08):Math.max(.5,orbit.sph.radius*.2);
+    if(e.key==='ArrowUp')orbit.dolly(st);
+    if(e.key==='ArrowDown')orbit.dolly(-st);
+    if(e.key==='ArrowLeft')orbit.strafe(-st,0);
+    if(e.key==='ArrowRight')orbit.strafe(st,0);
+    return;
+  }
+  if(e.key==='PageUp'){e.preventDefault();orbit.strafe(0,Math.max(.15,orbit.sph.radius*.2));return;}
+  if(e.key==='PageDown'){e.preventDefault();orbit.strafe(0,-Math.max(.15,orbit.sph.radius*.2));return;}
   if(e.key==='f'||e.key==='F'){
     if(selected){orbit.frame(getCenter(selected),getRadius(selected)*0.85);toast('Khung vừa: '+selected.userData.label);}
     else if(objects.length){
