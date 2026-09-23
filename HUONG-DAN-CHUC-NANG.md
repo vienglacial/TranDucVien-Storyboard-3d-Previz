@@ -85,10 +85,18 @@ Các nhóm có sẵn:
 ### Điều khiển chuột
 
 - **Chuột trái kéo** — xoay camera (Orbit)
-- **Lăn chuột** — zoom
-- **Chuột phải kéo** — lia (pan)
+- **Lăn chuột** — zoom **về phía điểm đang trỏ**, nên ngắm chi tiết nhỏ trong cảnh lớn vẫn tới được
+- **Shift + lăn** — zoom bước tinh (3%/nấc) để canh khung chính xác
+- **Ctrl/Alt + lăn** — zoom bước thô (30%/nấc) để nhảy nhanh giữa hai cỡ cảnh
+- **Bấm đúp vào đâu** — lấy đúng chỗ đó làm **tâm xoay**, camera tự lại gần. Đây là cách nhanh nhất để soi một chi tiết trong set lớn
+- **Phím F** — lấp đầy khung bằng vật đang chọn; không chọn gì thì khung vừa toàn cảnh
+- **Chuột phải kéo** — lia (pan), tốc độ tự co theo độ xa gần
 - **Bấm vật thể** — chọn để chỉnh
 - **Shift + bấm** — chọn thêm nhiều vật, di chuyển/xoay cả nhóm (cần ở chế độ Orbit)
+- **Phím T** — ẩn/hiện chữ chú thích previz của các khối bối cảnh
+
+> Tầm zoom được giới hạn theo cỡ cảnh: gần nhất 0.25 m (soi được bảng PET, chùm chà là),
+> xa nhất vừa đủ ôm trọn set mà không bay ra ngoài vòm trời.
 
 ### Monitor & khung ngắm
 

@@ -994,7 +994,8 @@ class Orbit{
     this.cam=cam;this.dom=dom;
     this.target=new THREE.Vector3(0,1,0);
     this.sph=new THREE.Spherical(10,Math.PI/2.6,Math.PI/4);
-    this.minR=1.2;this.maxR=120;
+    this.minR=0.25;this.maxR=120;
+    this.onZoomPick=null;    // app gắn vào: trả về điểm 3D dưới con trỏ
     this.enabled=true;
     this._update();this._bind();
   }
@@ -1022,10 +1023,25 @@ class Orbit{
       this._update();
     };
     const up=()=>mode=0;
+    // Bước zoom nhân theo bán kính nên mượt ở mọi cỡ cảnh.
+    // Shift = bước tinh (3%), Ctrl/Alt = bước thô (30%). Zoom vào thì camera
+    // TIẾN VỀ ĐIỂM DƯỚI CON TRỎ, nên ngắm chi tiết nhỏ trong set 400 m vẫn tới được.
+    let lastPick=null,lastPickT=0;
     const wheel=e=>{
       if(!this.enabled)return;e.preventDefault();
-      this.sph.radius*=(1+(e.deltaY>0?0.1:-0.1));
-      this.sph.radius=Math.max(this.minR,Math.min(this.maxR,this.sph.radius));
+      const step=e.shiftKey?0.03:((e.ctrlKey||e.altKey)?0.30:0.12);
+      const dir=e.deltaY>0?1:-1;
+      const r0=this.sph.radius;
+      const r1=Math.max(this.minR,Math.min(this.maxR,r0*(1+dir*step)));
+      if(dir<0&&this.onZoomPick){
+        const now=performance.now();
+        if(now-lastPickT>60){lastPick=this.onZoomPick(e);lastPickT=now;}
+        if(lastPick){
+          const t=Math.min(.9,1-r1/r0);          // phần khoảng cách vừa rút ngắn
+          this.target.lerp(lastPick,t);
+        }
+      }
+      this.sph.radius=r1;
       this._update();
     };
     this.dom.addEventListener('mousedown',down);
@@ -1040,7 +1056,13 @@ class Orbit{
   }
   frame(center,radius){
     this.target.copy(center);
-    this.sph.radius=Math.max(this.minR,radius*3);
+    this.sph.radius=Math.max(this.minR,Math.min(this.maxR,radius*3));
+    this._update();
+  }
+  // đặt tâm xoay vào đúng một điểm (bấm đúp) — từ đó zoom/xoay quanh chi tiết đó
+  focusPoint(p,radius){
+    this.target.copy(p);
+    if(radius)this.sph.radius=Math.max(this.minR,Math.min(this.maxR,radius));
     this._update();
   }
 }
@@ -3986,7 +4008,7 @@ function detachOne(setObj,child){
 let bigSetOn=false;
 function bigSetEnv(){
   if(bigSetOn)return;bigSetOn=true;
-  orbit.maxR=500;
+  orbit.maxR=380;          // ở trong vòm trời 460 m, không bay ra khoảng đen
   scene.fog.near=700;scene.fog.far=2400;
   sun.shadow.camera.left=-120;sun.shadow.camera.right=120;
   sun.shadow.camera.top=120;sun.shadow.camera.bottom=-120;
@@ -4028,7 +4050,7 @@ function gotoSetCam(setObj,bm){
   const p=new THREE.Vector3(bm.p[0],bm.p[1],bm.p[2]).applyMatrix4(setObj.matrixWorld);
   const t=new THREE.Vector3(bm.tg[0],bm.tg[1],bm.tg[2]).applyMatrix4(setObj.matrixWorld);
   const off=p.clone().sub(t);
-  orbit.maxR=Math.max(orbit.maxR,off.length()*1.5);
+  orbit.maxR=Math.max(orbit.maxR,off.length()*1.2);
   orbit.target.copy(t);
   orbit.sph.setFromVector3(off);
   orbit.sph.phi=Math.max(.05,Math.min(Math.PI-.05,orbit.sph.phi));
@@ -4786,6 +4808,28 @@ const planeIntersect=new THREE.Vector3();
 
 function ndc(e){const r=canvas.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;}
 
+/* ── điểm 3D dưới con trỏ: trúng vật thì lấy vật, trượt thì lấy mặt sàn ── */
+const _zoomPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+const _zoomHit=new THREE.Vector3();
+function pointUnderCursor(e){
+  ndc(e);ray.setFromCamera(mouse,camera);
+  const meshes=[];
+  objects.forEach(o=>{if(o.visible)o.traverse(m=>{if(m.isMesh&&m.visible&&!m.userData.__anno)meshes.push(m);});});
+  const hit=ray.intersectObjects(meshes,false)[0];
+  if(hit)return hit.point.clone();
+  return ray.ray.intersectPlane(_zoomPlane,_zoomHit)?_zoomHit.clone():null;
+}
+orbit.onZoomPick=pointUnderCursor;
+
+// bấm đúp vào đâu = lấy chỗ đó làm tâm xoay, kéo luôn camera lại gần
+vp.addEventListener('dblclick',e=>{
+  if(e.button!==0)return;
+  const p=pointUnderCursor(e);
+  if(!p)return;
+  orbit.focusPoint(p,Math.max(orbit.minR,Math.min(orbit.sph.radius,p.distanceTo(camera.position)*0.55)));
+  toast('Đã lấy điểm này làm tâm xoay (bấm đúp)');
+});
+
 vp.addEventListener('mousedown',e=>{
   if(e.button!==0)return;
   ndc(e);ray.setFromCamera(mouse,camera);
@@ -4866,6 +4910,15 @@ document.addEventListener('keydown',e=>{
   if(e.key==='q')document.querySelector('[data-tool=orbit]').click();
   if(e.key==='m'||e.key==='M')document.getElementById('monToggle').click();
   if(e.key==='t'||e.key==='T')toggleAnno();
+  // F = lấp đầy khung bằng vật đang chọn (hoặc cả cảnh nếu không chọn gì)
+  if(e.key==='f'||e.key==='F'){
+    if(selected){orbit.frame(getCenter(selected),getRadius(selected)*0.85);toast('Khung vừa: '+selected.userData.label);}
+    else if(objects.length){
+      const b=new THREE.Box3();objects.forEach(o=>b.expandByObject(o));
+      orbit.frame(b.getCenter(new THREE.Vector3()),b.getSize(new THREE.Vector3()).length()/2*0.6);
+      toast('Khung vừa toàn cảnh');
+    }
+  }
 });
 
 // ── Nháy đúp thanh trượt → về mặc định (như Photoshop) ──
