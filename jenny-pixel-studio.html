@@ -4335,6 +4335,247 @@ function buildBdZones(){
   return g;
 }
 
+/* ══════════ C6 · EXT. KIM TỰ THÁP HOÀN THÀNH (Set Bible §6) ══════════
+   Kim tự tháp = RACK BIDA ĐỨNG: 55 cầu đá ø4 xếp tam giác 10 hàng (đáy 10, đỉnh 1),
+   đáy 40 m, cao 35.2 m, DÀY ĐÚNG MỘT QUẢ — nhìn nghiêng là một lát mỏng (chủ ý).
+   Hệ trục: mặt rack nằm trên z=0, quay về +Z (phía camera). Quả góc TRÁI đáy ở x=-18.
+   Đường bi 30 m chạy chéo từ bục (trước-trái) tới quả góc. Nile ở +X, cách 150 m.  */
+
+const C6={ ball:'#d9cfb4', ball2:'#c2b494', wood:'#8a6538', wood2:'#6e4e2a', rope:'#cdb98d',
+  sand:'#dcc79c', packed:'#cbb589', velvet:'#8e2b2b', gold:'#e6bf45', dust:'#d8c9a6' };
+const C6_R=2, C6_ROWS=10;
+const C6_DY=C6_R*2*Math.sin(Math.PI/3);            // 3.464 m giữa hai hàng
+const C6_CORNER=[-18,0];                            // hình chiếu quả góc trái đáy lên sàn (x,z)
+const C6_PODIUM=[-39.2,21.2];                       // bục khánh thành: cách quả góc 30 m, chéo 45°
+const C6_DIR=(()=>{const dx=C6_CORNER[0]-C6_PODIUM[0],dz=C6_CORNER[1]-C6_PODIUM[1],l=Math.hypot(dx,dz);return[dx/l,dz/l];})();
+const C6_NRM=[-C6_DIR[1],C6_DIR[0]];               // vuông góc đường bi
+
+// vị trí 55 quả của một lát
+function c6Balls(){
+  const out=[];
+  for(let k=0;k<C6_ROWS;k++){                       // k=0: hàng đáy 10 quả
+    const n=C6_ROWS-k;
+    for(let i=0;i<n;i++)out.push([(i-(n-1)/2)*C6_R*2, C6_R+k*C6_DY]);
+  }
+  return out;
+}
+function c6Slice(z,tint){
+  const geo=new THREE.SphereGeometry(C6_R,18,12);
+  const im=new THREE.InstancedMesh(geo,new THREE.MeshStandardMaterial({color:tint,roughness:.62,metalness:.08,flatShading:true}),55);
+  const m=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),col=new THREE.Color();
+  c6Balls().forEach(([x,y],i)=>{
+    e.set(i*.7,i*1.3,0);q.setFromEuler(e);
+    m.compose(new THREE.Vector3(x,y,z),q,new THREE.Vector3(1,1,1));im.setMatrixAt(i,m);
+    col.set(tint).multiplyScalar(.9+((i*37)%7)/35);im.setColorAt(i,col);
+  });
+  im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
+  im.castShadow=true;im.receiveShadow=true;return im;
+}
+
+/* ---- nền: cát nén vùng văng r=120 + sa mạc + cồn xa ---- */
+function buildC6Ground(){
+  const g=new THREE.Group();
+  const p=box(460,.4,340,EG.sand);p.position.set(20,-.18,0);p.castShadow=false;g.add(p);
+  const zone=gmesh(new THREE.CylinderGeometry(120,120,.06,64),C6.packed);zone.position.y=.03;zone.castShadow=false;g.add(zone);
+  const R=rnd(151);
+  for(let i=0;i<8;i++){
+    const r=16+R()*22;
+    const d=gmesh(new THREE.SphereGeometry(r,14,7,0,Math.PI*2,0,Math.PI/2),EG.sand2);
+    d.scale.y=.13+R()*.08;d.position.set(-160+i*46+R()*14,0,-135-R()*30);d.castShadow=false;g.add(d);
+  }
+  g.userData.h=0;return g;
+}
+
+/* ---- KIM TỰ THÁP = rack bida đứng, lát trước (chuẩn) ---- */
+function buildC6Rack(){
+  const g=new THREE.Group();
+  g.add(c6Slice(0,C6.ball));
+  // ánh "lấp lánh nắng chiều": vài đốm sáng nhỏ trên mặt cầu phía nắng
+  const R=rnd(157);
+  c6Balls().forEach(([x,y],i)=>{
+    if(i%4)return;
+    const s=new THREE.Mesh(new THREE.SphereGeometry(.25,6,4),new THREE.MeshBasicMaterial({color:'#fff4d6'}));
+    s.position.set(x+1.1,y+1.2,1.4);g.add(s);
+  });
+  g.userData.h=C6_R*2+9*C6_DY;
+  return g;
+}
+/* ---- 2 lát sau (chỉ để nhìn đỡ mỏng, tắt sẵn) ---- */
+function buildC6RackDepth(){
+  const g=new THREE.Group();
+  g.add(c6Slice(-C6_R*2,C6.ball2));g.add(c6Slice(-C6_R*4,C6.ball2));
+  g.userData.h=C6_R*2+9*C6_DY;return g;
+}
+
+/* ---- KHUNG GỖ TAM GIÁC bao chân: 2 dầm xiên theo mái + dầm đáy sau lưng + dây kéo + đội kéo ---- */
+function buildC6Frame(){
+  const g=new THREE.Group();
+  const H=6,T=1;
+  const slope=Math.atan2(C6_DY,C6_R);              // góc mái so với phương ngang
+  const L=22;                                       // dầm xiên dài 22 m (bao 4 hàng dưới)
+  [-1,1].forEach(s=>{
+    const beam=box(L,H,T,C6.wood);
+    beam.position.set(s*(20+1.2-Math.cos(slope)*L/2),Math.sin(slope)*L/2+.6,0);
+    beam.rotation.z=-s*slope;g.add(beam);
+    // đai gỗ ngang
+    for(let i=0;i<4;i++){
+      const band=box(.3,H+.4,T+.5,C6.wood2);
+      const t=(i+.5)/4;
+      band.position.set(s*(21.2-Math.cos(slope)*L*t),Math.sin(slope)*L*t+.6,0);band.rotation.z=-s*slope;g.add(band);
+    }
+    // cọc neo + dây kéo về hướng -X (đội kéo)
+    const top=[s*(21.2-Math.cos(slope)*L),Math.sin(slope)*L+.6];
+    for(let r=0;r<3;r++){
+      const len=48;
+      const rope=cyl(.06,.06,len,C6.rope,5);
+      rope.position.set(top[0]-len/2*.94,top[1]/2+.5,2.2+r*1.4-s*3);
+      rope.rotation.z=Math.PI/2-Math.atan2(top[1],len*.94);g.add(rope);
+    }
+  });
+  // dầm đáy nằm SAU lưng lát trước để không che hàng đáy khi quay từ +Z
+  const base=box(44,H,T,C6.wood);base.position.set(0,H/2,-C6_R-1.2);g.add(base);
+  for(let i=0;i<6;i++){const b=box(.35,H+.4,T+.4,C6.wood2);b.position.set(-20+i*8,H/2,-C6_R-1.2);g.add(b);}
+  // đội dân công kéo khung (bên -X)
+  const R=rnd(163),list=[];
+  for(let i=0;i<36;i++)list.push({x:-64-Math.floor(i/6)*1.7,z:-4+(i%6)*2.2,ry:-Math.PI/2,lean:.42,s:.96+R()*.12});
+  g.add(peopleField(list,'stand'));
+  g.userData.h=Math.sin(slope)*L+6.6;
+  return g;
+}
+
+/* ---- BỤC KHÁNH THÀNH + gối nhung đỏ + cơ gỗ 1.5 m + bi trắng ø0.06 + thầy tế / người hầu / Pharaoh ---- */
+function buildC6Podium(){
+  const g=new THREE.Group();
+  g.add(bx(5,.3,5,EG.stone2,0,0,0));g.add(bx(4,.9,4,EG.stone,0,.3,0));
+  const step=box(2.2,.45,.9,EG.stone2);step.position.set(0,.22,2.45);g.add(step);
+  // giá + gối nhung đỏ
+  const stand=box(.9,.7,.6,C6.wood2);stand.position.set(.9,1.55,.2);g.add(stand);
+  const pillow=box(1.0,.16,.7,C6.velvet);pillow.position.set(.9,1.98,.2);g.add(pillow);
+  const tassel=torus3(.02,.02,C6.gold,6);tassel.position.set(.9,2.06,.2);g.add(tassel);
+  // cơ gỗ "bình thường" 1.5 m nằm trên gối
+  const cue=cyl(.018,.03,1.5,C6.wood,8);cue.rotation.z=Math.PI/2;cue.rotation.y=.35;cue.position.set(.9,2.1,.2);g.add(cue);
+  const cueTip=cyl(.017,.017,.04,'#3a6f8f',6);cueTip.rotation.z=Math.PI/2;cueTip.rotation.y=.35;cueTip.position.set(.9+.74*Math.cos(.35),2.1,.2-.74*Math.sin(.35));g.add(cueTip);
+  // bi trắng ø0.06 trên gối
+  const cb=sph(.03,'#f6f1e6',10);cb.position.set(1.15,2.09,.02);g.add(cb);
+  // hai người hầu bưng gối, thầy tế, Pharaoh (1.4 m + vương miện 0.6)
+  g.add(peopleField([{x:.3,z:1.0,ry:Math.PI,s:1.0},{x:1.5,z:1.0,ry:Math.PI,s:1.0},{x:-1.4,z:.4,ry:.6,s:1.06}],'stand'));
+  const ph=new THREE.Group();ph.position.set(-.6,1.2,-1.0);
+  ph.add(peopleField([{x:0,z:0,ry:.2,s:.82}],'stand'));
+  const crown=cone(.28,.6,C6.gold,8);crown.position.y=1.42*.82+.32;ph.add(crown);
+  g.add(ph);
+  // lơ xanh
+  const chalk=box(.08,.08,.08,'#3f7fa8');chalk.position.set(.55,2.1,.45);g.add(chalk);
+  g.userData.h=2.3;
+  return g;
+}
+
+/* ---- ĐƯỜNG BI 30 m cát nén: bục → quả góc trái đáy, kèm cái HỐ ở cuối ---- */
+function buildC6Path(){
+  const g=new THREE.Group();
+  const [px,pz]=C6_PODIUM,[cx,cz]=C6_CORNER;
+  const len=Math.hypot(cx-px,cz-pz);
+  const strip=box(len,.05,2.2,C6.packed);
+  strip.position.set((px+cx)/2,.05,(pz+cz)/2);strip.rotation.y=-Math.atan2(cz-pz,cx-px);strip.castShadow=false;g.add(strip);
+  // gờ cát hai bên rãnh
+  [-1,1].forEach(s=>{
+    const rim=box(len,.12,.25,EG.sand2);
+    rim.position.set((px+cx)/2+C6_NRM[0]*s*1.25,.08,(pz+cz)/2+C6_NRM[1]*s*1.25);rim.rotation.y=strip.rotation.y;rim.castShadow=false;g.add(rim);
+  });
+  // bi trắng đặt trên cát ngay trước bục
+  const cb=sph(.03,'#f6f1e6',10);cb.position.set(px+C6_DIR[0]*3.2,.06,pz+C6_DIR[1]*3.2);g.add(cb);
+  // cái HỐ bi rớt tõm (2:39) — nằm quá quả góc 3 m theo đúng hướng bi
+  const hx=cx+C6_DIR[0]*3,hz=cz+C6_DIR[1]*3;
+  const hole=gmesh(new THREE.CylinderGeometry(.35,.28,.5,14),'#1d1a16');hole.position.set(hx,-.2,hz);g.add(hole);
+  const lip=torus3(.38,.07,EG.sand2,16);lip.position.set(hx,.06,hz);g.add(lip);
+  g.userData.h=.15;
+  return g;
+}
+
+/* ---- ĐÁM ĐÔNG 300 quỳ hai bên đường bi, không chắn rãnh ---- */
+function buildC6Crowd(){
+  const g=new THREE.Group();
+  const [px,pz]=C6_PODIUM;const R=rnd(167),list=[];
+  for(let side=-1;side<=1;side+=2)for(let i=0;i<150;i++){
+    const row=Math.floor(i/30),col=i%30;
+    const t=4+col*.78+R()*.5;                       // dọc đường bi
+    const off=4.5+row*1.6+R()*.6;                   // cách rãnh ≥ 4.5 m
+    const x=px+C6_DIR[0]*t+C6_NRM[0]*side*off, z=pz+C6_DIR[1]*t+C6_NRM[1]*side*off;
+    // quay mặt vào rãnh
+    list.push({x,z,ry:Math.atan2(-C6_NRM[0]*side,-C6_NRM[1]*side)+(R()-.5)*.3,s:.94+R()*.14});
+  }
+  g.add(peopleField(list,'kneel'));
+  g.userData.h=1;return g;
+}
+
+/* ---- CỤM NEAR-MISS rải trong vùng văng: kiệu, đứa bé, nhóm dân ---- */
+function buildC6NearMiss(){
+  const g=new THREE.Group();
+  // kiệu + 4 người khiêng (đứng yên dưới kiệu sau khi bụi tan)
+  const k=new THREE.Group();k.position.set(28,0,44);k.rotation.y=.5;
+  [-.72,.72].forEach(x=>{const p=box(.13,.13,5.2,EG.wood);p.position.set(x,1.34,0);k.add(p);});
+  const deck=box(1.7,.14,2.3,EG.wood2);deck.position.y=1.45;k.add(deck);
+  const roof=box(1.95,.12,2.55,EG.red);roof.position.y=3.06;k.add(roof);
+  [[-.72,-.95],[.72,-.95],[-.72,.95],[.72,.95]].forEach(([x,z])=>{const p=cyl(.06,.06,1.5,C6.gold,8);p.position.set(x,2.27,z);k.add(p);});
+  k.add(peopleField([{x:-.72,z:-2.3,ry:0},{x:.72,z:-2.3,ry:0},{x:-.72,z:2.3,ry:0},{x:.72,z:2.3,ry:0}],'stand'));
+  g.add(k);
+  // đứa bé ngồi chơi trên cát
+  const kid=new THREE.Group();kid.position.set(-30,0,45);
+  kid.add(peopleField([{x:0,z:0,ry:-Math.PI/2,s:.55}],'kneel'));
+  const toy=sph(.12,EG.red,8);toy.position.set(.5,.12,.2);kid.add(toy);
+  g.add(kid);
+  // vài nhóm dân đứng rải
+  const R=rnd(173),list=[];
+  [[52,-30],[-56,-18],[8,66],[70,30]].forEach(([x,z])=>{for(let i=0;i<6;i++)list.push({x:x+(R()-.5)*5,z:z+(R()-.5)*5,ry:R()*6.28,s:.94+R()*.14});});
+  g.add(peopleField(list,'stand'));
+  g.userData.h=3.2;return g;
+}
+
+/* ---- STATE "SAU KHI NỔ BUNG": cầu văng khắp vùng, bụi, quả cầu có Pharaoh dính bẹp lăn về Nile ---- */
+function buildC6Burst(){
+  const g=new THREE.Group();
+  const spots=[[-32.4,45],[10,30],[45,-20],[-50,-10],[30,-45],[-8,55],[60,25],[-70,30],[22,-8],[-24,-30],[80,-40],[-45,60]];
+  spots.forEach(([x,z],i)=>{
+    const b=gmesh(new THREE.SphereGeometry(C6_R,16,10),i%2?C6.ball:C6.ball2);b.position.set(x,C6_R,z);b.rotation.set(i,i*.7,0);g.add(b);
+  });
+  // bụi tan chậm quanh chân tháp
+  const R=rnd(179);
+  for(let i=0;i<9;i++){
+    const r=7+R()*9;
+    const d=new THREE.Mesh(new THREE.SphereGeometry(r,10,7),new THREE.MeshBasicMaterial({color:C6.dust,transparent:true,opacity:.16,depthWrite:false}));
+    d.position.set(-30+R()*60,r*.5,-10+R()*30);d.userData.__anno=true;g.add(d);
+  }
+  // QUẢ CẦU CÓ VUA: lăn ngang khung về phía Nile (+X), Pharaoh cán phẳng như tem, vương miện quay theo
+  const kb=new THREE.Group();kb.position.set(40,0,12);
+  const ball=gmesh(new THREE.SphereGeometry(C6_R,18,12),C6.ball);ball.position.y=C6_R;kb.add(ball);
+  const flat=gmesh(new THREE.SphereGeometry(C6_R+.05,18,12,0,Math.PI*.55,Math.PI*.25,Math.PI*.4),'#8f8a86');
+  flat.position.y=C6_R;flat.rotation.y=-.4;kb.add(flat);                  // mảng "tem" ôm nửa vòng thân cầu
+  const crown=cone(.3,.6,C6.gold,8);crown.position.set(0,C6_R+1.6,1.3);crown.rotation.x=1.1;kb.add(crown);
+  const arrow=cone(.5,1.6,EG.mark,7);arrow.rotation.z=-Math.PI/2;arrow.position.set(4.2,C6_R,0);arrow.userData.__anno=true;kb.add(arrow);
+  g.add(kb);
+  g.add(tag('PHARAOH DÍNH BẸP NHƯ TEM — quả cầu lăn về Nile (2:37)',40,6.4,12,1.5,EG.red));
+  g.add(tag('cách đứa bé ĐÚNG MỘT GANG (2:35)',-32,5.2,45,1.2,EG.warm));
+  g.userData.h=C6_R*2;return g;
+}
+
+/* ---- chú thích + zone C6 ---- */
+function buildC6Zones(){
+  const g=new THREE.Group();
+  const z=(r,x,zz,c)=>{const m=zoneRing(r,c);m.position.set(x,.08,zz);g.add(m);};
+  const [px,pz]=C6_PODIUM,[cx,cz]=C6_CORNER;
+  // vùng văng 120 m
+  const big=annoMesh(new THREE.RingGeometry(119.2,120,96),EG.warm,.45);big.rotation.x=-Math.PI/2;big.position.y=.1;g.add(big);
+  g.add(tag('VÙNG VĂNG r=120 m — cát trống, không vật cản chắn đường vua lăn',0,4,-110,1.8,EG.warm));
+  z(2.6,cx,cz,EG.red); g.add(tag('QUẢ GÓC TRÁI ĐÁY — bi chạm "cạch" (2:27) → CRẮC (2:31)',cx-6,7.5,cz+4,1.5,EG.red));
+  z(3.2,px,pz,EG.warm); g.add(tag('Z_BỤC KHÁNH THÀNH — gối nhung (2:14) · Coppa nhắm cơ (2:18)',px,4.2,pz+3.5,1.5,EG.warm));
+  const hx=cx+C6_DIR[0]*3,hz=cz+C6_DIR[1]*3;
+  z(1.0,hx,hz); g.add(tag('HỐ — bi trắng rớt tõm, Pipo biên: SCRATCH (2:39)',hx+7,3.2,hz+4,1.4));
+  g.add(tag('ĐƯỜNG BI 30 m — camera dolly theo (2:22)',(px+cx)/2+C6_NRM[0]*8,2.4,(pz+cz)/2+C6_NRM[1]*8,1.5));
+  g.add(tag('SÔNG NILE → +X, cách 150 m',96,4,20,1.5,'#7fd88f'));
+  g.add(tag('KIM TỰ THÁP = RACK BIDA ĐỨNG: 55 cầu ø4 · đáy 40 m · cao 35.2 m · DÀY 1 QUẢ',0,40,3,2.4,EG.mark));
+  g.add(tag('C6 · EXT. KIM TỰ THÁP HOÀN THÀNH — 2:00→2:40',0,45,3,2.4,EG.mark));
+  g.userData.h=0;return g;
+}
+
 /* ══════════ ĐĂNG KÝ BỘ PHẬN VÀO BUILDERS ══════════ */
 const SET_PART_LABEL={};
 function regPart(key,label,fn){
@@ -4396,6 +4637,16 @@ regPart('bd_stateB','STATE B · C8 (ngai, đuốc, thợ đục)',buildBdStateB)
 regPart('bd_glow','Chữ tượng hình SÁNG LÊN',buildBdGlow);
 regPart('bd_traj','Quỹ đạo gag → lỗ kích hoạt',buildBdTraj);
 regPart('bd_zones','Chú thích + zone phòng bida',buildBdZones);
+regPart('c6_ground','Nền: vùng văng r=120 + sa mạc',buildC6Ground);
+regPart('c6_rack','KIM TỰ THÁP = rack 55 cầu (lát trước)',buildC6Rack);
+regPart('c6_rackdepth','2 lát sau (nhìn đỡ mỏng)',buildC6RackDepth);
+regPart('c6_frame','Khung gỗ tam giác + dây + đội kéo',buildC6Frame);
+regPart('c6_podium','Bục khánh thành + gối nhung + cơ + bi',buildC6Podium);
+regPart('c6_path','Đường bi 30 m + cái hố',buildC6Path);
+regPart('c6_crowd','Đám đông 300 quỳ hai bên đường bi',buildC6Crowd);
+regPart('c6_nearmiss','Cụm near-miss: kiệu, đứa bé, dân',buildC6NearMiss);
+regPart('c6_burst','STATE sau khi nổ: cầu văng, bụi, vua dính bẹp',buildC6Burst);
+regPart('c6_zones','Chú thích + zone C6',buildC6Zones);
 
 /* ══════════ ĐỊNH NGHĨA KHỐI SET ══════════
    p:[x,y,z]  ry: xoay ngang (rad)   Bookmark: p = vị trí máy, t = điểm nhìn, f = tiêu cự */
@@ -4496,6 +4747,40 @@ const SET_DEFS={
       {t:'3:38',n:'C8 cầu đá phá cửa',                p:[-3.4,2.4,2.8], tg:[5.6,1.8,.2], f:28},
       {t:'3:41',n:'C8 Coppa trượt trên nỉ',           p:[1.0,1.5,2.4],  tg:[.2,1.1,.3],  f:35},
       {t:'3:44',n:'C8 sàn mở',                        p:[.8,3.6,4.2],   tg:[0,.3,3.0],   f:28}
+    ]
+  },
+  setC6:{
+    label:'C6 · Kim tự tháp hoàn thành (rack bida)',
+    note:'Kim tự tháp = rack bida đứng: 55 cầu đá ø4, đáy 40 m, cao 35.2 m, DÀY MỘT QUẢ (chủ ý). Đường bi 30 m chéo vào quả góc trái đáy. Bật "STATE sau khi nổ" cho các shot từ 2:31.',
+    parts:[
+      {k:'eg_sky',      p:[0,0,0]},
+      {k:'c6_ground',   p:[0,0,0]},
+      {k:'eg_nile',     p:[150,0,0]},
+      {k:'c6_rack',     p:[0,0,0]},
+      {k:'c6_rackdepth',p:[0,0,0], hidden:true},
+      {k:'c6_frame',    p:[0,0,0]},
+      {k:'c6_podium',   p:[-39.2,0,21.2], ry:Math.PI/4},
+      {k:'c6_path',     p:[0,0,0]},
+      {k:'c6_crowd',    p:[0,0,0]},
+      {k:'c6_nearmiss', p:[0,0,0]},
+      {k:'c6_burst',    p:[0,0,0], hidden:true},
+      {k:'c6_zones',    p:[0,0,0]},
+      {k:'eg_scaleref', p:[-60,0,50]}
+    ],
+    cams:[
+      {t:'—',   n:'Tổng thể sa mạc + tháp',            p:[60,42,150],   tg:[0,12,0],     f:28},
+      {t:'2:00',n:'Wide hero — tháp lấp lánh',         p:[0,14,112],    tg:[0,14,0],     f:35},
+      {t:'2:05',n:'Pull-back reveal rack + khung gỗ',  p:[-34,10,84],   tg:[0,12,0],     f:28},
+      {t:'2:10',n:'Rút khung — rung một nhịp',         p:[-46,6,34],    tg:[-14,5,0],    f:35},
+      {t:'2:14',n:'Gối nhung — thánh vật',             p:[-36.4,1.9,25.2],tg:[-38.6,2.0,21.4],f:85},
+      {t:'2:18',n:'Coppa nhắm cơ (theo trục bi)',      p:[-45,1.3,27],  tg:[-18,3,2],    f:50},
+      {t:'2:22',n:'Dolly theo bi 30 m',                p:[-24,1.2,16.5],tg:[-18,2,1.5],  f:40},
+      {t:'2:27',n:'ECU bi chạm quả góc — cạch',        p:[-22,1.0,6.2], tg:[-18.6,1.3,2.2],f:85},
+      {t:'2:29',n:'Thầy tế giơ tay',                   p:[-35,1.8,17.5],tg:[-40,1.6,21.4],f:50},
+      {t:'2:31',n:'CRẮC + nổ bung — wide (bật STATE)', p:[0,22,125],    tg:[0,10,0],     f:24},
+      {t:'2:35',n:'Bụi tan — từng người đứng dậy',     p:[22,4,62],     tg:[0,2,20],     f:35},
+      {t:'2:37',n:'Cầu đá lăn ngang — vua dính bẹp',   p:[40,3,32],     tg:[40,2.5,12],  f:50},
+      {t:'2:39',n:'Bi trắng rớt hố — Pipo SCRATCH',    p:[-14,1.4,8.5], tg:[-15.9,.3,-2],f:50}
     ]
   },
   setC2:{
@@ -4771,6 +5056,7 @@ const ASSETS={
     ['setC5','C5 Công trường tháp',ic('<path d="M2 21h20M3.5 21L18 7M8.5 16.5l3-3 3 3-3 3z"/>')],
     ['setC2','C2 Hố khai quật + nhân sư',ic('<path d="M2 14h20M6 14v-3l3-4h4l3 4v3M9 9h1M13 9h1M4 14l-1 6h18l-1-6"/>')],
     ['setBida','C2b+C8 Phòng bida trong đầu',ic('<rect x="3" y="6" width="18" height="12" rx="1"/><rect x="7" y="10" width="10" height="5" rx="1"/><circle cx="6.5" cy="9.5" r="1"/><circle cx="17.5" cy="15" r="1"/>')],
+    ['setC6','C6 Kim tự tháp (rack bida)',ic('<circle cx="12" cy="5" r="2"/><circle cx="9.5" cy="9.5" r="2"/><circle cx="14.5" cy="9.5" r="2"/><circle cx="7" cy="14" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="17" cy="14" r="2"/><circle cx="4.5" cy="18.5" r="2"/><circle cx="9.5" cy="18.5" r="2"/><circle cx="14.5" cy="18.5" r="2"/><circle cx="19.5" cy="18.5" r="2"/>')],
   ],
   grpChar:[
     ['pipo','★ Pipo (gà)',ic('<circle cx="12" cy="8" r="4"/><path d="M12 12v3M8 14h8M10 19l2-4 2 4M9.5 7l1 1M14.5 7l-1 1"/><path d="M8.5 5.5q3.5-2 7 0"/>')],
