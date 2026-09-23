@@ -102,6 +102,8 @@ Các nhóm có sẵn:
 - **Bấm vật thể** — chọn để chỉnh
 - **Shift + bấm** — chọn thêm nhiều vật, di chuyển/xoay cả nhóm (cần ở chế độ Orbit)
 - **Phím T** — ẩn/hiện chữ chú thích previz của các khối bối cảnh
+- **Phím G** — gộp các vật đang chọn thành **một khối** (di chuyển/xoay/tỉ lệ/lưu như một vật); **Shift+G** — tách khối đang chọn ra lại
+- Khi chọn nhiều vật (Shift+bấm), các thanh trượt Xoay / Độ cao / Tỉ lệ ở panel phải áp cho **cả nhóm**
 
 > Tầm zoom được giới hạn theo cỡ cảnh: gần nhất 0.25 m (soi được bảng PET, chùm chà là),
 > xa nhất vừa đủ ôm trọn set mà không bay ra ngoài vòm trời.

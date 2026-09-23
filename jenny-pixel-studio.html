@@ -4576,6 +4576,221 @@ function buildC6Zones(){
   g.userData.h=0;return g;
 }
 
+/* ══════════ C7 · EXT. GIÀN THIÊU TRƯỚC ĐỀN — HOÀNG HÔN (Set Bible §7) ══════════
+   Quảng trường 40 × 40 m, gốc ở tâm quảng trường = chân cọc. Mặt tiền đền ở -Z
+   (hậu cảnh), nắng thấp sau đền. Camera mặc định ở +Z nhìn -Z: trái khung = -X.
+   Trục 180°: LỒNG PIPO bên TRÁI khung (-X), Coppa trên cọc ở giữa.
+   GAG: mép lồng cách cọc ĐÚNG 1.5 m (Pipo thò cánh hụt "hai gang").
+   Ba trạng thái bật/tắt: MƯA (2:50) · LỬA 12 m (3:05) · KHÓI (sau khi lửa tắt).  */
+
+const C7={ pave:'#b9ad93', pave2:'#a3987f', temple:'#cfc2a4', temple2:'#ab9c7c', pylon:'#bfb08f',
+  log:'#6e4b2a', log2:'#553a20', stake:'#7a5530', hippo:'#6b6f78', mask:'#2a2620',
+  rain:'#c9d6e2', fire1:'#ffd36b', fire2:'#ff8c2a', fire3:'#ff4a1f', smoke:'#5a5550', water:'#8fa3b3' };
+const C7_STAKE_H=3, C7_FIRE_H=12, C7_CAGE_GAP=1.5;
+
+/* ---- nền: quảng trường lát đá 40 × 40 + sa mạc quanh ---- */
+function buildC7Ground(){
+  const g=new THREE.Group();
+  const p=box(460,.4,340,EG.sand);p.position.set(0,-.2,-20);p.castShadow=false;g.add(p);
+  for(let i=-5;i<5;i++)for(let j=-5;j<5;j++){
+    const t=box(3.9,.16,3.9,(i+j)%2?C7.pave:C7.pave2);t.position.set(i*4+2,.08,j*4+2);t.castShadow=false;g.add(t);
+  }
+  const R=rnd(191);
+  for(let i=0;i<7;i++){
+    const r=14+R()*20;
+    const d=gmesh(new THREE.SphereGeometry(r,14,7,0,Math.PI*2,0,Math.PI/2),EG.sand2);
+    d.scale.y=.13+R()*.08;d.position.set(-140+i*48+R()*14,0,80+R()*30);d.castShadow=false;g.add(d);
+  }
+  g.userData.h=.16;return g;
+}
+
+/* ---- MẶT TIỀN ĐỀN: nền 3 m + bậc, hai hàng cột 12 m, tường pylon 15 m có cửa 6×10 ---- */
+function buildC7Temple(){
+  const g=new THREE.Group();
+  g.add(bx(44,3,14,C7.temple2,0,0,-7));                         // nền đền z -14..0 (cục bộ)
+  for(let i=0;i<6;i++){const st=box(14,.5,.9,C7.temple2);st.position.set(0,.25+i*.5,.45+i*.9);g.add(st);}  // bậc đi xuống +Z
+  // pylon 15 m, cửa 6 rộng × 10 cao ở giữa
+  [-1,1].forEach(s=>{const w=box(17,15,4,C7.pylon);w.position.set(s*11.5,7.5,-12);g.add(w);});
+  const lintel=box(6,5,4,C7.pylon);lintel.position.set(0,12.5,-12);g.add(lintel);
+  const dark=box(6,10,.4,'#1e1a15');dark.position.set(0,5,-13.9);g.add(dark);                 // lòng cửa tối
+  // vát mép pylon kiểu Ai Cập
+  [-1,1].forEach(s=>{const cap=box(17.6,.8,4.6,C7.temple2);cap.position.set(s*11.5,15.4,-12);g.add(cap);});
+  // hai hàng cột 12 m, chừa trục cửa
+  [-6,-2].forEach(z=>{
+    [-16,-11,-6,6,11,16].forEach(x=>{
+      const c=cyl(.7,.85,12,C7.temple,14);c.position.set(x,3+6,z);g.add(c);
+      const cap=cyl(1.1,.75,1.2,C7.temple2,14);cap.position.set(x,3+12.4,z);g.add(cap);
+      const base=cyl(1.0,1.0,.4,C7.temple2,14);base.position.set(x,3.2,z);g.add(base);
+    });
+  });
+  // dầm nối đầu cột
+  [-6,-2].forEach(z=>{[-11,11].forEach(x=>{const b=box(12,1,1.4,C7.temple2);b.position.set(x,3+13.4,z);g.add(b);});});
+  // đuốc hai bên cửa
+  [-4,4].forEach(x=>{const t=cyl(.12,.16,1.6,C7.log,6);t.position.set(x,3+2.4,-9.6);g.add(t);
+    const f=gmesh(new THREE.ConeGeometry(.3,.9,8),C7.fire2);f.material=new THREE.MeshBasicMaterial({color:C7.fire2});f.position.set(x,3+3.6,-9.6);g.add(f);});
+  g.userData.h=16.2;return g;
+}
+
+/* ---- ĐỐNG CỦI ø4 cao 1.5 + CỌC 3 m + dây trói ---- */
+function buildC7Pyre(){
+  const g=new THREE.Group();
+  const R=rnd(197);
+  for(let layer=0;layer<4;layer++){
+    const n=10-layer*2,r=1.9-layer*.3;
+    for(let i=0;i<n;i++){
+      const a=i/n*Math.PI*2+layer*.4;
+      const l=cyl(.16,.2,r*2,layer%2?C7.log:C7.log2,7);
+      l.position.set(Math.cos(a)*r*.3,.2+layer*.36,Math.sin(a)*r*.3);
+      l.rotation.set(0,a+(R()-.5)*.3,Math.PI/2);g.add(l);
+    }
+  }
+  const stake=cyl(.16,.2,C7_STAKE_H,C7.stake,8);stake.position.y=1.5+C7_STAKE_H/2-.5;g.add(stake);
+  [1.9,2.4,2.9].forEach(y=>{const r=torus3(.32,.035,EG.rope,14);r.position.y=y;g.add(r);});
+  // vương miện vẫn đội (không ai dám lấy) — đặt sẵn trên đầu vị trí Coppa
+  const crown=cone(.3,.6,EG.gold,8);crown.position.y=1.5+1.0+.45;g.add(crown);
+  g.add(tag('CỌC 3 m trên củi 1.5 m — Coppa trói ở đây, vương miện vẫn đội',0,5.2,0,1.4,EG.warm));
+  g.userData.h=1.5+C7_STAKE_H;return g;
+}
+
+/* ---- CỘT TREO LỒNG PIPO — mép lồng cách cọc ĐÚNG 1.5 m, bên TRÁI khung ---- */
+function buildC7CagePost(){
+  const g=new THREE.Group();
+  const cageR=.42, postX=-(C7_CAGE_GAP+cageR*2+.35);          // cột lùi ra sau lồng
+  g.add(bx(.75,.18,.75,EG.stone2,postX,0,0));
+  const post=cyl(.11,.15,3.6,EG.wood,10);post.position.set(postX,1.98,0);g.add(post);
+  const armLen=cageR+.5;
+  const arm=box(armLen,.14,.14,EG.wood);arm.position.set(postX+armLen/2,3.7,0);g.add(arm);
+  const chain=cyl(.02,.02,.42,EG.gold2,6);chain.position.set(postX+armLen-.12,3.42,0);g.add(chain);
+  const cage=makeCage(true);cage.position.set(postX+armLen-.12,1.75,0);g.add(cage);   // tâm lồng
+  // mép lồng gần cọc nhất = tâm + R  → cách cọc (x=0) đúng 1.5 m
+  const edgeX=postX+armLen-.12+cageR;
+  const gap=annoMesh(new THREE.PlaneGeometry(-edgeX,.1),EG.red,.9);gap.rotation.x=-Math.PI/2;gap.position.set(edgeX/2,2.55,.02);g.add(gap);
+  g.add(tag('MÉP LỒNG → CỌC = '+(-edgeX).toFixed(2)+' m — Pipo thò cánh hụt "hai gang"',edgeX/2,4.6,0,1.5,EG.red));
+  g.userData.h=3.9;return g;
+}
+
+/* ---- ĐAO PHỦ HÀ MÃ 2.5 m, mặt nạ trùm, đuốc hạ xuống củi ---- */
+function buildC7Executioner(){
+  const g=new THREE.Group();
+  const body=box(1.5,1.4,1.0,C7.hippo);body.position.y=1.5;g.add(body);
+  [-.45,.45].forEach(x=>{const l=box(.5,.8,.55,C7.hippo);l.position.set(x,.4,0);g.add(l);});
+  const head=gmesh(new THREE.SphereGeometry(.62,12,10),C7.hippo);head.scale.set(1.1,.9,1.3);head.position.set(0,2.35,.3);g.add(head);
+  const mask=box(1.2,.9,.5,C7.mask);mask.position.set(0,2.32,.55);g.add(mask);              // mặt nạ trùm
+  const hood=gmesh(new THREE.ConeGeometry(.75,1.1,10),C7.mask);hood.position.set(0,2.95,.15);g.add(hood);
+  [-.9,.9].forEach(x=>{const a=box(.34,1.1,.34,C7.hippo);a.position.set(x,1.35,.2);a.rotation.z=x>0?-.45:.2;g.add(a);});
+  // đuốc trong tay phải, hạ xuống về phía củi (-X)
+  const torch=cyl(.06,.08,1.4,C7.log,7);torch.position.set(-1.5,1.1,.5);torch.rotation.z=1.1;g.add(torch);
+  const fl=gmesh(new THREE.ConeGeometry(.2,.55,8),C7.fire2);fl.material=new THREE.MeshBasicMaterial({color:C7.fire2});fl.position.set(-2.1,.85,.5);fl.rotation.z=1.1;g.add(fl);
+  g.add(tag('ĐAO PHỦ HÀ MÃ 2.5 m — hạ đuốc (2:47), gõ đuốc ướt (2:55)',0,3.9,0,1.35));
+  g.userData.h=3.5;return g;
+}
+
+/* ---- DÂN QUỲ VÒNG CUNG phía +Z + đoàn tùy tùng (thầy tế, lính) ---- */
+function buildC7Crowd(){
+  const g=new THREE.Group();
+  const R=rnd(199),list=[];
+  for(let i=0;i<170;i++){
+    const row=Math.floor(i/34),col=i%34;
+    const rad=9+row*2.2+R()*.7, a=(col/33-.5)*Math.PI*1.15;   // cung 207° về phía +Z
+    const x=Math.sin(a)*rad, z=Math.cos(a)*rad+1;
+    if(x<-11&&z>5&&z<12)continue;                           // chừa góc trái khung cho thợ điêu khắc
+    list.push({x,z,ry:Math.atan2(-x,-z)+(R()-.5)*.3,s:.94+R()*.14});
+  }
+  g.add(peopleField(list,'kneel'));
+  // thầy tế + 2 lính gác đứng bên phải khung
+  g.add(peopleField([{x:6.2,z:4.5,ry:-.9,s:1.06},{x:8,z:6.5,ry:-.8,s:1.0},{x:9.5,z:5,ry:-.9,s:1.0}],'stand'));
+  const staff=cyl(.03,.03,2.2,EG.gold2,6);staff.position.set(6.7,1.1,4.2);g.add(staff);
+  g.add(tag('THẦY TẾ — "She commands the fire!" (3:05)',6.2,3.0,4.5,1.2));
+  g.userData.h=1.8;return g;
+}
+
+/* ---- THỢ ĐIÊU KHẮC + giá vẽ ở GÓC TRÁI KHUNG, đường nhìn thẳng vào mặt Coppa ---- */
+function buildC7Sculptor(){
+  const g=new THREE.Group();
+  const P=[-14,0,9];
+  const artist=new THREE.Group();artist.position.set(P[0],0,P[2]);
+  artist.add(peopleField([{x:0,z:0,ry:Math.atan2(0-P[0],0-P[2]),s:1.0}],'stand'));
+  g.add(artist);
+  // giá vẽ 3 chân + bảng
+  const ez=new THREE.Group();ez.position.set(P[0]+1.1,0,P[2]-.9);ez.rotation.y=Math.atan2(-P[0],-P[2]);
+  [[-.35,.2],[.35,.2],[0,-.4]].forEach(([x,z])=>{const l=cyl(.03,.03,1.7,EG.wood,6);l.position.set(x,.85,z);l.rotation.set(z<0?-.2:.2,0,x*.4);ez.add(l);});
+  const board=box(.9,1.1,.05,'#e8dcc0');board.position.set(0,1.35,.12);board.rotation.x=-.15;ez.add(board);
+  const sketch=makeLabel('◉ ◉  ↓',{size:.22,color:'#3a2f24',bg:'rgba(0,0,0,0)',border:'rgba(0,0,0,0)'});sketch.position.set(0,1.45,.16);ez.add(sketch);
+  g.add(ez);
+  // ĐƯỜNG NHÌN: từ mắt thợ (1.6 m) tới mặt Coppa trên cọc (~2.6 m)
+  const a=new THREE.Vector3(P[0],1.6,P[2]),b=new THREE.Vector3(0,2.6,0);
+  const los=new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(a,b),1,.03,6,false),new THREE.MeshBasicMaterial({color:EG.mark,transparent:true,opacity:.8}));
+  los.userData.__anno=true;g.add(los);
+  g.add(tag('THỢ ĐIÊU KHẮC — góc trái khung, đường nhìn THẲNG vào mặt Coppa (3:11)',P[0],3.4,P[2],1.4));
+  g.userData.h=2.2;return g;
+}
+
+/* ---- KHÓA NẮNG: mặt trời thấp SAU ĐỀN (-Z), hoàng hôn ---- */
+function buildC7Sun(){
+  const g=new THREE.Group();
+  const disc=new THREE.Mesh(new THREE.CircleGeometry(3.4,32),new THREE.MeshBasicMaterial({color:'#ffb066',transparent:true,opacity:.95,depthWrite:false}));
+  disc.position.set(-6,15,-95);disc.userData.__anno=true;g.add(disc);
+  const halo=new THREE.Mesh(new THREE.RingGeometry(3.5,6.2,40),new THREE.MeshBasicMaterial({color:'#ff9a4a',transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}));
+  halo.position.set(-6,15,-95.1);halo.userData.__anno=true;g.add(halo);
+  const mk=new THREE.Group();mk.position.set(16,0,12);
+  const pole=cyl(.06,.06,3,EG.mark,6);pole.position.y=1.5;mk.add(pole);
+  const arrow=cone(.3,1.1,EG.warm,8);arrow.rotation.x=Math.PI/2;arrow.position.set(0,3,-.8);mk.add(arrow);
+  const shaft=cyl(.07,.07,4,EG.warm,6);shaft.rotation.x=Math.PI/2;shaft.position.set(0,3,1.5);mk.add(shaft);
+  mk.add(tag('HOÀNG HÔN — nắng thấp SAU ĐỀN, góc cao 9°',0,4.6,0,1.35,EG.warm));g.add(mk);
+  g.userData.sunDir=[-.06,Math.sin(9*Math.PI/180),-Math.cos(9*Math.PI/180)];
+  g.userData.h=4.6;return g;
+}
+
+/* ---- STATE MƯA XỐI (2:50): vệt mưa instanced + vũng nước ---- */
+function buildC7Rain(){
+  const g=new THREE.Group();
+  const R=rnd(211),N=2200;
+  const im=new THREE.InstancedMesh(new THREE.CylinderGeometry(.012,.012,1.1,3),
+    new THREE.MeshBasicMaterial({color:C7.rain,transparent:true,opacity:.55}),N);
+  const m=new THREE.Matrix4(),q=new THREE.Quaternion().setFromEuler(new THREE.Euler(.12,0,.08));
+  for(let i=0;i<N;i++){m.compose(new THREE.Vector3((R()-.5)*56,R()*14,(R()-.5)*56+2),q,new THREE.Vector3(1,1,1));im.setMatrixAt(i,m);}
+  im.instanceMatrix.needsUpdate=true;g.add(im);
+  for(let i=0;i<18;i++){
+    const pd=new THREE.Mesh(new THREE.CircleGeometry(.6+R()*1.4,14),new THREE.MeshStandardMaterial({color:C7.water,roughness:.15,metalness:.4,transparent:true,opacity:.7}));
+    pd.rotation.x=-Math.PI/2;pd.position.set((R()-.5)*34,.18,(R()-.5)*34);g.add(pd);
+  }
+  // khói đuốc tắt
+  for(let i=0;i<4;i++){const s=new THREE.Mesh(new THREE.SphereGeometry(.5+i*.3,8,6),new THREE.MeshBasicMaterial({color:C7.smoke,transparent:true,opacity:.35,depthWrite:false}));s.position.set(.3+i*.2,2.2+i*.8,.4);g.add(s);}
+  g.add(tag('STATE MƯA XỐI — lửa tắt phụt, khói (2:50)',0,15.5,0,1.5,'#9fc4de'));
+  g.userData.h=14;return g;
+}
+
+/* ---- STATE LỬA BÙNG 12 m (3:05): dựng thẳng, cháy giữa mưa như không có mưa ---- */
+function buildC7Fire(){
+  const g=new THREE.Group();
+  const lay=(r,h,y,c,op)=>{const f=new THREE.Mesh(new THREE.ConeGeometry(r,h,12),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));f.position.y=y;g.add(f);return f;};
+  lay(2.4,C7_FIRE_H,1.5+C7_FIRE_H/2,C7.fire3,.55);
+  lay(1.7,C7_FIRE_H*.85,1.5+C7_FIRE_H*.85/2,C7.fire2,.7);
+  lay(1.0,C7_FIRE_H*.6,1.5+C7_FIRE_H*.6/2,C7.fire1,.9);
+  const glow=new THREE.Mesh(new THREE.SphereGeometry(9,12,8),new THREE.MeshBasicMaterial({color:'#ff9a3c',transparent:true,opacity:.07,depthWrite:false,side:THREE.BackSide}));
+  glow.position.y=5;glow.userData.__anno=true;g.add(glow);
+  const L=new THREE.PointLight('#ff9a3c',6,40,1.5);L.position.y=5;g.add(L);
+  const R=rnd(223);
+  for(let i=0;i<40;i++){const e=new THREE.Mesh(new THREE.SphereGeometry(.08,4,3),new THREE.MeshBasicMaterial({color:C7.fire1}));e.position.set((R()-.5)*4,2+R()*13,(R()-.5)*4);g.add(e);}
+  g.add(tag('LỬA 12 m = 4 × cọc 3 m — dựng thẳng giữa mưa (3:05) → mưa TẠNH',0,C7_FIRE_H+3.2,0,1.6,EG.warm));
+  g.userData.h=1.5+C7_FIRE_H;return g;
+}
+
+/* ---- chú thích + zone C7 ---- */
+function buildC7Zones(){
+  const g=new THREE.Group();
+  const z=(r,x,zz,c)=>{const m=zoneRing(r,c);m.position.set(x,.2,zz);g.add(m);};
+  z(2.3,0,0,EG.warm);
+  z(1.0,-2.3,0,EG.red);
+  z(1.2,3.2,2.2);
+  z(1.4,-14,9,'#7fd88f');
+  const axis=annoMesh(new THREE.PlaneGeometry(30,.12),EG.red,.45);axis.rotation.x=-Math.PI/2;axis.position.set(0,.22,6);g.add(axis);
+  g.add(tag('TRỤC 180° — Pipo (lồng) TRÁI · Coppa (cọc) GIỮA',-15.5,1.3,6,1.0,EG.red));
+  g.add(tag('QUẢNG TRƯỜNG 40 × 40 m · đền cao 15 m làm hậu cảnh',-20,2,20,1.4));
+  g.add(tag('C7 · EXT. GIÀN THIÊU TRƯỚC ĐỀN — HOÀNG HÔN — 2:40→3:15',0,18,-6,2.4,EG.mark));
+  g.userData.h=0;return g;
+}
+
 /* ══════════ ĐĂNG KÝ BỘ PHẬN VÀO BUILDERS ══════════ */
 const SET_PART_LABEL={};
 function regPart(key,label,fn){
@@ -4647,6 +4862,17 @@ regPart('c6_crowd','Đám đông 300 quỳ hai bên đường bi',buildC6Crowd);
 regPart('c6_nearmiss','Cụm near-miss: kiệu, đứa bé, dân',buildC6NearMiss);
 regPart('c6_burst','STATE sau khi nổ: cầu văng, bụi, vua dính bẹp',buildC6Burst);
 regPart('c6_zones','Chú thích + zone C6',buildC6Zones);
+regPart('c7_ground','Quảng trường lát đá 40×40',buildC7Ground);
+regPart('c7_temple','Mặt tiền đền 15 m + hai hàng cột',buildC7Temple);
+regPart('c7_pyre','Đống củi ø4 + cọc 3 m',buildC7Pyre);
+regPart('c7_cagepost','Cột lồng Pipo — mép lồng cách cọc 1.5 m',buildC7CagePost);
+regPart('c7_exec','Đao phủ hà mã 2.5 m + đuốc',buildC7Executioner);
+regPart('c7_crowd','Dân quỳ vòng cung + thầy tế',buildC7Crowd);
+regPart('c7_sculptor','Thợ điêu khắc + giá vẽ + đường nhìn',buildC7Sculptor);
+regPart('c7_sun','Khóa nắng hoàng hôn sau đền',buildC7Sun);
+regPart('c7_rain','STATE mưa xối (2:50)',buildC7Rain);
+regPart('c7_fire','STATE lửa bùng 12 m (3:05)',buildC7Fire);
+regPart('c7_zones','Chú thích + zone C7',buildC7Zones);
 
 /* ══════════ ĐỊNH NGHĨA KHỐI SET ══════════
    p:[x,y,z]  ry: xoay ngang (rad)   Bookmark: p = vị trí máy, t = điểm nhìn, f = tiêu cự */
@@ -4781,6 +5007,37 @@ const SET_DEFS={
       {t:'2:35',n:'Bụi tan — từng người đứng dậy',     p:[22,4,62],     tg:[0,2,20],     f:35},
       {t:'2:37',n:'Cầu đá lăn ngang — vua dính bẹp',   p:[40,3,32],     tg:[40,2.5,12],  f:50},
       {t:'2:39',n:'Bi trắng rớt hố — Pipo SCRATCH',    p:[-14,1.4,8.5], tg:[-15.9,.3,-2],f:50}
+    ]
+  },
+  setC7:{
+    label:'C7 · Giàn thiêu trước đền (hoàng hôn)',
+    note:'Quảng trường 40×40, đền 15 m hậu cảnh, nắng thấp sau đền. Mép lồng Pipo cách cọc ĐÚNG 1.5 m. Bật STATE mưa cho 2:50–3:02, STATE lửa cho 3:05–3:13.',
+    parts:[
+      {k:'eg_sky',      p:[0,0,0]},
+      {k:'c7_ground',   p:[0,0,0]},
+      {k:'c7_temple',   p:[0,0,-20]},
+      {k:'c7_pyre',     p:[0,0,0]},
+      {k:'c7_cagepost', p:[0,0,.6]},
+      {k:'c7_exec',     p:[3.4,0,2.2], ry:-2.2},
+      {k:'c7_crowd',    p:[0,0,0]},
+      {k:'c7_sculptor', p:[0,0,0]},
+      {k:'c7_sun',      p:[0,0,0]},
+      {k:'c7_rain',     p:[0,0,0], hidden:true},
+      {k:'c7_fire',     p:[0,0,0], hidden:true},
+      {k:'c7_zones',    p:[0,0,0]},
+      {k:'eg_scaleref', p:[14,0,16]}
+    ],
+    cams:[
+      {t:'—',   n:'Tổng thể quảng trường + đền',      p:[30,22,58],   tg:[0,3,-6],     f:28},
+      {t:'2:40',n:'Wide hoàng hôn — đền sau lưng',    p:[0,4.2,40],   tg:[0,4.5,-10],  f:28},
+      {t:'2:47',n:'Đao phủ hạ đuốc xuống củi',        p:[5.6,1.7,7],  tg:[1.4,1.5,1],  f:50},
+      {t:'2:50',n:'Mưa xối — lửa tắt phụt (bật MƯA)', p:[-6.5,2.4,9.5],tg:[0,2.2,0],   f:35},
+      {t:'2:55',n:'Đao phủ gõ đuốc ướt',              p:[6.4,2.1,5.2],tg:[3.2,1.9,2.2],f:50},
+      {t:'3:02',n:'Coppa móc Zippo trong yên ngựa',   p:[2.4,2.7,4.2],tg:[0,2.6,0],    f:85},
+      {t:'3:05',n:'Lửa BÙNG 12 m — low angle (bật LỬA)',p:[4.5,.6,9.5],tg:[0,6.5,0],   f:24},
+      {t:'3:08',n:'Lưỡi thè hứng giọt mưa cuối — ECU',p:[1.3,3.2,2.6],tg:[0,3.0,0],    f:85},
+      {t:'3:11',n:'Thợ điêu khắc vẽ như điên',        p:[-17.5,1.7,13],tg:[-13.5,1.5,8.5],f:50},
+      {t:'3:13',n:'Pipo trong lồng — lửa hắt lên mặt',p:[-5.2,2.2,5.0],tg:[-2.0,2.0,.6],f:50}
     ]
   },
   setC2:{
@@ -5056,6 +5313,7 @@ const ASSETS={
     ['setC5','C5 Công trường tháp',ic('<path d="M2 21h20M3.5 21L18 7M8.5 16.5l3-3 3 3-3 3z"/>')],
     ['setC2','C2 Hố khai quật + nhân sư',ic('<path d="M2 14h20M6 14v-3l3-4h4l3 4v3M9 9h1M13 9h1M4 14l-1 6h18l-1-6"/>')],
     ['setBida','C2b+C8 Phòng bida trong đầu',ic('<rect x="3" y="6" width="18" height="12" rx="1"/><rect x="7" y="10" width="10" height="5" rx="1"/><circle cx="6.5" cy="9.5" r="1"/><circle cx="17.5" cy="15" r="1"/>')],
+    ['setC7','C7 Giàn thiêu trước đền',ic('<path d="M4 21h16M6 21l1-5h10l1 5M12 16v-6M9 11c0-3 3-4 3-7 0 3 3 4 3 7a3 3 0 0 1-6 0z"/>')],
     ['setC6','C6 Kim tự tháp (rack bida)',ic('<circle cx="12" cy="5" r="2"/><circle cx="9.5" cy="9.5" r="2"/><circle cx="14.5" cy="9.5" r="2"/><circle cx="7" cy="14" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="17" cy="14" r="2"/><circle cx="4.5" cy="18.5" r="2"/><circle cx="9.5" cy="18.5" r="2"/><circle cx="14.5" cy="18.5" r="2"/><circle cx="19.5" cy="18.5" r="2"/>')],
   ],
   grpChar:[
@@ -5498,16 +5756,16 @@ function renderInspector(){
     partColorInp.onchange=()=>{pushHistory&&pushHistory();autosave&&autosave();};
   }
   const rot=document.getElementById('objRot');
-  rot.oninput=e=>{selected.rotation.y=e.target.value*Math.PI/180;updRange(rot);refreshRot();};
+  rot.oninput=e=>{const v=e.target.value*Math.PI/180;selection.forEach(o=>o.rotation.y=v);updRange(rot);refreshRot();};
   updRange(rot);
   const rotX=document.getElementById('objRotX');
-  if(rotX){rotX.oninput=e=>{selected.rotation.x=e.target.value*Math.PI/180;updRange(rotX);const v=document.getElementById('vObjRotX');if(v)v.textContent=Math.round(+e.target.value)+'°';};updRange(rotX);}
+  if(rotX){rotX.oninput=e=>{const ang=e.target.value*Math.PI/180;selection.forEach(o=>o.rotation.x=ang);updRange(rotX);const v=document.getElementById('vObjRotX');if(v)v.textContent=Math.round(+e.target.value)+'°';};updRange(rotX);}
   const rotZ=document.getElementById('objRotZ');
-  if(rotZ){rotZ.oninput=e=>{selected.rotation.z=e.target.value*Math.PI/180;updRange(rotZ);const v=document.getElementById('vObjRotZ');if(v)v.textContent=Math.round(+e.target.value)+'°';};updRange(rotZ);}
+  if(rotZ){rotZ.oninput=e=>{const ang=e.target.value*Math.PI/180;selection.forEach(o=>o.rotation.z=ang);updRange(rotZ);const v=document.getElementById('vObjRotZ');if(v)v.textContent=Math.round(+e.target.value)+'°';};updRange(rotZ);}
   const oy=document.getElementById('objY');
-  if(oy){oy.oninput=e=>{selected.position.y=+e.target.value;updRange(oy);document.getElementById('vObjY').textContent=(+e.target.value).toFixed(2)+'m';};updRange(oy);}
+  if(oy){oy.oninput=e=>{const d=(+e.target.value)-selected.position.y;selection.forEach(o=>o.position.y+=d);updRange(oy);document.getElementById('vObjY').textContent=(+e.target.value).toFixed(2)+'m';};updRange(oy);}
   const sc=document.getElementById('objScale');
-  sc.oninput=e=>{selected.scale.setScalar(+e.target.value);updRange(sc);refreshSc();};
+  sc.oninput=e=>{const v=+e.target.value;selection.forEach(o=>o.scale.setScalar(v));updRange(sc);refreshSc();};
   updRange(sc);
   // slider chỉnh dáng nhân vật
   if(u.figure){
@@ -5846,6 +6104,15 @@ document.addEventListener('keydown',e=>{
   }
   if((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Y')&&!typing){e.preventDefault();redo();return;}
   if((e.ctrlKey||e.metaKey)&&(e.key==='g'||e.key==='G')&&!typing){e.preventDefault();groupSelection();return;}
+  if(!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key==='g'||e.key==='G')){
+    e.preventDefault();
+    if(e.shiftKey){                                    // Shift+G: tách khối đang chọn
+      const sets=selection.filter(o=>o.userData.isSet);
+      if(!sets.length){toast('Chọn một khối rồi Shift+G để tách');return;}
+      sets.forEach(k=>splitSet(k));
+    }else groupSelection();                            // G: gộp nhóm đang chọn
+    return;
+  }
   if(typing)return;
   if(e.key==='Delete'||e.key==='Backspace'){if(selected){e.preventDefault();deleteSelected();}}
   if(e.key==='w')document.querySelector('[data-tool=move]').click();
