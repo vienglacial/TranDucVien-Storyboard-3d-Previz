@@ -10,12 +10,12 @@
   :root{
     --bg:#0d1117;
     --panel:#161b22;
-    --panel-2:#1c232c;
-    --line:#2a3340;
+    --panel-2:#1f2731;
+    --line:#33404f;
     --line-soft:#222a34;
     --ink:#e6edf3;
-    --ink-dim:#8b97a5;
-    --ink-faint:#5b6675;
+    --ink-dim:#b7c3d0;
+    --ink-faint:#8d9aab;
     --accent:#4cc2ff;
     --accent-warm:#ffb454;
     --danger:#ff6b6b;
@@ -31,9 +31,9 @@
     -webkit-font-smoothing:antialiased;
     user-select:none;
   }
-  #app{display:grid;grid-template-columns:248px 1fr 268px;grid-template-rows:46px 1fr;height:100vh;transition:grid-template-columns .25s ease}
-  #app.hide-left{grid-template-columns:0 1fr 268px}
-  #app.hide-right{grid-template-columns:248px 1fr 0}
+  #app{display:grid;grid-template-columns:276px 1fr 300px;grid-template-rows:46px 1fr;height:100vh;transition:grid-template-columns .25s ease}
+  #app.hide-left{grid-template-columns:0 1fr 300px}
+  #app.hide-right{grid-template-columns:276px 1fr 0}
   #app.full{grid-template-columns:0 1fr 0}
   .panel.left,.panel.right{transition:opacity .2s}
   #app.hide-left .panel.left,#app.full .panel.left{opacity:0;pointer-events:none}
@@ -52,12 +52,13 @@
   /* ── Top bar ── */
   header{
     grid-column:1 / -1;
-    display:flex;align-items:center;gap:18px;
-    padding:0 16px;
+    display:flex;align-items:center;gap:10px;
+    padding:0 14px;
     background:linear-gradient(180deg,#171d25,#12171e);
     border-bottom:1px solid var(--line);
-    z-index:20;
+    z-index:20;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
   }
+  header::-webkit-scrollbar{display:none}
   .logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px;font-size:14px}
   .logo .px{display:grid;grid-template-columns:repeat(2,5px);grid-template-rows:repeat(2,5px);gap:1.5px;filter:drop-shadow(0 0 6px var(--accent))}
   .logo .px i{border-radius:1px}
@@ -65,20 +66,20 @@
   .logo .px i:nth-child(2){background:var(--accent-warm)}
   .logo .px i:nth-child(3){background:var(--good)}
   .logo .px i:nth-child(4){background:var(--accent)}
-  .logo small{font-family:'JetBrains Mono';color:var(--ink-faint);font-weight:500;font-size:10px;letter-spacing:.8px}
+  .logo small{font-family:'JetBrains Mono';color:var(--ink-faint);font-weight:500;font-size:12px;letter-spacing:.8px}
   .logo small b{color:var(--accent);font-weight:600}
   .topspacer{flex:1}
   .topbtn{
     font-family:'JetBrains Mono';font-size:11px;font-weight:500;letter-spacing:.4px;
     color:var(--ink-dim);background:var(--panel-2);border:1px solid var(--line);
-    padding:7px 12px;border-radius:6px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;
+    padding:7px 11px;border-radius:6px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;white-space:nowrap;
   }
   .topbtn:hover{color:var(--ink);border-color:#3a4654;background:#222b35}
   .topbtn.primary{background:var(--accent);color:#06121b;border-color:var(--accent);font-weight:600}
   .topbtn.primary:hover{background:#6fcdff}
   .topbtn svg{width:13px;height:13px}
   .topbtn.disabled{opacity:.35;pointer-events:none}
-  .multi-banner{background:rgba(88,166,255,.12);border:1px solid var(--accent);border-radius:8px;padding:9px 11px;margin-bottom:12px;font-family:'JetBrains Mono';font-size:10px;line-height:1.5;color:var(--ink-dim)}
+  .multi-banner{background:rgba(88,166,255,.12);border:1px solid var(--accent);border-radius:8px;padding:9px 11px;margin-bottom:12px;font-family:'JetBrains Mono';font-size:12px;line-height:1.5;color:var(--ink-dim)}
   .multi-banner b{color:var(--accent)}
   .multi-banner #clearSel{color:var(--accent);cursor:pointer;text-decoration:underline;white-space:nowrap}
 
@@ -92,20 +93,20 @@
 
   .sec{border-bottom:1px solid var(--line-soft);padding:14px 14px 16px}
   .sec h3{
-    font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:1.4px;
-    color:var(--ink-faint);text-transform:uppercase;margin-bottom:11px;display:flex;align-items:center;gap:7px;
+    font-family:'JetBrains Mono';font-size:12px;font-weight:700;letter-spacing:.9px;
+    color:var(--ink-dim);text-transform:uppercase;margin-bottom:11px;display:flex;align-items:center;gap:7px;
     cursor:pointer;user-select:none;
   }
   .sec h3::before{content:'';width:3px;height:11px;background:var(--accent);border-radius:2px;opacity:.8}
-  .sec h3 .caret{margin-left:auto;transition:transform .2s;opacity:.7;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);font-size:9px;color:var(--ink-dim)}
+  .sec h3 .caret{margin-left:auto;transition:transform .2s;opacity:.7;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);font-size:11px;color:var(--ink-dim)}
   .sec h3:hover{color:var(--ink)}
   .sec h3:hover .caret{color:var(--accent);border-color:var(--accent)}
   .sec.collapsed h3 .caret{transform:rotate(-90deg)}
   .sec.collapsed .sec-body{display:none}
-  .sec.collapsed h3{opacity:.7}
+  .sec.collapsed h3{opacity:.85}
   /* thanh thu gọn tất cả ở đầu panel */
   .panel-tools{display:flex;gap:6px;padding:8px 14px 0}
-  .panel-tools button{flex:1;font-family:'JetBrains Mono';font-size:9px;letter-spacing:.5px;color:var(--ink-faint);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:5px;cursor:pointer;transition:.13s}
+  .panel-tools button{flex:1;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.5px;color:var(--ink-faint);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:5px;cursor:pointer;transition:.13s}
   .panel-tools button:hover{color:var(--accent);border-color:var(--accent)}
 
   /* ô tìm kiếm model */
@@ -119,7 +120,7 @@
   .search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--ink-faint);stroke-width:2;fill:none;pointer-events:none}
   .search-box .clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--ink-faint);cursor:pointer;font-size:14px;display:none}
   .search-box.has-text .clr{display:block}
-  .no-result{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-faint);text-align:center;padding:14px;line-height:1.7}
+  .no-result{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);text-align:center;padding:14px;line-height:1.7}
   .asset.hidden{display:none}
   .sec.search-hidden{display:none}
 
@@ -134,8 +135,8 @@
   .asset:active{transform:translateY(0) scale(.96)}
   .asset svg{width:30px;height:30px;stroke:var(--ink-dim);stroke-width:1.4;fill:none;transition:.14s}
   .asset:hover svg{stroke:var(--accent)}
-  .asset span{font-family:'JetBrains Mono';font-size:8.5px;color:var(--ink-faint);letter-spacing:.3px}
-  .asset:hover span{color:var(--ink-dim)}
+  .asset span{font-family:'Archivo';font-size:11.5px;font-weight:500;color:var(--ink-dim);text-align:center;line-height:1.15;padding:0 4px}
+  .asset:hover span{color:var(--ink)}
 
   /* viewport */
   #viewport{position:relative;background:#0a0e13;overflow:hidden}
@@ -150,7 +151,7 @@
   .safe{position:absolute;border:1px dashed rgba(255,180,84,.3)}
 
   .vp-hud{
-    position:absolute;left:14px;bottom:14px;font-family:'JetBrains Mono';font-size:10.5px;
+    position:absolute;left:14px;bottom:14px;font-family:'JetBrains Mono';font-size:12px;
     color:var(--ink-dim);background:rgba(13,17,23,.78);backdrop-filter:blur(8px);
     border:1px solid var(--line);border-radius:7px;padding:8px 11px;line-height:1.7;pointer-events:none;
   }
@@ -166,7 +167,7 @@
   .monitor.hidden{display:none}
   .monitor canvas{display:block}
   .monitor .mlabel{
-    position:absolute;top:5px;left:7px;font-family:'JetBrains Mono';font-size:8.5px;letter-spacing:.5px;
+    position:absolute;top:5px;left:7px;font-family:'JetBrains Mono';font-size:11px;letter-spacing:.5px;
     color:#fff;background:rgba(0,0,0,.5);padding:2px 6px;border-radius:4px;
   }
   .monitor .mrec{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 6px var(--danger)}
@@ -179,7 +180,7 @@
   .pose-sel{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:'JetBrains Mono';font-size:11px;padding:8px 10px;outline:none;cursor:pointer}
   .pose-sel:focus{border-color:var(--accent)}
   .joint-grp{border-top:1px solid var(--line-soft);padding-top:11px;margin-top:2px}
-  .joint-grp .jlabel{font-family:'JetBrains Mono';font-size:9px;letter-spacing:1px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px}
+  .joint-grp .jlabel{font-family:'JetBrains Mono';font-size:11px;letter-spacing:1px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px}
 
   .vp-toolbar{
     position:absolute;top:12px;left:50%;transform:translateX(-50%);
@@ -197,14 +198,14 @@
   .vp-msg{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);text-align:center;
-    pointer-events:none;line-height:1.8;opacity:.55;
+    pointer-events:none;line-height:1.8;opacity:.85;
   }
-  .vp-msg kbd{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--ink-dim);font-size:10px}
+  .vp-msg kbd{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--ink-dim);font-size:12px}
 
   /* sliders & controls */
   .ctrl{margin-bottom:13px}
   .ctrl:last-child{margin-bottom:0}
-  .ctrl label{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-dim);margin-bottom:6px;letter-spacing:.3px}
+  .ctrl label{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:12px;color:var(--ink);margin-bottom:6px;letter-spacing:.2px}
   .ctrl label .val{color:var(--accent);font-weight:600}
   input[type=range]{
     -webkit-appearance:none;width:100%;height:4px;border-radius:3px;
@@ -219,7 +220,7 @@
 
   .lens-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}
   .lp{
-    font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);background:var(--panel-2);
+    font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim);background:var(--panel-2);
     border:1px solid var(--line);border-radius:5px;padding:6px 0;cursor:pointer;transition:.13s;text-align:center;
   }
   .lp:hover{border-color:var(--accent);color:var(--ink)}
@@ -227,7 +228,7 @@
 
   .angle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
   .ang{
-    font-family:'JetBrains Mono';font-size:9px;color:var(--ink-dim);background:var(--panel-2);
+    font-family:'JetBrains Mono';font-size:11px;color:var(--ink-dim);background:var(--panel-2);
     border:1px solid var(--line);border-radius:6px;padding:9px 4px;cursor:pointer;transition:.13s;
     display:flex;flex-direction:column;align-items:center;gap:5px;letter-spacing:.2px;
   }
@@ -235,11 +236,11 @@
   .ang svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.5;fill:none}
 
   /* selected object inspector */
-  .empty-insp{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-faint);text-align:center;padding:18px 6px;line-height:1.8}
+  .empty-insp{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);text-align:center;padding:18px 6px;line-height:1.8}
   .insp-name{display:flex;align-items:center;gap:8px;margin-bottom:13px}
   .insp-name .swatch{width:22px;height:22px;border-radius:6px;border:1px solid var(--line)}
   .insp-name .nm{font-weight:700;font-size:13px}
-  .insp-name .ty{font-family:'JetBrains Mono';font-size:9px;color:var(--ink-faint);letter-spacing:.6px;text-transform:uppercase}
+  .insp-name .ty{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);letter-spacing:.6px;text-transform:uppercase}
 
   .colorrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
   .colr{width:22px;height:22px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:.12s}
@@ -256,11 +257,11 @@
 
   /* ── Texture block trong inspector ── */
   .tex-blk{border-top:1px solid var(--line-soft);padding-top:11px;margin-top:11px}
-  .tex-blk .jlabel{font-family:'JetBrains Mono';font-size:9px;letter-spacing:1px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
-  .tex-blk .jlabel .gear{font-size:9px;color:var(--accent);cursor:pointer;text-transform:none;letter-spacing:.4px}
+  .tex-blk .jlabel{font-family:'JetBrains Mono';font-size:11px;letter-spacing:1px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+  .tex-blk .jlabel .gear{font-size:11px;color:var(--accent);cursor:pointer;text-transform:none;letter-spacing:.4px}
   .tex-mode{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
   .tex-mode button{
-    font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);
+    font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim);
     background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
     padding:6px 4px;cursor:pointer;transition:.14s;letter-spacing:.3px;
   }
@@ -268,7 +269,7 @@
   .tex-mode button.active{background:var(--accent);color:#06121b;border-color:var(--accent);font-weight:600}
   .tex-src{display:flex;gap:6px;margin-bottom:8px}
   .tex-src button{
-    flex:1;font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);
+    flex:1;font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim);
     background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
     padding:7px 4px;cursor:pointer;transition:.14s;display:flex;align-items:center;justify-content:center;gap:5px;
   }
@@ -277,13 +278,13 @@
   .tex-url-row{display:none;gap:5px;margin-bottom:8px}
   .tex-url-row.show{display:flex}
   .tex-url-row input{
-    flex:1;font-family:'JetBrains Mono';font-size:10px;color:var(--ink);
+    flex:1;font-family:'JetBrains Mono';font-size:12px;color:var(--ink);
     background:var(--panel-2);border:1px solid var(--line);border-radius:6px;
     padding:7px 9px;outline:none;
   }
   .tex-url-row input:focus{border-color:var(--accent)}
   .tex-url-row button{
-    font-family:'JetBrains Mono';font-size:10px;color:#06121b;
+    font-family:'JetBrains Mono';font-size:12px;color:#06121b;
     background:var(--accent);border:none;border-radius:6px;padding:7px 11px;cursor:pointer;font-weight:600;
   }
   .tex-url-row button:hover{background:#6fcdff}
@@ -302,7 +303,7 @@
   }
   .tex-preview .rm:hover{background:var(--danger);border-color:var(--danger)}
   .tex-empty{
-    font-family:'JetBrains Mono';font-size:9.5px;color:var(--ink-faint);text-align:center;
+    font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);text-align:center;
     padding:11px 6px;border:1px dashed var(--line);border-radius:7px;line-height:1.6;margin-bottom:7px;
   }
   .tex-decal-ctrl{display:none;margin-top:4px}
@@ -316,21 +317,21 @@
   .shot:hover{border-color:#3a4654}
   .shot img{width:100%;display:block;background:#000;aspect-ratio:16/9;object-fit:cover}
   .shot .meta{padding:7px 9px;display:flex;justify-content:space-between;align-items:center}
-  .shot .meta .lbl{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim)}
+  .shot .meta .lbl{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim)}
   .shot .meta .lbl b{color:var(--accent-warm)}
   .shot .x{color:var(--ink-faint);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;border-radius:4px}
   .shot .x:hover{color:var(--danger);background:rgba(255,107,107,.1)}
-  .noshot{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-faint);text-align:center;padding:14px 6px;line-height:1.8}
+  .noshot{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);text-align:center;padding:14px 6px;line-height:1.8}
 
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
     background:var(--panel-2);border:1px solid var(--accent);border-radius:9px;padding:11px 18px;
-    font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink);opacity:0;transition:.3s;z-index:100;pointer-events:none;
+    font-family:'JetBrains Mono';font-size:12.5px;color:var(--ink);opacity:0;transition:.3s;z-index:100;pointer-events:none;
     box-shadow:0 8px 30px rgba(0,0,0,.5);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  .hint{font-family:'JetBrains Mono';font-size:9.5px;color:var(--ink-faint);line-height:1.7;margin-top:8px}
+  .hint{font-family:'Archivo';font-size:12px;color:var(--ink-dim);line-height:1.6;margin-top:8px}
 
   /* AI dàn cảnh */
   .ai-box textarea{
@@ -349,18 +350,18 @@
   .ai-run:disabled{opacity:.5;cursor:wait}
   .ai-run svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
   .ai-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
-  .ai-chip{font-family:'JetBrains Mono';font-size:9px;color:var(--ink-dim);background:var(--panel-2);
+  .ai-chip{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-dim);background:var(--panel-2);
     border:1px solid var(--line);border-radius:20px;padding:5px 9px;cursor:pointer;transition:.13s}
   .ai-chip:hover{border-color:var(--accent);color:var(--ink)}
-  .ai-status{font-family:'JetBrains Mono';font-size:10px;color:var(--accent);margin-top:9px;line-height:1.6;min-height:14px}
+  .ai-status{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);margin-top:9px;line-height:1.6;min-height:14px}
   .ai-status.err{color:var(--danger)}
 
   /* ảnh tham chiếu cho AI dựng cảnh */
-  .ref-divider{display:flex;align-items:center;gap:8px;margin:13px 0 11px;font-family:'JetBrains Mono';font-size:9px;color:var(--ink-faint);letter-spacing:1px}
+  .ref-divider{display:flex;align-items:center;gap:8px;margin:13px 0 11px;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);letter-spacing:1px}
   .ref-divider::before,.ref-divider::after{content:'';flex:1;height:1px;background:var(--line-soft)}
   .ref-drop{
     border:1.5px dashed var(--line);border-radius:9px;padding:13px 10px;text-align:center;cursor:pointer;
-    transition:.15s;font-family:'JetBrains Mono';font-size:10px;color:var(--ink-faint);line-height:1.7;
+    transition:.15s;font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);line-height:1.7;
   }
   .ref-drop:hover{border-color:var(--accent);color:var(--ink-dim);background:#1a212a}
   .ref-drop svg{width:22px;height:22px;stroke:var(--ink-faint);stroke-width:1.5;fill:none;margin-bottom:5px}
@@ -372,16 +373,16 @@
   .ref-thumb .num{position:absolute;bottom:3px;left:3px;background:rgba(76,194,255,.85);color:#06121b;
     font-family:'JetBrains Mono';font-size:8px;font-weight:600;border-radius:3px;padding:1px 4px}
   .ref-opts{margin-top:10px}
-  .ref-check{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);cursor:pointer;margin-bottom:7px}
-  .model-pick{display:flex;flex-direction:column;gap:5px;font-family:'JetBrains Mono';font-size:9.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px}
-  .model-pick select{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:'JetBrains Mono';font-size:10.5px;padding:7px 9px;outline:none;cursor:pointer;text-transform:none;letter-spacing:0}
+  .ref-check{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim);cursor:pointer;margin-bottom:7px}
+  .model-pick{display:flex;flex-direction:column;gap:5px;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px}
+  .model-pick select{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:'JetBrains Mono';font-size:12px;padding:7px 9px;outline:none;cursor:pointer;text-transform:none;letter-spacing:0}
   .model-pick select:focus{border-color:var(--accent)}
   .ref-check input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
 
   /* background controls */
   .bg-drop{
     border:1.5px dashed var(--line);border-radius:9px;padding:16px 10px;text-align:center;cursor:pointer;
-    transition:.15s;font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-faint);line-height:1.7;
+    transition:.15s;font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);line-height:1.7;
   }
   .bg-drop:hover{border-color:var(--accent);color:var(--ink-dim);background:#1a212a}
   .bg-drop svg{width:24px;height:24px;stroke:var(--ink-faint);stroke-width:1.5;fill:none;margin-bottom:6px}
@@ -390,7 +391,7 @@
   .bg-thumb .rm{position:absolute;top:6px;right:6px;background:rgba(13,17,23,.8);border:1px solid var(--line);
     color:var(--danger);border-radius:5px;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1}
   .seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:3px;gap:3px}
-  .seg button{flex:1;font-family:'JetBrains Mono';font-size:10px;color:var(--ink-dim);background:transparent;border:none;padding:6px;border-radius:5px;cursor:pointer;transition:.12s}
+  .seg button{flex:1;font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim);background:transparent;border:none;padding:6px;border-radius:5px;cursor:pointer;transition:.12s}
   .seg button.active{background:var(--accent);color:#06121b;font-weight:600}
   .seg button:hover:not(.active){color:var(--ink)}
 
@@ -408,24 +409,24 @@
   .new-proj input:focus{border-color:var(--accent)}
   .new-proj button{font-family:'JetBrains Mono';font-size:11px;font-weight:600;background:var(--accent);color:#06121b;border:none;border-radius:8px;padding:0 16px;cursor:pointer;white-space:nowrap}
   .new-proj button:hover{background:#6fcdff}
-  .proj-label{font-family:'JetBrains Mono';font-size:9px;letter-spacing:1.2px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px}
+  .proj-label{font-family:'JetBrains Mono';font-size:11px;letter-spacing:1.2px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:9px}
   .proj-item{display:flex;align-items:center;gap:11px;padding:11px 12px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;margin-bottom:8px;cursor:pointer;transition:.13s}
   .proj-item:hover{border-color:var(--accent);background:#1f2832}
   .proj-item.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
   .proj-item .info{flex:1;min-width:0}
   .proj-item .pn{font-family:'Archivo';font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .proj-item .pm{font-family:'JetBrains Mono';font-size:9.5px;color:var(--ink-faint);margin-top:2px}
+  .proj-item .pm{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);margin-top:2px}
   .proj-item .del{color:var(--ink-faint);cursor:pointer;font-size:14px;padding:4px 7px;border-radius:5px}
   .proj-item .del:hover{color:var(--danger);background:rgba(255,107,107,.1)}
-  .proj-empty{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-faint);text-align:center;padding:18px;line-height:1.7}
-  .save-status{position:fixed;bottom:22px;right:22px;font-family:'JetBrains Mono';font-size:10px;color:var(--good);background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:6px 11px;z-index:40;opacity:0;transition:.3s;pointer-events:none}
+  .proj-empty{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);text-align:center;padding:18px;line-height:1.7}
+  .save-status{position:fixed;bottom:22px;right:22px;font-family:'JetBrains Mono';font-size:12px;color:var(--good);background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:6px 11px;z-index:40;opacity:0;transition:.3s;pointer-events:none}
   .save-status.show{opacity:.9}
 
   /* bảng hướng dẫn */
   .help-modal{width:540px}
   .help-section{margin-bottom:20px}
   .help-section:last-child{margin-bottom:0}
-  .help-section .ht{font-family:'JetBrains Mono';font-size:10px;letter-spacing:1.2px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+  .help-section .ht{font-family:'JetBrains Mono';font-size:12px;letter-spacing:1.2px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:7px}
   .help-section .ht::before{content:'';width:3px;height:11px;background:var(--accent);border-radius:2px}
   .help-steps{counter-reset:s;display:flex;flex-direction:column;gap:9px}
   .help-step{display:flex;gap:11px;font-family:'Archivo';font-size:12.5px;color:var(--ink-dim);line-height:1.5}
@@ -433,11 +434,12 @@
   .help-step b{color:var(--ink)}
   .keytable{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;align-items:center}
   .keytable .kdesc{font-family:'Archivo';font-size:12px;color:var(--ink-dim)}
-  kbd{font-family:'JetBrains Mono';font-size:10.5px;font-weight:600;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:3px 8px;min-width:22px;text-align:center;display:inline-block;white-space:nowrap}
-  .help-foot{display:flex;align-items:center;gap:8px;padding:13px 18px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-dim)}
+  kbd{font-family:'JetBrains Mono';font-size:12px;font-weight:600;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:3px 8px;min-width:22px;text-align:center;display:inline-block;white-space:nowrap}
+  .help-foot{display:flex;align-items:center;gap:8px;padding:13px 18px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono';font-size:12px;color:var(--ink-dim)}
   .help-foot input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
   .help-foot label{cursor:pointer;display:flex;align-items:center;gap:7px}
-  .vt small{opacity:.65;font-size:9px;margin-left:1px}
+  .vt small{opacity:.65;font-size:11px;margin-left:1px}
+  #projName{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -488,6 +490,10 @@
       <div class="agrid" id="grpVeh"></div>
     </div>
     <div class="sec">
+      <h3>Máy bay · Khoang hành khách</h3>
+      <div class="agrid" id="grpAir"></div>
+    </div>
+    <div class="sec">
       <h3>Quân sự</h3>
       <div class="agrid" id="grpMil"></div>
     </div>
@@ -530,7 +536,7 @@
     <canvas id="c"></canvas>
     <div class="vp-toolbar">
       <button class="vt active" data-tool="orbit" title="Xoay camera — phím Q (chuột trái kéo)"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 12a10 10 0 0 0-10-10"/><path d="M12 6v6l4 2"/></svg>Orbit<small>Q</small></button>
-      <button class="vt" data-tool="move" title="Di chuyển vật thể — phím G (giữ Alt để nâng lên/hạ xuống)"><svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>Di chuyển<small>G</small></button>
+      <button class="vt" data-tool="move" title="Di chuyển vật thể — phím W (giữ Alt để nâng lên/hạ xuống)"><svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>Di chuyển<small>W</small></button>
       <button class="vt" data-tool="rotate" title="Xoay vật thể — phím E"><svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>Xoay<small>E</small></button>
       <button class="vt" data-tool="scale" title="Phóng to/thu nhỏ — phím R"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Tỉ lệ<small>R</small></button>
       <button class="vt mon-toggle active" id="monToggle" title="Bật/tắt màn hình xem trước (M)"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1"/><path d="M9 21h6M12 17v4"/></svg>Monitor<small>M</small></button>
@@ -542,7 +548,7 @@
         <div class="safe" style="inset:10%"></div>
       </div>
     </div>
-    <div class="vp-msg" id="vpMsg">Bấm một chủ thể bên trái để thêm vào cảnh<br><span style="font-size:10px;opacity:.7">Chuột trái kéo = xoay · Lăn chuột = zoom · Chuột phải kéo = lia</span></div>
+    <div class="vp-msg" id="vpMsg">Bấm một chủ thể bên trái để thêm vào cảnh<br><span style="font-size:12px;opacity:.7">Chuột trái kéo = xoay · Lăn chuột = zoom · Chuột phải kéo = lia</span></div>
     <div class="monitor" id="monitor">
       <canvas id="monCanvas"></canvas>
       <span class="mlabel" id="monLabel">VIEW · 35mm</span>
@@ -572,7 +578,7 @@
         <div class="ref-divider">HOẶC DỰNG BỐI CẢNH TỪ ẢNH</div>
         <div class="ref-drop" id="refDrop">
           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          Tải ảnh <b>bối cảnh</b> tham chiếu<br><span style="opacity:.6">đường phố, phòng, phong cảnh... (KHÔNG phải ref sheet nhân vật)</span>
+          Tải ảnh <b>bối cảnh</b> tham chiếu<br><span style="opacity:.85">đường phố, phòng, phong cảnh... (KHÔNG phải ref sheet nhân vật)</span>
         </div>
         <input type="file" id="refInput" accept="image/*" multiple style="display:none">
         <div class="ref-grid" id="refGrid"></div>
@@ -596,7 +602,7 @@
         <div class="ref-divider" style="color:var(--accent)">★ TẠO NHÂN VẬT GIỐNG PIPO (CÓ KHỚP)</div>
         <div class="ref-drop" id="genImgDrop">
           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          Tải ảnh <b>1 nhân vật</b> (vd Pipo)<br><span style="opacity:.6">AI chọn khung xương khớp nhất → gập tư thế được</span>
+          Tải ảnh <b>1 nhân vật</b> (vd Pipo)<br><span style="opacity:.85">AI chọn khung xương khớp nhất → gập tư thế được</span>
         </div>
         <input type="file" id="genImgInput" accept="image/*" style="display:none">
         <div id="genImgPreview" style="display:none;margin-top:9px">
@@ -621,7 +627,7 @@
       <div class="ai-box">
         <div class="ref-drop" id="charDrop">
           <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          Tải ảnh nhân vật (PNG nền trong)<br><span style="opacity:.6">vd: Pipo — dán lên tấm đứng trong cảnh</span>
+          Tải ảnh nhân vật (PNG nền trong)<br><span style="opacity:.85">vd: Pipo — dán lên tấm đứng trong cảnh</span>
         </div>
         <input type="file" id="charInput" accept="image/*" style="display:none">
         <div class="ctrl" style="margin-top:10px">
@@ -629,8 +635,8 @@
           <input id="charName" placeholder="vd: Gà vàng Pipo" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);font-family:'Archivo';font-size:12px;padding:8px 10px;outline:none">
         </div>
         <div class="ctrl">
-          <label>Tên tiếng Anh (cho AI) <span style="opacity:.55"></span></label>
-          <input id="charNameEn" placeholder="vd: yellow chicken Pipo" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--ink-dim);font-family:'JetBrains Mono';font-size:10.5px;padding:8px 10px;outline:none">
+          <label>Tên tiếng Anh (cho AI) <span style="opacity:.85"></span></label>
+          <input id="charNameEn" placeholder="vd: yellow chicken Pipo" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--ink-dim);font-family:'JetBrains Mono';font-size:12px;padding:8px 10px;outline:none">
         </div>
         <div class="ctrl">
           <label>Chiều cao trong cảnh <span class="val" id="vCharH">1.8m</span></label>
@@ -645,7 +651,7 @@
       <div id="bgArea">
         <div class="bg-drop" id="bgDrop">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-          Tải ảnh nền lên<br><span style="opacity:.6">PNG / JPG · ảnh thật, concept art...</span>
+          Tải ảnh nền lên<br><span style="opacity:.85">PNG / JPG · ảnh thật, concept art...</span>
         </div>
       </div>
       <input type="file" id="bgInput" accept="image/*" style="display:none">
@@ -778,7 +784,7 @@
         <div class="help-step"><span>Vào <b>Settings → API Keys</b>, bấm <b>Create Key</b>, đặt tên rồi <b>copy ngay</b> (key chỉ hiện một lần).</span></div>
         <div class="help-step"><span>Quay lại đây, dán key vào ô trên rồi bấm Lưu. Key lưu trong trình duyệt máy bạn.</span></div>
       </div>
-      <p style="font-family:'JetBrains Mono';font-size:9.5px;color:var(--ink-faint);line-height:1.6;margin-top:14px">
+      <p style="font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);line-height:1.6;margin-top:14px">
         ⚠ Key lưu trong trình duyệt máy bạn, không gửi đi đâu ngoài Anthropic. Đừng chia sẻ file đã lưu key.<br>
         ℹ Nếu mở file kiểu <b>file://</b> (nhấp đúp) bằng Chrome, trình duyệt chặn lưu lâu dài — key vẫn dùng được trong phiên này, nhưng lần mở sau phải nhập lại. Muốn nhớ vĩnh viễn: dùng <b>Firefox</b>, hoặc chạy qua <b>localhost</b> (xem file hướng dẫn kèm theo).
       </p>
@@ -823,7 +829,7 @@
           <div class="proj-label" style="margin-bottom:7px;color:var(--accent)">Depth map (khóa góc + chiều sâu)</div>
           <div style="border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#000;min-height:80px;display:flex;align-items:center;justify-content:center">
             <img id="storyImgDepth" style="width:100%;display:block">
-            <span id="depthHint" style="font-family:'JetBrains Mono';font-size:10px;color:var(--ink-faint);padding:20px">Bấm nút dưới để tạo</span>
+            <span id="depthHint" style="font-family:'JetBrains Mono';font-size:12px;color:var(--ink-faint);padding:20px">Bấm nút dưới để tạo</span>
           </div>
           <button class="topbtn" id="storyMakeDepth" style="width:100%;margin-top:8px;justify-content:center">⚙ Tạo Depth map</button>
           <button class="topbtn" id="storyDlDepth" style="width:100%;margin-top:6px;justify-content:center;display:none">⬇ Tải Depth</button>
@@ -832,7 +838,7 @@
           <div class="proj-label" style="margin-bottom:7px;color:var(--accent)">Edge map (khóa hình khối)</div>
           <div style="border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;min-height:80px;display:flex;align-items:center;justify-content:center">
             <img id="storyImgEdge" style="width:100%;display:block">
-            <span id="edgeHint" style="font-family:'JetBrains Mono';font-size:10px;color:#999;padding:20px">Bấm nút dưới để tạo</span>
+            <span id="edgeHint" style="font-family:'JetBrains Mono';font-size:12px;color:#999;padding:20px">Bấm nút dưới để tạo</span>
           </div>
           <button class="topbtn" id="storyMakeEdge" style="width:100%;margin-top:8px;justify-content:center">⚙ Tạo Edge map</button>
           <button class="topbtn" id="storyDlEdge" style="width:100%;margin-top:6px;justify-content:center;display:none">⬇ Tải Edge</button>
@@ -844,7 +850,7 @@
 
       <div class="proj-label" style="margin-bottom:7px;display:flex;align-items:center;gap:10px">
         <span>Prompt mô tả (copy dán kèm ảnh)</span>
-        <span id="storyGenBadge" style="font-family:'JetBrains Mono';font-size:9px;color:var(--ink-faint);text-transform:none;letter-spacing:0"></span>
+        <span id="storyGenBadge" style="font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint);text-transform:none;letter-spacing:0"></span>
       </div>
       <textarea id="storyPrompt" style="width:100%;min-height:160px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-family:'JetBrains Mono';font-size:11px;padding:11px;line-height:1.6;resize:vertical;outline:none"></textarea>
       <div style="display:flex;gap:8px;margin-top:10px">
@@ -898,7 +904,7 @@
         <div class="ht">Phím tắt</div>
         <div class="keytable">
           <kbd>Q</kbd><span class="kdesc">Công cụ Orbit (xoay camera)</span>
-          <kbd>G</kbd><span class="kdesc">Công cụ Di chuyển (giữ Alt khi kéo = nâng lên/hạ xuống)</span>
+          <kbd>W</kbd><span class="kdesc">Công cụ Di chuyển (giữ Alt khi kéo = nâng lên/hạ xuống)</span>
           <kbd>E</kbd><span class="kdesc">Công cụ Xoay vật thể</span>
           <kbd>R</kbd><span class="kdesc">Công cụ Tỉ lệ vật thể (phóng to/thu nhỏ)</span>
           <kbd>Nháy đúp</kbd><span class="kdesc">Nháy đúp vào BẤT KỲ thanh trượt nào → đưa về mặc định</span>
@@ -1062,6 +1068,7 @@ function initDistortion(){
   distCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
   distMat=new THREE.ShaderMaterial({
     uniforms:{ tDiffuse:{value:null}, k:{value:0.0}, aspect:{value:1.0} },
+    transparent:true, depthTest:false, depthWrite:false,
     vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.0,1.0); }`,
     fragmentShader:`
       varying vec2 vUv; uniform sampler2D tDiffuse; uniform float k; uniform float aspect;
@@ -1070,11 +1077,17 @@ function initDistortion(){
         c.x *= aspect;                    // giữ tỉ lệ để méo đều
         float r2 = dot(c,c);
         float f = 1.0 + k * r2;           // barrel khi k>0
-        vec2 uv = c * f;
+        // co toàn khung theo góc xa nhất → mọi điểm đều nằm trong ảnh gốc, không còn viền tối
+        float r2max = 0.25 * (aspect*aspect + 1.0);
+        float s = 1.0 / (1.0 + k * r2max);
+        vec2 uv = c * f * s;
         uv.x /= aspect;
-        uv += 0.5;
-        if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){ gl_FragColor=vec4(0.04,0.055,0.075,1.0); return; }
+        uv = clamp(uv + 0.5, 0.0, 1.0);
         gl_FragColor = texture2D(tDiffuse, uv);
+        // render target chứa màu linear → mã hoá sRGB khi vẽ ra canvas, nếu không toàn khung bị tối
+        vec3 lin = gl_FragColor.rgb;
+        vec3 srgb = mix(lin * 12.92, 1.055 * pow(max(lin, vec3(0.0)), vec3(1.0/2.4)) - 0.055, step(0.0031308, lin));
+        gl_FragColor = vec4(srgb, gl_FragColor.a);
       }`
   });
   distMesh=new THREE.Mesh(new THREE.PlaneGeometry(2,2),distMat);
@@ -1089,9 +1102,9 @@ function renderView(){
     // lưu clear color hiện tại để khôi phục sau
     const prevColor=new THREE.Color();renderer.getClearColor(prevColor);
     const prevAlpha=renderer.getClearAlpha();
-    // render scene vào target với nền tối đặc
+    // render scene vào target, giữ nguyên nền hiện tại (trong suốt khi dùng phông phẳng)
     renderer.setRenderTarget(rtTarget);
-    renderer.setClearColor(0x0a0e13,1);
+    renderer.setClearColor(prevColor,prevAlpha);
     renderer.clear(true,true,true);
     renderer.render(scene,camera);
     renderer.setRenderTarget(null);
@@ -1099,7 +1112,7 @@ function renderView(){
     distMat.uniforms.tDiffuse.value=rtTarget.texture;
     distMat.uniforms.k.value=lensDistortion;
     distMat.uniforms.aspect.value=w/h;
-    renderer.setClearColor(0x0a0e13,1);
+    renderer.setClearColor(prevColor,prevAlpha);
     renderer.clear(true,true,true);
     renderer.render(distScene,distCam);
     // khôi phục
@@ -1284,7 +1297,7 @@ function removeBackground(){
   scene.background=new THREE.Color('#0a0e13');renderer.setClearColor(0x0a0e13,1);
   document.getElementById('bgControls').style.display='none';
   document.getElementById('bgArea').innerHTML=
-    `<div class="bg-drop" id="bgDrop"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Tải ảnh nền lên<br><span style="opacity:.6">PNG / JPG · ảnh thật, concept art...</span></div>`;
+    `<div class="bg-drop" id="bgDrop"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Tải ảnh nền lên<br><span style="opacity:.85">PNG / JPG · ảnh thật, concept art...</span></div>`;
   bindBgDrop();
   toast('Đã gỡ ảnh nền');
 }
@@ -1551,6 +1564,7 @@ const POSE_PRESETS={
   raise:    {torsoLean:0, hip:0,   knee:0,   shoulderF:-160,elbow:0, spread:0}, // giơ hai tay lên
   point:    {torsoLean:0, hip:0,   knee:0,   shoulderF:-80, elbow:0, spread:0, oneArm:true}, // chỉ tay (tay phải)
   run:      {torsoLean:22,hip:30,  knee:50,  shoulderF:50, elbow:70, spread:0, stride:true}, // chạy
+  airsit:   {torsoLean:-12,hip:-88,knee:88,  shoulderF:-12,elbow:-78,spread:5}, // ngồi ghế máy bay: hơi ngả lưng, cẳng tay đặt lên tay vịn
 };
 
 // ════ DATABASE KHUNG CƠ THỂ CÓ KHỚP (để AI match từ ảnh) ════
@@ -1814,6 +1828,157 @@ function applyFeatures(g, features){
   g.userData.features=features;
 }
 
+/* ════════════════════════ GHẾ & KHOANG MÁY BAY (hành khách) ════════════════════════ */
+// Kích thước theo ghế economy thật (A320/B737): rộng nệm 0.45m, nệm cao 0.44m, tựa lưng ngả 12°,
+// tay vịn cao 0.69m, khoảng cách hàng (pitch) 0.79m, lối đi giữa 0.5m, cabin rộng ~3.7m ở tầm tay vịn.
+const AIRSEAT={w:.45,cushT:.44,cushH:.11,cushD:.47,backH:.66,backT:.10,headH:.16,armH:.69,armW:.06,armL:.40,pitch:.79};
+const AIRCOL={seat:'#1f2024',seat2:'#2a2b30',red:'#b3151f',head:'#d8dadd',frame:'#b0b4ba',tray:'#3a3c42',arm:'#b8bcc2',armPost:'#8d9198',pocket:'#15161a',screen:'#0f1114',belt:'#c41e2a',buckle:'#c9ccd1'};
+// tựa lưng + đầu tựa + bàn ăn + túi báo + màn hình (gắn ở lưng ghế)
+function airSeatBack(g,x,col){
+  const S=AIRSEAT;const bg=new THREE.Group();
+  bg.position.set(x,S.cushT-.02,-S.cushD/2+S.backT/2);bg.rotation.x=-12*Math.PI/180; // ngả ra sau 12°
+  const back=box(S.w,S.backH*.55,S.backT,col);back.position.y=S.backH*.275;bg.add(back);                 // nửa dưới đen
+  const upper=box(S.w,S.backH*.45,S.backT,AIRCOL.red);upper.position.y=S.backH*.775;bg.add(upper);       // nửa trên đỏ
+  const lumbar=box(S.w-.06,S.backH*.45,.03,AIRCOL.seat2);lumbar.position.set(0,S.backH*.3,S.backT/2+.01);bg.add(lumbar);
+  const head=box(S.w+.02,S.headH,S.backT+.02,AIRCOL.red);head.position.y=S.backH+S.headH/2;bg.add(head);
+  for(const s of[-1,1]){const wing=box(.06,S.headH*.95,.09,AIRCOL.red);wing.position.set(s*(S.w/2-.02),S.backH+S.headH/2,S.backT/2+.045);bg.add(wing);}
+  const logo=box(S.w*.45,.05,.012,AIRCOL.head);logo.position.set(0,S.backH+S.headH*.5,S.backT/2+.018);bg.add(logo); // biển logo nhỏ trên đầu tựa
+  const scr=box(S.w-.12,.17,.012,AIRCOL.screen);scr.position.set(0,S.backH*.86,-S.backT/2-.008);bg.add(scr);           // màn hình giải trí
+  const tray=box(S.w-.08,.27,.02,AIRCOL.tray);tray.position.set(0,S.backH*.52,-S.backT/2-.012);bg.add(tray);            // bàn ăn gập
+  const latch=box(.05,.03,.02,AIRCOL.arm);latch.position.set(0,S.backH*.52+.16,-S.backT/2-.02);bg.add(latch);
+  const pocket=box(S.w-.08,.17,.03,AIRCOL.pocket);pocket.position.set(0,S.backH*.16,-S.backT/2-.018);bg.add(pocket);   // túi đựng tạp chí
+  g.add(bg);return bg;
+}
+// nệm ngồi + khung đỡ (một chỗ ngồi, chưa có tay vịn)
+function airSeatCushion(g,x,col){
+  const S=AIRSEAT;
+  const cush=box(S.w,S.cushH,S.cushD,col);cush.position.set(x,S.cushT-S.cushH/2,0);g.add(cush);
+  const lip=box(S.w,.04,.09,AIRCOL.seat2);lip.position.set(x,S.cushT+.015,S.cushD/2-.045);g.add(lip);             // mép nệm trước hơi nhô
+  const pan=box(S.w,.05,S.cushD*.9,AIRCOL.armPost);pan.position.set(x,S.cushT-S.cushH-.025,0);g.add(pan);              // khay đỡ nệm
+  const vest=box(S.w-.1,.08,.25,'#f0b429');vest.position.set(x,S.cushT-S.cushH-.09,-.05);g.add(vest);              // hộp áo phao dưới ghế
+}
+// tay vịn (có trụ đỡ phía sau)
+function airArmrest(g,x){
+  const S=AIRSEAT;
+  const pad=box(S.armW,.045,S.armL,AIRCOL.arm);pad.position.set(x,S.armH-.0225,.015);g.add(pad);
+  const tip=cyl(.0225,.0225,S.armW,AIRCOL.arm,10);tip.rotation.z=Math.PI/2;tip.position.set(x,S.armH-.0225,.015+S.armL/2);g.add(tip); // đầu tay vịn bo tròn
+  const post=box(S.armW*.8,S.armH-S.cushT+.03,.11,AIRCOL.armPost);post.position.set(x,(S.armH+S.cushT)/2-.03,-.13);g.add(post);
+}
+// chân ghế + thanh ngang chung cho cả dãy (x0..x1)
+function airSeatBase(g,x0,x1){
+  const S=AIRSEAT;const wdt=x1-x0,cx=(x0+x1)/2;
+  for(const z of[-.14,.12]){const beam=cyl(.025,.025,wdt,AIRCOL.frame,8);beam.rotation.z=Math.PI/2;beam.position.set(cx,S.cushT-S.cushH-.06,z);g.add(beam);}
+  const legX=wdt>1?[x0+.08,cx,x1-.08]:[x0+.06,x1-.06];
+  legX.forEach(lx=>{
+    for(const z of[-.14,.12]){const leg=box(.05,S.cushT-S.cushH-.06,.05,AIRCOL.frame);leg.position.set(lx,(S.cushT-S.cushH-.06)/2,z);g.add(leg);}
+    const foot=box(.08,.03,.42,AIRCOL.frame);foot.position.set(lx,.015,-.01);g.add(foot);
+  });
+}
+// dãy n ghế liền, tâm dãy tại x=0, mặt ghế quay về +z. Trả về mảng tọa độ x tâm từng ghế
+function airRow(g,n,col){
+  const S=AIRSEAT;const step=S.w+S.armW;const x0=-(n*step+S.armW)/2;
+  const xs=[];
+  for(let i=0;i<n;i++){const x=x0+S.armW+S.w/2+i*step;xs.push(x);airSeatCushion(g,x,col||AIRCOL.seat);airSeatBack(g,x,col||AIRCOL.seat);}
+  for(let i=0;i<=n;i++){airArmrest(g,x0+S.armW/2+i*step);}
+  airSeatBase(g,x0,-x0);
+  return xs;
+}
+// hành khách ngồi vào ghế (nhân vật có rig, tư thế airsit, hạ đúng độ cao nệm). idx để đổi màu áo/vóc dáng
+const AIR_SHIRTS=['#c0392b','#2980b9','#27ae60','#8e44ad','#e67e22','#5d6d7e','#d35400','#16a085','#f1c40f','#7d3c98','#1f618d','#a04000'];
+const AIR_SKINS=['#e8b795','#d9a072','#f1c9a5','#a86f4a','#c68e63','#7a4e2d'];
+const AIR_PANTS=['#2c3e50','#4a4a4a','#1b2631','#5b3a29','#34495e','#6e6e6e'];
+const AIR_BODIES=[{height:1.58,build:.9},{height:1.5,build:1.0},{height:1.66,build:.85},{height:1.46,build:.95},{height:1.62,build:1.05},{height:1.54,build:.88}];
+function airPassenger(idx){
+  const b=AIR_BODIES[idx%AIR_BODIES.length];
+  const shirt=AIR_SHIRTS[idx%AIR_SHIRTS.length];
+  const skin=AIR_SKINS[(idx*5)%AIR_SKINS.length],pants=AIR_PANTS[(idx*7)%AIR_PANTS.length];
+  const S=AIRSEAT,h=b.height;
+  const legLen=.44*h,legD=.105*h,torsoD=.135*h*b.build,torsoW=.24*h*b.build;
+  const U=.094*h*.82*2;   // đơn vị size của phụ kiện = đường kính đầu
+  // dây an toàn + khóa làm PHỤ KIỆN gắn vào thân (pos y=-2 là đáy thân = ngang hông)
+  // → gập tư thế / chỉnh dáng / lưu project đều giữ được
+  const feats=[
+    {type:'belt',  on:'torso',shape:'box',size:[torsoW*1.15/U,.05/U,.05/U],pos:[0,-2,.15], color:AIRCOL.belt},
+    {type:'buckle',on:'torso',shape:'box',size:[.085/U,.06/U,.075/U],      pos:[.28,-2,.3],color:AIRCOL.buckle},
+  ];
+  const f=makeFigure({height:h,build:b.build,headScale:.82,color:shirt,poseName:'airsit',pose:POSE_PRESETS.airsit,features:feats});
+  const partColors={head:skin,torso:shirt,arm:shirt,leg:pants};
+  f.traverse(m=>{if(m.isMesh&&m.userData.part&&!m.userData.__feat&&partColors[m.userData.part])m.material.color.set(partColors[m.userData.part]);});
+  f.userData.partColors=partColors;
+  f.userData.key='airsitter';f.userData.label='Hành khách';f.userData.enName='seated airplane passenger';
+  f.userData.__airPax=true;                       // dấu để nhận ra & tách khỏi ghế
+  // hạ hông xuống mặt nệm, lưng sát tựa
+  f.position.y=S.cushT+legD*.1-legLen;
+  f.position.z=-S.cushD/2+S.backT+torsoD/2-.01;
+  return f;
+}
+// đặt hành khách vào từng ghế của một dãy (xs = tọa độ x tâm ghế), seatIdx0 để đổi màu
+function airFillRow(g,xs,seatIdx0,skipFn){
+  xs.forEach((x,i)=>{const idx=seatIdx0+i;if(skipFn&&skipFn(idx))return;const p=airPassenger(idx);p.position.x+=x;g.add(p);});
+}
+// khoang máy bay thân hẹp (nội thất): sàn, vỏ cong nhìn từ trong, cửa sổ, ngăn hành lý, trần, vách sau
+// khoang máy bay (nội thất) — vỏ khoang là 1 vật thể; mỗi dãy 3 ghế là 1 vật thể riêng (userData.extras) để xóa/di chuyển từng dãy.
+// Kích thước nới rộng hơn thật một chút (rộng ~4.3m, trần ~2.6m, lối đi 0.7m, pitch 0.95m) để camera đi lại trong khoang dễ hơn.
+const AIRCABIN={R:2.25,cy:.85,aisle:.7,pitch:.95,rows:5};
+function airCabin(rows,withPeople){
+  const g=new THREE.Group();const S=AIRSEAT,C=AIRCABIN;
+  const R=C.R,cy=C.cy;
+  const floorW=2*Math.sqrt(R*R-cy*cy);                // bề rộng sàn theo dây cung
+  const L=rows*C.pitch+1.8;                           // chiều dài khoang (có lối trống đầu/cuối)
+  const wallCol='#e6e8ea',binCol='#eceef0',floorCol='#5a1a22';
+  // sàn thảm đỏ đô + 2 vạch vàng dẫn lối
+  const floor=box(floorW,.06,L,floorCol);floor.position.y=-.03;g.add(floor);
+  for(const s of[-1,1]){const line=box(.03,.006,L,'#e0b628');line.position.set(s*(C.aisle/2-.08),.003,0);g.add(line);}
+  // vỏ khoang cong: chỉ vẽ MẶT TRONG (BackSide) → nhìn từ ngoài vẫn thấy được bên trong
+  const a=Math.acos(-cy/R);
+  const shell=new THREE.Mesh(new THREE.CylinderGeometry(R,R,L,40,1,true,-a,2*a),
+    new THREE.MeshStandardMaterial({color:wallCol,roughness:.85,metalness:.02,side:THREE.BackSide}));
+  shell.rotation.x=-Math.PI/2;shell.position.y=cy;shell.receiveShadow=true;g.add(shell);
+  // cửa sổ oval hai bên, cách nhau đúng 1 pitch ghế
+  const wy=1.15,dy=wy-cy,wx=Math.sqrt(R*R-dy*dy)-.03;
+  const nWin=Math.floor((L-.8)/(C.pitch*.6));const wStep=(L-.8)/nWin;const wz0=-(nWin-1)*wStep/2;
+  for(let i=0;i<nWin;i++){const z=wz0+i*wStep;
+    for(const s of[-1,1]){
+      const fr=cyl(.2,.2,.05,'#f3f4f6',18);fr.rotation.z=Math.PI/2;fr.scale.y=1.3;fr.position.set(s*wx,wy,z);g.add(fr);      // khung oval
+      const gl=cyl(.16,.16,.05,'#9cc3e6',18);gl.rotation.z=Math.PI/2;gl.scale.y=1.3;gl.position.set(s*(wx-.015),wy,z);g.add(gl); // kính
+      const shade=box(.02,.09,.26,'#f8f8f8');shade.position.set(s*(wx-.03),wy+.15,z);g.add(shade);                              // màn che
+    }
+  }
+  // ngăn hành lý trên đầu + dải đèn đọc sách + trần giữa
+  const binY=2.15,binX=1.42;
+  for(const s of[-1,1]){
+    const bin=box(.66,.36,L-.4,binCol);bin.position.set(s*binX,binY,0);g.add(bin);
+    const door=box(.05,.36,L-.4,'#f4f5f7');door.position.set(s*(binX-.31),binY-.1,0);door.rotation.z=s*.45;g.add(door); // nắp ngăn nghiêng về lối đi
+    const psu=box(.62,.05,L-.4,'#c9ccd2');psu.position.set(s*(binX+.03),binY-.21,0);g.add(psu);
+    const lights=box(.58,.012,L-.5,'#fff6d8');lights.position.set(s*(binX+.03),binY-.24,0);g.add(lights);
+  }
+  const ceilY=cy+R-.15;
+  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(2.0,L-.4),new THREE.MeshStandardMaterial({color:'#f2f3f5',roughness:.9}));
+  ceil.rotation.x=Math.PI/2;ceil.position.y=ceilY;g.add(ceil);                        // trần chỉ thấy từ dưới
+  const strip=box(.35,.01,L-.4,'#fff9e6');strip.position.y=ceilY-.01;g.add(strip);   // đèn trần dọc lối đi
+  // vách sau (đuôi khoang) + cửa toilet
+  const bulk=box(floorW,ceilY+.1,.08,'#e4e6ea');bulk.position.set(0,(ceilY+.1)/2,-L/2+.04);g.add(bulk);
+  const lav=box(.75,1.95,.03,'#cfd3d9');lav.position.set(1.05,.98,-L/2+.09);g.add(lav);
+  const knob=sph(.03,'#8a9097',8);knob.position.set(.78,1.0,-L/2+.12);g.add(knob);
+  // các dãy ghế: tạo thành VẬT THỂ RIÊNG (addObject sẽ thêm từng dãy vào cảnh) — mũi máy bay ở +z, ghế quay mặt về +z
+  const step=S.w+S.armW,blockW=3*step+S.armW,bx=C.aisle/2+blockW/2;
+  const z0=L/2-1.2;const extras=[];let v=0;
+  for(let r=0;r<rows;r++){const z=z0-r*C.pitch;
+    for(const sd of[-1,1]){
+      const key=withPeople?'airseatrowp':'airseatrow';
+      const rg=BUILDERS[key](v);
+      rg.position.set(sd*bx,0,z);
+      rg.userData.key=key;rg.userData.label=(withPeople?'Hàng ghế + khách':'Hàng 3 ghế')+' '+(r+1)+(sd<0?'L':'R');
+      extras.push(rg);v++;
+    }
+  }
+  g.userData.extras=extras;
+  // camera tự nhảy vào trong khoang (đứng ở đầu lối đi nhìn về đuôi)
+  g.userData.camOnAdd={target:[0,1.1,0],r:L/2+.3,phi:1.38,theta:0}; // camera đứng ngay cửa khoang nhìn dọc lối đi; lăn chuột để đi sâu vào
+  g.userData.h=ceilY;
+  return g;
+}
+
 const BUILDERS={
   /* ---- người: figure tham số hóa ---- */
   // opts: {height, build (độ mập), legRatio (tỉ lệ chân), color}
@@ -1838,6 +2003,22 @@ const BUILDERS={
   poseRaise(){return makeFigure({poseName:'raise',pose:POSE_PRESETS.raise});},
   posePoint(){return makeFigure({poseName:'point',pose:POSE_PRESETS.point});},
   poseRun(){return makeFigure({poseName:'run',pose:POSE_PRESETS.run});},
+  poseAirSit(){const g=makeFigure({poseName:'airsit',pose:POSE_PRESETS.airsit});
+    g.userData.spawnY=AIRSEAT.cushT+.105*1.92*.1-.44*1.92; // sinh ra ở độ cao vừa ngồi lên nệm ghế máy bay
+    return g;},
+  /* ---- máy bay: ghế & khoang hành khách ---- */
+  airseat(){const g=new THREE.Group();airRow(g,1,AIRCOL.seat);g.userData.h=1.25;return g;},
+  airseatrow(v){const g=new THREE.Group();airRow(g,3,AIRCOL.seat);g.userData.h=1.25;if(v!==undefined)g.userData.variant=v;return g;},
+  airpassenger(){const g=new THREE.Group();const xs=airRow(g,1,AIRCOL.seat);airFillRow(g,xs,0);g.userData.h=1.35;return g;},
+  airsitter(v){const p=airPassenger(v===undefined?Math.floor(Math.random()*12):v);
+    p.userData.variant=v===undefined?undefined:v;
+    p.userData.spawnY=p.position.y;   // sinh ra đúng độ cao mặt nệm để thả vào ghế trống
+    return p;},
+  airseatrowp(v){const g=new THREE.Group();const xs=airRow(g,3,AIRCOL.seat);
+    if(v===undefined)airFillRow(g,xs,0);else{airFillRow(g,xs,v*3,i=>i%4===1);g.userData.variant=v;} // bỏ trống ~1/4 ghế cho tự nhiên
+    g.userData.h=1.35;return g;},
+  aircabin(){return airCabin(AIRCABIN.rows,false);},
+  aircabinp(){return airCabin(AIRCABIN.rows,true);},
   /* ---- động vật ---- */
   dog(){const g=new THREE.Group();const c='#c4906a';
     const body=box(.7,.34,.28,c);body.position.y=.5;g.add(body);
@@ -2225,6 +2406,7 @@ const ASSETS={
   ],
   grpPose:[
     ['poseSit','Ngồi ghế',ic('<circle cx="10" cy="5" r="2"/><path d="M10 7v5h6M10 12v6M16 12v6M7 12h3"/>')],
+    ['poseAirSit','Ngồi máy bay',ic('<circle cx="10" cy="5" r="2"/><path d="M10 7v6h5M15 13v5M7 13h3v5M6 4v14M6 12h12"/>')],
     ['poseRide','Ngồi lái xe',ic('<circle cx="9" cy="5" r="2"/><path d="M9 7l2 4 5 1M11 11v4M9 11l-2 5M16 12l1 4"/>')],
     ['poseLie','Nằm',ic('<circle cx="5" cy="14" r="2"/><path d="M7 15h12M7 18h12"/>')],
     ['poseSquat','Ngồi xổm',ic('<circle cx="12" cy="5" r="2"/><path d="M12 7v4l-3 3 1 5M12 11l3 3-1 5M9 14h6"/>')],
@@ -2242,6 +2424,15 @@ const ASSETS={
     ['boat','Thuyền',ic('<path d="M3 14h18l-2 5H5zM12 14V6M12 6l5 4"/>')],
     ['airplane','Máy bay',ic('<path d="M12 3l1 7 8 4v2l-8-1v4l2 2v1l-3-1-3 1v-1l2-2v-4l-8 1v-2l8-4 1-7z"/>')],
     ['helicopter','Trực thăng',ic('<path d="M2 6h20M11 6v3M7 12h8a2 2 0 0 1 2 2v2H7zM17 14h4M5 16v2M13 16v2"/>')],
+  ],
+  grpAir:[
+    ['airseat','Ghế máy bay',ic('<path d="M7 4v9M7 13h9v6M7 13v6M16 13l3-1M5 11h11M5 11v2"/>')],
+    ['airseatrow','Hàng 3 ghế',ic('<path d="M3 5v8h5V5M9 5v8h5V5M15 5v8h5V5M3 13v6M20 13v6M3 16h17"/>')],
+    ['airpassenger','Ghế + khách',ic('<circle cx="11" cy="5" r="2"/><path d="M7 4v9h4v6M11 13h5v6M11 7v6M8 10h4"/>')],
+    ['airsitter','Khách ngồi (rời)',ic('<circle cx="12" cy="5" r="2.2"/><path d="M12 7.5v6h5M12 13.5v6M17 13.5v6M9 10.5h3"/>')],
+    ['airseatrowp','Hàng ghế + khách',ic('<circle cx="6" cy="5" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="18" cy="5" r="1.5"/><path d="M3 8v6h18V8M3 14v5M21 14v5M6 7v7M12 7v7M18 7v7"/>')],
+    ['aircabin','Khoang máy bay',ic('<path d="M3 12a9 8 0 0 1 18 0v7H3z"/><rect x="5" y="13" width="5" height="4"/><rect x="14" y="13" width="5" height="4"/><circle cx="6" cy="9" r="1"/><circle cx="18" cy="9" r="1"/>')],
+    ['aircabinp','Khoang + hành khách',ic('<path d="M3 12a9 8 0 0 1 18 0v7H3z"/><circle cx="7.5" cy="12" r="1.3"/><circle cx="16.5" cy="12" r="1.3"/><path d="M5 19v-4h5v4M14 19v-4h5v4"/>')],
   ],
   grpMil:[
     ['tank','Xe tăng',ic('<path d="M3 14h14v3H3zM5 14v-2h8v2M13 13h8v1M2 17h16"/><circle cx="6" cy="18" r="1"/><circle cx="14" cy="18" r="1"/>')],
@@ -2347,11 +2538,17 @@ function addObject(key,label){
   if(g.userData.fixedChar)label=g.userData.label;
   // đặt cách target một chút, lệch ngẫu nhiên nhẹ để không chồng
   const off=objects.length*1.6;
-  g.position.set((Math.random()-.5)*2,0,off*0.4+(Math.random()-.5)*1.5);
+  g.position.set((Math.random()-.5)*2,g.userData.spawnY||0,off*0.4+(Math.random()-.5)*1.5);
   scene.add(g);objects.push(g);
   select(g);
   document.getElementById('vpMsg').style.display='none';
-  toast(`Đã thêm: ${label}`);
+  // vật thể kèm theo (vd: từng dãy ghế của khoang máy bay) → thêm thành vật riêng, đặt cùng gốc với vật chính
+  if(g.userData.extras){
+    g.userData.extras.forEach(e=>{e.userData.id=++idCounter;e.position.add(g.position);scene.add(e);objects.push(e);});
+    const n=g.userData.extras.length;delete g.userData.extras;
+    toast(`Đã thêm: ${label} (+${n} dãy ghế — chọn 1 dãy rồi bấm “Tách hành khách” để xóa từng người)`);
+  }else toast(`Đã thêm: ${label}`);
+  if(g.userData.camOnAdd){const c=g.userData.camOnAdd;orbit.target.set(c.target[0]+g.position.x,c.target[1],c.target[2]+g.position.z);orbit.sph.radius=c.r;orbit.sph.phi=c.phi;orbit.sph.theta=c.theta;orbit._update();delete g.userData.camOnAdd;}
   if(typeof autosave==='function')autosave();
   if(typeof pushHistory==='function')pushHistory();
 }
@@ -2388,6 +2585,39 @@ function deleteSelected(){
 }
 function updGroupBtn(){/* placeholder: cập nhật UI liên quan nhóm nếu cần */}
 
+// đếm số hành khách còn nằm trong (các) dãy ghế
+function countPax(list){return list.reduce((n,o)=>n+o.children.filter(c=>c.userData.__airPax).length,0);}
+// tách hành khách ra khỏi dãy ghế: mỗi người thành một vật thể riêng, chọn/xóa/di chuyển độc lập.
+// Giữ nguyên vị trí ngoài đời thực (kể cả khi dãy đã được xoay/di chuyển/phóng to).
+function splitPassengers(list){
+  let n=0;
+  const wp=new THREE.Vector3(),wq=new THREE.Quaternion(),ws=new THREE.Vector3();
+  list.forEach(row=>{
+    const pax=row.children.filter(c=>c.userData.__airPax);
+    if(!pax.length)return;
+    pax.forEach(p=>{
+      p.getWorldPosition(wp);p.getWorldQuaternion(wq);p.getWorldScale(ws);
+      row.remove(p);scene.add(p);
+      p.position.copy(wp);p.quaternion.copy(wq);p.scale.copy(ws);
+      p.userData.id=++idCounter;
+      objects.push(p);n++;
+    });
+    // dãy giờ đã trống → đổi sang loại ghế không người để lưu/mở lại không mọc người trở lại
+    if(row.userData.key==='airseatrowp')row.userData.key='airseatrow';
+    else if(row.userData.key==='airpassenger')row.userData.key='airseat';
+    if(row.userData.label)row.userData.label=row.userData.label.replace(/\s*\+\s*khách/i,'');
+  });
+  return n;
+}
+function runSplitPax(list,allLabel){
+  const n=splitPassengers(list);
+  if(!n){toast('Không có hành khách nào để tách');return;}
+  renderInspector();
+  toast('Đã tách '+n+' hành khách'+(allLabel?' (toàn cảnh)':'')+' — bấm vào từng người rồi Del để bỏ');
+  if(typeof autosave==='function')autosave();
+  if(typeof pushHistory==='function')pushHistory();
+}
+
 /* ════════════════════════ INSPECTOR ════════════════════════ */
 function renderInspector(){
   const el=document.getElementById('inspector');
@@ -2395,6 +2625,7 @@ function renderInspector(){
   const u=selected.userData;
   let firstMesh=null;selected.traverse(o=>{if(o.isMesh && !o.userData.__decal && !firstMesh)firstMesh=o;});
   const curCol=firstMesh && firstMesh.material && firstMesh.material.color ? '#'+firstMesh.material.color.getHexString() : '#c9d1d9';
+  const paxSel=countPax(selection), paxAll=countPax(objects);   // hành khách còn dính trong ghế
   const multiSel=selection.length>1?`<div class="multi-banner">Đang chọn <b>${selection.length}</b> vật — di chuyển / xoay / tỉ lệ sẽ áp cho cả nhóm. <span id="clearSel">Bỏ chọn nhóm</span></div>`:'';
   el.innerHTML=`
     ${multiSel}
@@ -2405,9 +2636,9 @@ function renderInspector(){
         <div class="ty">ID #${u.id} · ${u.key==='__custom'?'AI tạo':u.key}</div></div>
     </div>
     <div class="ctrl" style="margin-top:-4px">
-      <label style="cursor:default"><span>Tên tiếng Anh cho AI <span style="opacity:.55">(tùy chọn)</span></span></label>
+      <label style="cursor:default"><span>Tên tiếng Anh cho AI <span style="opacity:.85">(tùy chọn)</span></span></label>
       <input id="objNameEn" value="${(u.enName||'').replace(/"/g,'&quot;')}" placeholder="vd: yellow chicken Pipo — để trống = tự dịch"
-        style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-dim);font-family:'JetBrains Mono';font-size:10.5px;padding:7px 9px;outline:none">
+        style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-dim);font-family:'JetBrains Mono';font-size:12px;padding:7px 9px;outline:none">
     </div>
     <div class="ctrl">
       <label>Xoay ngang (trục Y) <span class="val" id="vObjRotY">${Math.round(selected.rotation.y*180/Math.PI)}°</span></label>
@@ -2451,6 +2682,7 @@ function renderInspector(){
       <select class="pose-sel" id="poseSel">
         <option value="stand">Đứng</option>
         <option value="sit">Ngồi ghế</option>
+        <option value="airsit">Ngồi ghế máy bay</option>
         <option value="ride">Ngồi lái xe</option>
         <option value="lie">Nằm</option>
         <option value="squat">Ngồi xổm</option>
@@ -2478,7 +2710,7 @@ function renderInspector(){
     </div>
     <div class="ctrl">
       <label>Gập khuỷu <span class="val" id="vJEl">${Math.round(u.pose.elbow||0)}°</span></label>
-      <input type="range" id="jEl" min="0" max="160" step="1" data-default="0" value="${u.pose.elbow||0}">
+      <input type="range" id="jEl" min="-160" max="160" step="1" data-default="0" value="${u.pose.elbow||0}">
     </div>`:''}
     ${(u.features&&u.features.length)?`
     <div class="joint-grp">
@@ -2492,7 +2724,7 @@ function renderInspector(){
       <div class="ctrl"><label>Kích thước <span class="val" id="vFS">0</span></label><input type="range" id="featSize" min="0.05" max="2" step="0.02" value="0.3"></div>
       <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
         <input type="color" id="featColor" value="#ffffff" style="width:38px;height:32px;padding:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;cursor:pointer">
-        <span style="font-family:'JetBrains Mono';font-size:9px;color:var(--ink-faint)">màu phụ kiện này</span>
+        <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--ink-faint)">màu phụ kiện này</span>
       </div>
     </div>`:''}
     <div class="ctrl">
@@ -2541,6 +2773,8 @@ function renderInspector(){
         `:''}
       `:`<div class="tex-empty">Chưa có texture.<br>Tải ảnh lên hoặc dán URL.</div>`}
     </div>
+    ${paxSel?`<button class="delbtn" id="splitPaxBtn" style="color:var(--accent-warm);background:rgba(255,180,84,.1);border-color:rgba(255,180,84,.4);margin-top:12px"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8 8l12 10M8 16L20 6"/></svg>Tách ${paxSel} hành khách khỏi ghế</button>`:''}
+    ${paxAll>paxSel?`<div style="text-align:center;margin-top:8px"><span id="splitPaxAll" style="font-family:'JetBrains Mono';font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline">Tách toàn bộ ${paxAll} hành khách trong cảnh</span></div>`:''}
     <button class="delbtn" id="delBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Xóa vật thể (Del)</button>
   `;
   // color swatches — tô theo phần đang chọn (nếu là figure) hoặc cả người
@@ -2780,6 +3014,8 @@ function renderInspector(){
     updRange(texOff);
   }
   document.getElementById('delBtn').onclick=deleteSelected;
+  const spBtn=document.getElementById('splitPaxBtn');if(spBtn)spBtn.onclick=()=>runSplitPax(selection.slice(),false);
+  const spAll=document.getElementById('splitPaxAll');if(spAll)spAll.onclick=()=>runSplitPax(objects.slice(),true);
   const nameInp=document.getElementById('objName');
   if(nameInp){
     nameInp.oninput=e=>{
@@ -2896,7 +3132,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Y')&&!typing){e.preventDefault();redo();return;}
   if(typing)return;
   if(e.key==='Delete'||e.key==='Backspace'){if(selected){e.preventDefault();deleteSelected();}}
-  if(e.key==='g')document.querySelector('[data-tool=move]').click();
+  if(e.key==='w')document.querySelector('[data-tool=move]').click();
   if(e.key==='e')document.querySelector('[data-tool=rotate]').click();
   if(e.key==='r')document.querySelector('[data-tool=scale]').click();
   if(e.key==='q')document.querySelector('[data-tool=orbit]').click();
@@ -3099,7 +3335,11 @@ const EN_TERMS={
   sink:'sink',cabinet:'wall cabinet',bed:'bed',wardrobe:'wardrobe',nightstand:'nightstand',
   desk:'desk',diningtable:'dining table',chair:'chair',stool:'stool',
   tree:'tree',pine:'pine tree',bush:'bush',rock:'rock',mountain:'mountain',
-  cube:'box',sphere:'sphere',cylinder:'cylinder',coneP:'cone',plane:'flat plane',pillar:'pillar'
+  cube:'box',sphere:'sphere',cylinder:'cylinder',coneP:'cone',plane:'flat plane',pillar:'pillar',
+  poseAirSit:'passenger seated in an airplane seat',airseat:'airplane economy seat with armrests',airseatrow:'row of three airplane seats',
+  airpassenger:'passenger seated in an airplane seat',airseatrowp:'row of three airplane seats with seated passengers',
+  airsitter:'seated airplane passenger',
+  aircabin:'airplane cabin interior with rows of seats, windows and overhead bins',aircabinp:'airplane cabin interior with rows of seated passengers, windows and overhead bins'
 };
 function enTerm(o){
   if(o.userData.enName)return o.userData.enName; // tên Anh do người dùng đặt
@@ -3340,17 +3580,11 @@ function gatherSceneData(){
     bg: bgDataUrl?{data:bgDataUrl,mode:bgMode,opacity:+document.getElementById('bgOpacity').value,
          dist:+document.getElementById('bgDist').value,scale:+document.getElementById('bgScale').value}:null,
     objects:objects.map(o=>{
-      let col='#c9d1d9';
-      o.traverse(m=>{
-        if(!m.isMesh || m.userData.__decal)return;
-        if(m.material && m.material.userData && m.material.userData.__texMat)return; // bỏ qua mesh có texture
-        if(m.material && m.material.color && m.material.color.getHexString()!=='2a2a2a'){
-          col='#'+m.material.color.getHexString();
-        }
-      });
+      const col=lastMeshColor(o);
       const rec={key:o.userData.key,label:o.userData.label,
         pos:[o.position.x,o.position.y,o.position.z],rotY:o.rotation.y,rotX:o.rotation.x,rotZ:o.rotation.z,scale:o.scale.x,color:col};
       if(o.userData.enName)rec.enName=o.userData.enName;
+      if(o.userData.variant!==undefined)rec.variant=o.userData.variant;
       if(o.userData.charImg){rec.charImg=o.userData.charImg;rec.charH=o.userData.h;}
       if(o.userData.key==='__custom'||o.userData.fixedChar)rec.parts=o.userData.parts;
       if(o.userData.figure)rec.figure=o.userData.figure;
@@ -3369,6 +3603,18 @@ function gatherSceneData(){
     })
   };
 }
+// màu của mesh cuối cùng trong vật (dùng để lưu/so sánh khi tải lại; vật nhiều màu chỉ bị tô lại nếu người dùng đã đổi màu)
+function lastMeshColor(o){
+  let col='#c9d1d9';
+  o.traverse(m=>{
+    if(!m.isMesh || m.userData.__decal)return;
+    if(m.material && m.material.userData && m.material.userData.__texMat)return; // bỏ qua mesh có texture
+    if(m.material && m.material.color && m.material.color.getHexString()!=='2a2a2a'){
+      col='#'+m.material.color.getHexString();
+    }
+  });
+  return col;
+}
 // áp dụng lại trạng thái cảnh từ object
 function applySceneData(d){
   objects.slice().forEach(o=>scene.remove(o));objects.length=0;select(null);
@@ -3376,18 +3622,21 @@ function applySceneData(d){
     let g;
     if((od.key==='__custom'||od.fixedChar)&&od.parts)g=buildFromParts(od.parts);
     else if(od.figure)g=makeFigure({...od.figure,color:od.color,pose:od.pose,poseName:od.poseName,features:od.features||[]});
-    else g=BUILDERS[od.key]?BUILDERS[od.key]():null;
+    else g=BUILDERS[od.key]?BUILDERS[od.key](od.variant):null;
+    if(g&&g.userData.extras)delete g.userData.extras; // khoang máy bay: các dãy ghế đã được lưu thành vật riêng
+    if(g)delete g.userData.camOnAdd;
     if(!g)return;
     g.userData.key=od.key;g.userData.label=od.label;g.userData.id=++idCounter;
+    if(od.key==='airsitter')g.userData.__airPax=true;   // giữ dấu hành khách để đếm/tách đúng
     if(od.enName)g.userData.enName=od.enName;
     if(od.key==='__custom'||od.fixedChar)g.userData.parts=od.parts;
     if(od.figure)g.userData.figure=od.figure;
     if(od.fixedChar)g.userData.fixedChar=od.fixedChar;
     if(od.partColors){g.userData.partColors=od.partColors;
-      g.traverse(m=>{if(m.isMesh&&m.userData.part&&od.partColors[m.userData.part]&&m.material&&m.material.color)m.material.color.set(od.partColors[m.userData.part]);});}
+      g.traverse(m=>{if(m.isMesh&&m.userData.part&&!m.userData.__feat&&od.partColors[m.userData.part]&&m.material&&m.material.color)m.material.color.set(od.partColors[m.userData.part]);});}
     if(od.pose){g.userData.pose=od.pose;g.userData.poseName=od.poseName;}
     g.position.set(...od.pos);g.rotation.y=od.rotY;if(od.rotX)g.rotation.x=od.rotX;if(od.rotZ)g.rotation.z=od.rotZ;g.scale.setScalar(od.scale);
-    if(od.key!=='__custom'&&!od.figure&&!od.fixedChar&&od.key!=='cardchar')g.traverse(m=>{if(m.isMesh&&m.material.color.getHexString()!=='2a2a2a')m.material.color.set(od.color);});
+    if(od.key!=='__custom'&&!od.figure&&!od.fixedChar&&od.key!=='cardchar'&&od.color!==lastMeshColor(g))g.traverse(m=>{if(m.isMesh&&m.material.color.getHexString()!=='2a2a2a')m.material.color.set(od.color);});
     scene.add(g);objects.push(g);
     // áp lại ảnh nhân vật billboard nếu có
     if(od.key==='cardchar'&&od.charImg){
@@ -3608,7 +3857,7 @@ const SYS_COMMON=`Hãy trả về JSON THUẦN (không markdown, không giải t
 Mỗi vật thể: {"key":<loại>,"x":<mét, trái âm phải dương>,"z":<mét, gần camera là dương, xa là âm>,"rotY":<độ 0-360>,"scale":<0.3-4>}.
 HỆ TRỤC: camera nhìn theo hướng -z (nhìn vào trong). x: trái(-) phải(+). z: gần camera(+), xa dần(-). rotY xoay quanh trục đứng.
 CHỈ dùng các "key" hợp lệ sau: ${VALID_KEYS.join(', ')}.
-Quy ước: human=người, tall=người cao gầy, heavy=người mập, short=người lùn, longleg=chân dài, shortleg=chân ngắn, athletic=người vạm vỡ, child=trẻ em, dog=chó, horse=ngựa, bird=chim, car=ô tô, truck=xe tải, bus=xe buýt, bike=xe đạp, motorbike=xe máy, boat=thuyền, airplane=máy bay, helicopter=trực thăng, tank=xe tăng, apc=xe bọc thép, rifle=súng trường, pistol=súng ngắn, sword=kiếm, knife=dao, bow=cung, staff=gậy, shield=khiên, house=nhà, building=tòa nhà cao, fence=lưới B40, fencegate=cổng lưới B40, wall=tường (dài 5m theo trục x, dày 0.4m), stairs=bậc thang, firescape=cầu thang thoát hiểm, door=cửa, dumpster=thùng rác lớn, trashcan=thùng rác nhỏ, barrel=thùng phuy, crate=thùng gỗ, pallet=pallet, woodboard=tấm ván nghiêng, streetlight=đèn đường, utilitypole=cột điện, acunit=máy lạnh, bollard=cọc tiêu, sign=biển báo, pipe=ống nước, sofa=ghế sofa, armchair=ghế bành, coffeetable=bàn trà, tv=tivi, tvstand=kệ tivi, bookshelf=kệ sách, lamp=đèn cây, rug=thảm, fridge=tủ lạnh, stove=bếp, counter=tủ bếp, sink=bồn rửa, cabinet=tủ treo, bed=giường, wardrobe=tủ áo, nightstand=tủ đầu giường, desk=bàn làm việc, diningtable=bàn ăn, chair=ghế, stool=ghế đẩu, tree=cây, pine=cây thông, bush=bụi cây, rock=đá, mountain=núi, cube=hộp, sphere=cầu, cylinder=trụ, coneP=nón, plane=tấm phẳng, pillar=cột.
+Quy ước: human=người, tall=người cao gầy, heavy=người mập, short=người lùn, longleg=chân dài, shortleg=chân ngắn, athletic=người vạm vỡ, child=trẻ em, dog=chó, horse=ngựa, bird=chim, car=ô tô, truck=xe tải, bus=xe buýt, bike=xe đạp, motorbike=xe máy, boat=thuyền, airplane=máy bay, helicopter=trực thăng, tank=xe tăng, apc=xe bọc thép, rifle=súng trường, pistol=súng ngắn, sword=kiếm, knife=dao, bow=cung, staff=gậy, shield=khiên, house=nhà, building=tòa nhà cao, fence=lưới B40, fencegate=cổng lưới B40, wall=tường (dài 5m theo trục x, dày 0.4m), stairs=bậc thang, firescape=cầu thang thoát hiểm, door=cửa, dumpster=thùng rác lớn, trashcan=thùng rác nhỏ, barrel=thùng phuy, crate=thùng gỗ, pallet=pallet, woodboard=tấm ván nghiêng, streetlight=đèn đường, utilitypole=cột điện, acunit=máy lạnh, bollard=cọc tiêu, sign=biển báo, pipe=ống nước, sofa=ghế sofa, armchair=ghế bành, coffeetable=bàn trà, tv=tivi, tvstand=kệ tivi, bookshelf=kệ sách, lamp=đèn cây, rug=thảm, fridge=tủ lạnh, stove=bếp, counter=tủ bếp, sink=bồn rửa, cabinet=tủ treo, bed=giường, wardrobe=tủ áo, nightstand=tủ đầu giường, desk=bàn làm việc, diningtable=bàn ăn, chair=ghế, stool=ghế đẩu, tree=cây, pine=cây thông, bush=bụi cây, rock=đá, mountain=núi, cube=hộp, sphere=cầu, cylinder=trụ, coneP=nón, plane=tấm phẳng, pillar=cột, airseat=ghế máy bay có tay vịn, airseatrow=hàng 3 ghế máy bay, airpassenger=ghế máy bay có hành khách ngồi, airsitter=một hành khách đang ngồi (không kèm ghế), airseatrowp=hàng 3 ghế máy bay có hành khách, aircabin=khoang máy bay (nội thất: 5 hàng ghế 3+3, lối đi giữa, cửa sổ; rộng ~4.2m, dài ~6.5m dọc trục z, ghế quay mặt về +z), aircabinp=khoang máy bay có sẵn hành khách ngồi.
 QUAN TRỌNG về tường: 1 "wall" chỉ dài 5m. Để làm BỨC TƯỜNG DÀI chạy dọc hẻm/đường, hãy đặt NHIỀU wall nối tiếp nhau dọc trục z (cách nhau 5m) và đặt rotY=90 để tường nằm dọc (song song hướng nhìn). Tường bên trái x≈-3, bên phải x≈+3.
 Khi vật thể KHÔNG khớp loại nào (khối nền lớn không rõ, vật nền), dùng "cube" + scale cho đúng tỉ lệ (gray box). Mặt đất đã có sẵn, KHÔNG tạo.`;
 

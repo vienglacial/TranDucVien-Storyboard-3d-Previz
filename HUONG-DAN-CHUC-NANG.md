@@ -62,6 +62,7 @@ Các nhóm có sẵn:
 - **Người & Động vật** — nhân vật có khung xương (gập tư thế được)
 - **Tư thế nhân vật** — đặt nhanh người ở các dáng dựng sẵn
 - **Xe cộ**, **Quân sự**, **Vũ khí (đạo cụ)**
+- **Máy bay · Khoang hành khách** — ghế economy có tay vịn (đơn / hàng 3 ghế), ghế có sẵn hành khách, và **Khoang máy bay** trọn bộ: 5 hàng ghế 3+3, lối đi giữa, cửa sổ, ngăn hành lý, trần đèn. Bản *Khoang + hành khách* có sẵn người ngồi (bỏ trống ~1/4 ghế cho tự nhiên). Mỗi dãy 3 ghế là một vật thể riêng → bấm chọn dãy để xóa / di chuyển / xoay từng dãy; vỏ khoang là vật thể riêng. Chọn một dãy rồi bấm **Tách hành khách** trong Inspector (hoặc *Tách toàn bộ … trong cảnh*) để mỗi người thành một vật thể riêng — sau đó bấm từng người và nhấn `Del` để chừa ghế trống. Muốn thêm người trở lại thì dùng model **Khách ngồi (rời)**. Khi thêm khoang, camera tự nhảy vào đầu lối đi. Vỏ khoang chỉ vẽ mặt trong nên xoay camera ra ngoài vẫn nhìn xuyên vào được; đặt camera trong lối đi (cao ~1.2–1.4m) để lấy góc máy như phim.
 - **Kiến trúc**, **Đồ vật / Đô thị**
 - **Nội thất** — Phòng khách · Bếp · Ngủ & Bàn ghế
 - **Thiên nhiên**
@@ -76,7 +77,7 @@ Các nhóm có sẵn:
 | Công cụ | Phím | Tác dụng |
 |---|---|---|
 | **Orbit** | `Q` | Xoay camera quanh cảnh (chuột trái kéo) |
-| **Di chuyển** | `G` | Kéo vật thể trên mặt đất; **giữ `Alt`** khi kéo để nâng lên / hạ xuống |
+| **Di chuyển** | `W` | Kéo vật thể trên mặt đất; **giữ `Alt`** khi kéo để nâng lên / hạ xuống |
 | **Xoay** | `E` | Xoay vật thể đang chọn |
 | **Tỉ lệ** | `R` | Phóng to / thu nhỏ vật thể |
 | **Monitor** | `M` | Bật/tắt màn hình xem trước (khung hình thật của "máy quay") |
@@ -147,7 +148,7 @@ Khi chọn một vật, cột phải hiện đầy đủ điều khiển:
 
 **Với nhân vật có khung xương**, có thêm:
 - **Chiều cao, độ mập, tỉ lệ chân, bề ngang vai**
-- **Tư thế dựng sẵn:** Đứng · Ngồi ghế · Ngồi lái xe · Nằm · Ngồi xổm · Quỳ · Giơ tay · Chỉ tay · Chạy
+- **Tư thế dựng sẵn:** Đứng · Ngồi ghế · Ngồi ghế máy bay (ngả lưng nhẹ, cẳng tay đặt lên tay vịn; nhân vật *Ngồi máy bay* trong kho sinh ra đúng độ cao để thả lên ghế máy bay) · Ngồi lái xe · Nằm · Ngồi xổm · Quỳ · Giơ tay · Chỉ tay · Chạy
 - **Khớp tinh chỉnh:** cúi/ngả thân, gập hông, gập gối, đưa tay, gập khuỷu
 - **Chỉnh phụ kiện** (mắt/mỏ/tóc/mũ/áo): vị trí 3 chiều, kích thước, màu riêng
 - **Màu theo bộ phận:** cả người / đầu / thân / tay / chân
@@ -230,8 +231,8 @@ Mở app bằng cách nhấp đúp trên **Chrome** sẽ bị chặn lưu lâu d
 
 | Phím | Tác dụng |
 |---|---|
-| `Q` / `G` / `E` / `R` | Orbit / Di chuyển / Xoay / Tỉ lệ |
-| `Alt` (khi kéo `G`) | Nâng lên / hạ xuống |
+| `Q` / `W` / `E` / `R` | Orbit / Di chuyển / Xoay / Tỉ lệ |
+| `Alt` (khi kéo `W`) | Nâng lên / hạ xuống |
 | `M` | Bật/tắt monitor |
 | `~` / `Tab` | Toàn màn hình (ẩn 2 panel) |
 | `/` | Nhảy tới ô tìm kiếm model |
