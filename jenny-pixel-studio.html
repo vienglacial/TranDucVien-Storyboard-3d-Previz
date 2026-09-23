@@ -3467,7 +3467,8 @@ const C2={
 };
 const C2_PIT={w:60,d:40,deep:6};              // hố 60 × 40, sâu 6 m
 const C2_HEAD={h:9,w:10,dp:10,chin:-3};       // đầu 9 m, cằm y=-3, đỉnh bờm y=+6
-const C2_FACE_Z=13.2;                         // mặt phẳng trước của mặt tượng (mõm + gờ mũi)
+const C2_FACE_Z=15.3;                         // mặt trước mõm ngựa + lỗ mũi nhô ra
+const C2_NOSE_L=[-1.6,4.2,7.4], C2_NOSE_R=[1.4,4.2,7.4];   // lỗ mũi trái (ø1.2) / phải (loe ø3), cục bộ đầu
 const C2_NOSE_Y=1.2;                          // cao độ hai lỗ mũi
 const C2_TAPE_Z=28;                           // dây phong tỏa: cách chân tượng (z=+18) 10 m
 const C2_POST_Z=26;                           // bục gác, ngay TRONG dây
@@ -3607,89 +3608,74 @@ function buildC2Body(){
   return g;
 }
 
-/* ---- ĐẦU TƯỢNG MẶT COPPA — gốc cục bộ ở CẰM, dựng lên 9 m ----
-   Đặt ở [0, -3, 7] trong set → cằm y=-3, đỉnh bờm y=+6.                */
+/* ---- ĐẦU TƯỢNG MẶT COPPA (NGỰA) — gốc cục bộ ở CẰM, cao 9 m, theo ref mặt nạ vàng ----
+   Mõm dài nhô ra trước, HAI LỖ MŨI ở đầu mõm và mỗi lỗ có GỜ ĐỨNG ĐƯỢC (ban công nhỏ)
+   để đặt Coppa 1.0 m lên. Mắt lé lồi (một bên mảng tối), lưỡi thè, râu bện, nemes sọc,
+   bờm tua tủa, tai nhọn, rắn hổ mang trên trán. Đặt ở [0,-3,7] → cằm y=-3, đỉnh y=+6. */
 function buildC2Head(){
   const g=new THREE.Group();
-  const W=C2_HEAD.w,H=C2_HEAD.h,DP=C2_HEAD.dp;
-  // khối đầu
-  const skull=box(W-1.4,H*.72,DP-1.2,C2.lime);skull.position.set(0,H*.42,-.3);g.add(skull);
-  // má bầu hai bên (nét Coppa)
-  [-1,1].forEach(s=>{
-    const cheek=gmesh(new THREE.SphereGeometry(2.1,10,8),C2.lime);
-    cheek.scale.set(1,.9,.85);cheek.position.set(s*2.6,3.6,1.8);g.add(cheek);
-  });
-  // mõm nhô ra trước
-  const muzzle=box(5.6,3.4,4.8,C2.lime);muzzle.position.set(0,3.4,4.0);g.add(muzzle);  // nhô 2.1 m khỏi trán
-  // HÀM + CẰM: đáy khối này chính là cằm (y=0 cục bộ) — mốc để đầu cao đúng 9 m
-  const jaw=box(5.2,2.4,5.0,C2.lime);jaw.position.set(0,1.2,2.8);g.add(jaw);
-  const chin=gmesh(new THREE.SphereGeometry(1.9,10,8),C2.lime);
-  chin.scale.set(1.25,.7,.9);chin.position.set(0,1.33,4.3);g.add(chin);  // đáy cầu chạm đúng y=0
-  const neck=box(6.2,2.6,3.4,C2.lime2);neck.position.set(0,1.3,-1.2);g.add(neck);
-  // khăn NEMES + bờm: hai vạt xuôi xuống hai vai
-  const nemes=box(W,2.4,DP-.6,C2.lime2);nemes.position.set(0,H-1.2,-.6);g.add(nemes);
-  for(let i=0;i<7;i++){
-    const st=box(W+.06,.34,DP-.5,i%2?C2.lime3:C2.lime);
-    st.position.set(0,H-2.3-i*.001,-.6);st.position.y=H-.3-i*.36;st.castShadow=false;g.add(st);
-  }
-  [-1,1].forEach(s=>{
-    const lap=box(1.5,5.2,4.2,C2.lime2);lap.position.set(s*(W/2-.75),H*.42,-.4);g.add(lap);
-    for(let i=0;i<6;i++){
-      const st=box(1.95,.3,4.45,i%2?C2.lime3:C2.lime);
-      st.position.set(s*(W/2-.75),H*.42+2.2-i*.8,-.4);st.castShadow=false;g.add(st);
-    }
-  });
-  // tai tròn nhô hai bên khăn
-  [-1,1].forEach(s=>{
-    const ear=gmesh(new THREE.CylinderGeometry(1.15,1.15,.7,12),C2.lime2);
-    ear.rotation.z=Math.PI/2;ear.position.set(s*(W/2-.3),H-1.6,-.4);g.add(ear);
-  });
-  // MẮT LÉ — hai con ngươi dồn về giữa (dấu ấn design Coppa)
-  [-1,1].forEach(s=>{
-    const EY=5.9;                                  // mắt cao 5.9 cục bộ = y 2.9 — cách mũi 1.7 m
-    const socket=gmesh(new THREE.SphereGeometry(1.5,12,10),C2.lime2);
-    socket.scale.z=.5;socket.position.set(s*2.0,EY,3.2);g.add(socket);
-    const eye=gmesh(new THREE.SphereGeometry(1.22,12,10),C2.bone);
-    eye.scale.z=.45;eye.position.set(s*2.0,EY,3.6);g.add(eye);
-    const pupil=gmesh(new THREE.SphereGeometry(.46,10,8),'#2a2620');
-    pupil.scale.z=.4;pupil.position.set(s*1.42,EY,3.94);g.add(pupil);   // dồn vào trong = lé
-    const brow=box(3.0,.45,.5,C2.lime3);brow.position.set(s*2.0,EY+1.55,3.5);brow.rotation.z=-s*.14;g.add(brow);
-  });
-  // ── HAI LỖ MŨI: trái nhỏ ø1.2 (ngồi + chui lọt), phải loe loa kèn ø3 ──
-  const ny=C2_NOSE_Y-C2_HEAD.chin;            // đổi sang toạ độ cục bộ của đầu
-  const nz=6.2;                               // mặt trước của mõm
-  // MŨI TRÁI (−X = trái khung khi nhìn thẳng mặt tượng)
-  const lnose=new THREE.Group();lnose.position.set(-1.4,ny,nz);
-  const lrim=gmesh(new THREE.TorusGeometry(.6,.26,8,20),C2.lime2);lrim.position.z=.6;lnose.add(lrim);
-  const lhole=gmesh(new THREE.CylinderGeometry(.6,.52,2.6,16,1,true),'#2b2720');
-  lhole.rotation.x=Math.PI/2;lhole.position.z=-.6;lhole.material.side=THREE.DoubleSide;lnose.add(lhole);
-  const lledge=box(1.7,.3,1.0,C2.lime2);lledge.position.set(0,-.62,.85);lnose.add(lledge); // gờ ngồi vắt vẻo
+  const H=C2_HEAD.h,W=C2_HEAD.w;
+  const band=(w,h,d,x,y,z,c)=>{const b=box(w,h,d,c);b.position.set(x,y,z);g.add(b);return b;};
+  // sọ + hai má bầu
+  band(7.6,4.4,6.0,0,5.6,-1.4,C2.lime);
+  [-1,1].forEach(sx=>{const ch=gmesh(new THREE.SphereGeometry(2.3,12,9),C2.lime);ch.scale.set(1,.85,.9);ch.position.set(sx*2.7,4.6,.6);g.add(ch);});
+  // cổ/họng đỡ đầu + hàm dưới (đáy = cằm y=0)
+  band(6.2,2.6,4.2,0,1.3,-1.6,C2.lime2);
+  band(4.4,2.6,5.6,0,1.3,2.4,C2.lime);
+  const chin=gmesh(new THREE.SphereGeometry(2.0,10,8),C2.lime);chin.scale.set(1.15,.62,1);chin.position.set(0,1.24,4.6);g.add(chin);
+  // MÕM NGỰA dài, nhô 7 m về trước, hơi chúc xuống
+  const muzzle=box(4.8,3.6,6.4,C2.lime);muzzle.position.set(0,4.1,4.0);muzzle.rotation.x=.06;g.add(muzzle);
+  const tip=gmesh(new THREE.SphereGeometry(2.6,14,10),C2.lime);tip.scale.set(1.12,.7,.55);tip.position.set(0,4.15,5.85);g.add(tip);   // mặt trước ~z 7.3
+  const bridge=box(2.2,.7,5.6,C2.lime2);bridge.position.set(0,5.75,3.2);bridge.rotation.x=.1;g.add(bridge);   // sống mũi — đường leo
+  // ── HAI LỖ MŨI ở đầu mõm + GỜ ĐỨNG ──
+  const [lx,ny,nz]=C2_NOSE_L,[rx]=C2_NOSE_R;
+  const lnose=new THREE.Group();lnose.position.set(lx,ny,nz);
+  const ltube=gmesh(new THREE.CylinderGeometry(.72,.68,.9,18,1,true),C2.lime2);ltube.rotation.x=Math.PI/2;ltube.position.z=.45;ltube.material.side=THREE.DoubleSide;lnose.add(ltube);
+  const lrim=gmesh(new THREE.TorusGeometry(.68,.22,8,20),C2.lime2);lrim.position.z=.9;lnose.add(lrim);
+  const lhole=gmesh(new THREE.CircleGeometry(.6,18),'#2b2720');lhole.position.z=.02;lnose.add(lhole);               // miệng lỗ tối (ø1.2)
+  const lledge=box(1.5,.28,1.1,C2.lime2);lledge.position.set(0,-.74,1.2);lnose.add(lledge);          // gờ đứng phía trước, mặt trên y = ny-0.6
   g.add(lnose);
-  // MŨI PHẢI (+X) — loe như loa kèn, miệng ø3 m
-  const rnose=new THREE.Group();rnose.position.set(1.8,ny,nz);
-  const bell=gmesh(new THREE.CylinderGeometry(1.5,.5,2.2,20,1,true),C2.lime2);
-  bell.rotation.x=-Math.PI/2;bell.position.z=-.5;bell.material.side=THREE.DoubleSide;rnose.add(bell);
-  const bellRim=gmesh(new THREE.TorusGeometry(1.5,.22,8,24),C2.lime);bellRim.position.z=.6;rnose.add(bellRim);
-  const throat=gmesh(new THREE.CylinderGeometry(.5,.34,1.6,12,1,true),'#241f19');
-  throat.rotation.x=Math.PI/2;throat.position.z=-2.2;throat.material.side=THREE.DoubleSide;rnose.add(throat);
+  const rnose=new THREE.Group();rnose.position.set(rx,ny,nz);
+  const bell=gmesh(new THREE.CylinderGeometry(1.5,.6,2.2,22,1,true),C2.lime2);bell.rotation.x=-Math.PI/2;bell.position.z=1.1;bell.material.side=THREE.DoubleSide;rnose.add(bell);   // loe ra ngoài, miệng ø3 ở z+2.2
+  const bellRim=gmesh(new THREE.TorusGeometry(1.5,.22,8,26),C2.lime);bellRim.position.z=2.2;rnose.add(bellRim);
+  const throat=gmesh(new THREE.CircleGeometry(.58,16),'#241f19');throat.position.z=.02;rnose.add(throat);          // họng tối trong loa
+  const rledge=box(2.4,.28,1.1,C2.lime2);rledge.position.set(0,-1.64,2.5);rnose.add(rledge);         // gờ đứng dưới miệng loa
   g.add(rnose);
-  // sống mũi nối hai lỗ (đường leo của Coppa)
-  const bridge=box(4.6,.9,1.2,C2.lime);bridge.position.set(.2,ny+.95,nz-.1);g.add(bridge);
-  // MIỆNG + LƯỠI ĐÁ dài 3 m (chỉ là dấu ấn design, không dùng làm gag)
-  const mouth=box(4.2,.9,1.0,'#3a342b');mouth.position.set(0,ny-2.3,nz+.1);g.add(mouth);
-  const lip=box(4.6,.45,1.2,C2.lime2);lip.position.set(0,ny-1.75,nz+.2);g.add(lip);
-  const tongue=box(2.4,.5,3.0,'#a8564e');
-  tongue.position.set(0,ny-2.55,nz+1.5);tongue.rotation.x=.22;g.add(tongue);
-  const tongueTip=gmesh(new THREE.SphereGeometry(1.2,10,8),'#a8564e');
-  tongueTip.scale.set(1,.2,.7);tongueTip.position.set(0,ny-3.15,nz+2.9);g.add(tongueTip);
-  // phong hóa + vết nứt
-  const R=rnd(43);
-  for(let i=0;i<12;i++){
-    const side=i%2?1:-1;
-    const c=box(.16,.5+R()*1.5,.16,C2.crack);
-    c.position.set(side*(W/2-1.0),H*.18+R()*H*.55,-3.2+R()*5.4);
-    c.rotation.set(0,0,(R()-.5)*.7);c.castShadow=false;g.add(c);
+  // MẮT LÉ LỒI: hai cầu to hai bên sọ, con ngươi dồn vào giữa; mắt phải có MẢNG TỐI quanh
+  [-1,1].forEach(sx=>{
+    const eye=gmesh(new THREE.SphereGeometry(1.25,14,11),C2.bone);eye.position.set(sx*2.2,7.1,2.1);g.add(eye);
+    const pupil=gmesh(new THREE.SphereGeometry(.42,10,8),'#2a2620');pupil.position.set(sx*1.5,7.0,3.15);g.add(pupil);
+    const lid=gmesh(new THREE.SphereGeometry(1.32,14,8,0,Math.PI*2,0,Math.PI*.42),C2.lime2);lid.position.set(sx*2.2,7.15,2.1);g.add(lid);
+  });
+  const patch=gmesh(new THREE.CylinderGeometry(1.75,1.75,.12,20),'#4a4237');patch.rotation.x=Math.PI/2;patch.position.set(2.2,7.1,1.5);g.add(patch);
+  // LƯỠI THÈ dưới mõm, lệch phải như ref
+  const tongue=box(1.3,.36,2.6,'#a8564e');tongue.position.set(.7,2.5,6.3);tongue.rotation.x=.42;g.add(tongue);
+  const tTip=gmesh(new THREE.SphereGeometry(.75,10,7),'#a8564e');tTip.scale.set(1,.3,.8);tTip.position.set(.7,1.9,7.4);g.add(tTip);
+  // RÂU BỆN từ cằm rủ xuống, có đai
+  const beard=cyl(.5,.42,2.5,C2.lime2,10);beard.position.set(0,-1.1,3.75);beard.rotation.x=.18;g.add(beard);
+  for(let k=0;k<4;k++){const r=torus3(.52,.07,C2.lime3,14);r.rotation.x=.18;r.position.set(0,-.3-k*.62,3.6+k*.11);g.add(r);}
+  const bTip=gmesh(new THREE.SphereGeometry(.55,10,8),C2.lime3);bTip.position.set(0,-2.4,4.05);g.add(bTip);
+  // KHĂN NEMES: đỉnh + hai vạt rủ xuống vai, sọc ngang
+  band(W,1.8,6.4,0,H-1.9,-1.6,C2.lime2);
+  for(let k=0;k<5;k++)band(W+.06,.3,6.45,0,H-1.2-k*.36,-1.6,k%2?C2.lime3:C2.lime).castShadow=false;
+  [-1,1].forEach(sx=>{
+    band(1.6,5.4,4.4,sx*(W/2-.8),H*.4,-.8,C2.lime2);
+    for(let k=0;k<7;k++)band(1.65,.28,4.45,sx*(W/2-.8),H*.4+2.4-k*.8,-.8,k%2?C2.lime3:C2.lime).castShadow=false;
+  });
+  // BỜM tua tủa giữa hai tai + TAI NHỌN
+  const R=rnd(53);
+  for(let k=0;k<11;k++){
+    const c=cone(.42,1.6,C2.lime2,6);c.position.set(-3+k*.6,H-1.6+.8,-1.6+(R()-.5)*1.4);c.rotation.set((R()-.5)*.5,0,(k-5)*.13);g.add(c);
   }
+  [-1,1].forEach(sx=>{const ear=cone(.7,2.2,C2.lime,8);ear.position.set(sx*2.9,H-1.2,-1.2);ear.rotation.z=-sx*.35;g.add(ear);
+    const inner=cone(.4,1.5,C2.lime3,8);inner.position.set(sx*2.9,H-1.35,-.95);inner.rotation.z=-sx*.35;g.add(inner);});
+  // RẮN HỔ MANG + KỀN KỀN trên trán
+  const cobra=cyl(.14,.1,1.5,C2.lime3,8);cobra.position.set(.45,H-.3,1.6);cobra.rotation.x=.3;g.add(cobra);
+  const hood=gmesh(new THREE.SphereGeometry(.42,8,6),C2.lime3);hood.scale.set(1,1.3,.5);hood.position.set(.45,H+.2,1.75);g.add(hood);
+  const vul=gmesh(new THREE.SphereGeometry(.3,8,6),C2.lime3);vul.position.set(-.5,H-.2,1.7);g.add(vul);
+  const beak=cone(.12,.5,C2.lime3,6);beak.rotation.x=Math.PI/2;beak.position.set(-.5,H-.2,2.1);g.add(beak);
+  // vết nứt phong hóa ở hai vạt khăn
+  for(let k=0;k<10;k++){const c=box(.16,.5+R()*1.5,.16,C2.crack);c.position.set((k%2?1:-1)*(W/2-.9),H*.2+R()*H*.5,-3+R()*4.4);c.rotation.z=(R()-.5)*.6;c.castShadow=false;g.add(c);}
   g.userData.h=H;
   return g;
 }
@@ -3698,7 +3684,7 @@ function buildC2Head(){
    Ẩn trong đầu; muốn xem thì tắt bộ phận "Đầu tượng" trong danh sách.  */
 function buildC2Horn(){
   const g=new THREE.Group();
-  const ny=C2_NOSE_Y-C2_HEAD.chin, nz=3.4;
+  const ny=C2_NOSE_L[1], nz=C2_NOSE_L[2];
   // khoang phòng bida 8 × 8 × 4 m (set 3 nằm đúng chỗ này)
   // phòng bida đã nới lên 12×12×5 — LỚN HƠN đầu tượng 10 m. Khung vẽ đúng cỡ để thấy chênh lệch:
   // hoặc chấp nhận cheat hoạt hình (trong rộng hơn ngoài), hoặc phóng đầu tượng lên ~14 m.
@@ -3712,11 +3698,11 @@ function buildC2Horn(){
   // Hai lỗ mũi ĐỔ THẲNG vào phòng (chỉ đạo: cửa hang chính là hai lỗ mũi).
   // Phòng bida là khoang cộng hưởng: tiếng xì vào mũi trái, vang trong phòng, phụt ra mũi phải.
   const curve=new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-1.4,ny,nz-.4),
-    new THREE.Vector3(-1.4,ny+.2,-1.0),
-    new THREE.Vector3(-0.2,ny+.4,-2.4),
-    new THREE.Vector3( 1.2,ny+.2,-1.0),
-    new THREE.Vector3( 1.8,ny,nz-.8)
+    new THREE.Vector3(C2_NOSE_L[0],ny,nz-.6),
+    new THREE.Vector3(-1.6,ny+.1,2.0),
+    new THREE.Vector3(-0.2,ny+.5,-2.4),
+    new THREE.Vector3( 1.4,ny+.1,2.0),
+    new THREE.Vector3(C2_NOSE_R[0],ny,nz-.9)
   ]);
   const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,50,.62,10,false),
     new THREE.MeshStandardMaterial({color:'#6f6355',roughness:.9,flatShading:true,side:THREE.DoubleSide}));
@@ -3908,8 +3894,8 @@ function buildC2Zones(){
   axis.rotation.x=-Math.PI/2;axis.position.set(0,.09,(C2_POST_Z+C2_FACE_Z)/2);g.add(axis);
   g.add(tag('TRỤC CHỒNG KHUNG — mặt Coppa ⟷ mặt tượng (50–85 mm)',-17,1.5,19,1.6,EG.red));
   z(2.0,0,0,C2_POST_Z,EG.warm); g.add(tag('Z_BỤC GÁC — Pipo + Coppa (0:20)',0,2.6,C2_POST_Z+2.6,1.35,EG.warm));
-  z(1.3,-1.4,C2_NOSE_Y,C2_FACE_Z+.9); g.add(tag('Z_MŨI TRÁI ø1.2 — ngồi vắt vẻo (0:30) rồi chui vào (0:43)',-8.5,4.4,C2_FACE_Z+1,1.5));
-  z(2.0,1.8,C2_NOSE_Y,C2_FACE_Z+.9,'#7fd88f'); g.add(tag('Z_MŨI PHẢI ø3 — kèn nổ (0:35) · phun cát (3:48)',9.5,5.6,C2_FACE_Z+1,1.5,'#7fd88f'));
+  z(1.3,C2_NOSE_L[0],C2_NOSE_Y,C2_FACE_Z+.8); g.add(tag('Z_MŨI TRÁI ø1.2 — có GỜ ĐỨNG: đặt Coppa lên đây (0:30) rồi chui vào (0:43)',-8.5,4.4,C2_FACE_Z+1,1.5));
+  z(2.0,C2_NOSE_R[0],C2_NOSE_Y,C2_FACE_Z+.8,'#7fd88f'); g.add(tag('Z_MŨI PHẢI ø3 — kèn nổ (0:35) · phun cát (3:48)',9.5,5.6,C2_FACE_Z+1,1.5,'#7fd88f'));
   z(1.2,7,-C2_PIT.deep,19); g.add(tag('Z_BẢNG KHẢO CỔ — insert 0:38',9,-3.6,19,1.2));
   z(3.0,0,0,34,'#7fd88f'); g.add(tag('Z_ĐÁM ĐÔNG — ngoài dây, 36 người',0,3.0,38,1.4,'#7fd88f'));
   z(3.0,0,0,31,EG.warm); g.add(tag('Z_RƠI C9 — hai đứa bắn ra mũi phải, rơi ở đây (3:45)',0,2.2,29.5,1.4,EG.warm));
@@ -4227,12 +4213,17 @@ function buildBdStateB(){
   g.add(th);
   // MẶT NẠ VÀNG đúc theo mặt Coppa (mắt lé, lưỡi thè) đặt trên ngai
   const mask=new THREE.Group();mask.position.set(3.25,1.0,.6);mask.rotation.y=-Math.PI/2;
-  const face=gmesh(new THREE.SphereGeometry(.3,12,10),BD.gold);face.scale.set(1,1.15,.65);mask.add(face);
+  const face=gmesh(new THREE.SphereGeometry(.28,12,10),BD.gold);face.scale.set(1,1.1,.8);mask.add(face);
+  const mz=gmesh(new THREE.SphereGeometry(.2,10,8),BD.gold);mz.scale.set(1,.7,1.5);mz.position.set(0,-.1,.3);mask.add(mz);   // mõm ngựa
   [-1,1].forEach(s=>{
-    const e=sph(.075,'#2a2620',8);e.position.set(s*.1,.06,.2);mask.add(e);   // mắt lé: dồn vào giữa
+    const w=sph(.11,BD.bone||'#e8e0cc',8);w.position.set(s*.2,.12,.17);mask.add(w);
+    const e=sph(.045,'#2a2620',8);e.position.set(s*.13,.12,.27);mask.add(e);   // mắt lé lồi: dồn vào giữa
+    const ear=cone(.06,.22,BD.gold2,6);ear.position.set(s*.2,.42,-.02);ear.rotation.z=-s*.3;mask.add(ear);
+    const nos=sph(.04,'#241f19',6);nos.position.set(s*.07,-.1,.58);mask.add(nos);
   });
-  const tongue=box(.09,.03,.16,'#a8564e');tongue.position.set(0,-.16,.24);mask.add(tongue);
-  const beard=cyl(.05,.03,.28,BD.gold2,8);beard.position.set(0,-.3,.16);mask.add(beard);
+  const tongue=box(.09,.03,.18,'#a8564e');tongue.position.set(.05,-.24,.5);tongue.rotation.x=.4;mask.add(tongue);
+  const beard=cyl(.05,.03,.3,BD.gold2,8);beard.position.set(0,-.4,.3);mask.add(beard);
+  for(let k=0;k<3;k++){const c=cone(.04,.14,BD.gold2,5);c.position.set(-.1+k*.1,.4,-.05);mask.add(c);}
   g.add(mask);
   // QUẠT LÁ CỌ Pipo bỏ trơ dưới chân ngai
   const fan=new THREE.Group();fan.position.set(2.6,0,1.5);fan.rotation.set(0,.6,1.35);
@@ -5064,12 +5055,12 @@ const SET_DEFS={
       {t:'—',   n:'Tổng thể hố + tượng',            p:[46,30,92],    tg:[0,-1,6],    f:28},
       {t:'0:15',n:'Wide tượng - hố',                p:[27,9,47],     tg:[0,-.5,7],   f:35},
       {t:'0:20',n:'Hai mặt chồng khung (gag chính)',p:[0,1.95,30.5], tg:[0,1.9,26],  f:50},
-      {t:'0:30',n:'Low angle Coppa trên gờ mũi trái',p:[-6,-4.5,18],  tg:[-1.4,1.4,13],  f:50},
+      {t:'0:30',n:'Low angle Coppa trên gờ mũi trái',p:[-7,-4.5,21],  tg:[-1.6,1.3,15.3],f:50},
       {t:'0:35',n:'Wide kèn nổ - nón bay',          p:[36,10,54],    tg:[0,1,18],    f:24},
       {t:'0:38',n:'Insert bảng khảo cổ',            p:[7.6,-4.0,22.5],tg:[7,-4.9,19.3],f:50},
-      {t:'0:43',n:'Coppa chui mũi trái',            p:[-4.6,1.7,18],  tg:[-1.4,1.2,12.9],f:50},
+      {t:'0:43',n:'Coppa chui mũi trái',            p:[-5.2,1.6,19.5],tg:[-1.6,1.2,15.3],f:50},
       {t:'3:45',n:'C9 wide - đám đông nhặt nón',    p:[-22,5,50],    tg:[0,1,26],    f:35},
-      {t:'3:48',n:'C9 mũi phải phun cát',           p:[9.5,2.4,24],  tg:[1.9,1.2,12.9],f:50},
+      {t:'3:48',n:'C9 mũi phải phun cát',           p:[10,2.4,25.5], tg:[1.4,1.2,15.5],f:50},
       {t:'3:55',n:'C9 Coppa vỗ móng - đám đông quỳ',p:[0,1.7,26],    tg:[0,1.5,36],  f:35}
     ]
   },
