@@ -5,23 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jenny Pixel Studio — 3D Storyboard Studio</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --bg:#111318;
-    --panel:#191C22;
-    --panel-left:#191C22;   /* KHO: hơi ấm */
-    --panel-right:#1A1E27;  /* CHỈNH: hơi lạnh */
-    --panel-2:#22262E;
-    --line:#2C313B;
-    --line-soft:#262A33;
-    --ink:#E7E9EE;
-    --ink-dim:#C3C9D3;
-    --ink-faint:#8B93A1;
-    --accent:#5CC4F5;       /* xanh trời: chỉnh, chọn, công cụ, số đo */
-    --accent-warm:#E8B04B;  /* hổ phách: kho model, thêm, chụp shot */
-    --danger:#FF8A8A;
-    --good:#3DD68C;
+    --bg:#0d1117;
+    --panel:#161b22;
+    --panel-2:#1f2731;
+    --line:#33404f;
+    --line-soft:#222a34;
+    --ink:#e6edf3;
+    --ink-dim:#b7c3d0;
+    --ink-faint:#8d9aab;
+    --accent:#4cc2ff;
+    --accent-warm:#ffb454;
+    --danger:#ff6b6b;
+    --good:#5ee6a8;
     --grid:#1b2530;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -29,12 +27,12 @@
   body{
     background:var(--bg);
     color:var(--ink);
-    font-family:'Be Vietnam Pro',system-ui,sans-serif;
+    font-family:'Archivo',sans-serif;
     -webkit-font-smoothing:antialiased;
     user-select:none;
   }
-  #app{display:grid;grid-template-columns:276px 1fr 312px;grid-template-rows:52px 1fr;height:100vh;transition:grid-template-columns .25s ease}
-  #app.hide-left{grid-template-columns:0 1fr 312px}
+  #app{display:grid;grid-template-columns:276px 1fr 300px;grid-template-rows:46px 1fr;height:100vh;transition:grid-template-columns .25s ease}
+  #app.hide-left{grid-template-columns:0 1fr 300px}
   #app.hide-right{grid-template-columns:276px 1fr 0}
   #app.full{grid-template-columns:0 1fr 0}
   .panel.left,.panel.right{transition:opacity .2s}
@@ -42,7 +40,7 @@
   #app.hide-right .panel.right,#app.full .panel.right{opacity:0;pointer-events:none}
   /* nút thu gọn panel nổi trên viewport */
   .collapse-tab{
-    position:absolute;top:60px;z-index:15;width:22px;height:46px;cursor:pointer;
+    position:absolute;top:54px;z-index:15;width:22px;height:46px;cursor:pointer;
     background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);
     display:flex;align-items:center;justify-content:center;transition:.14s;
   }
@@ -472,121 +470,6 @@
   .help-foot label{cursor:pointer;display:flex;align-items:center;gap:7px}
   .vt small{opacity:.65;font-size:11px;margin-left:1px}
   #projName{white-space:nowrap}
-
-  /* ═══════════ GIAO DIỆN MỚI (theo bản thiết kế đã duyệt) ═══════════
-     Chữ: Be Vietnam Pro cho mọi nhãn/nút; JetBrains Mono CHỈ cho số đo & phím tắt.
-     Vai trò: trái = KHO (thêm, tông ấm, hổ phách) · phải = CHỈNH (4 tab, tông lạnh, xanh trời). */
-  .topbtn,.vt,.panel-tools button,.search-box input,.sec h3,.ctrl label,.pose-sel,.joint-grp .jlabel,
-  .ang,.empty-insp,.insp-name .ty,.delbtn,.multi-banner,.no-result,.vp-msg,.set-blk .jlabel,.set-note,
-  .setbar button,.partrow,.cambm,.tex-blk .jlabel,.tex-mode button,.tex-src button,.proj-label,.proj-item .pm,
-  .proj-empty,.help-section .ht,.help-step,.help-step::before,.keytable .kdesc,.help-foot,.new-proj button,
-  .asset span,.proj-item .pn,.logo,input,textarea,select,button{font-family:'Be Vietnam Pro',system-ui,sans-serif;letter-spacing:0;text-transform:none}
-  .vp-hud,.ctrl label .val,.lp,.monitor .mlabel,kbd,.vt small,.cambm b,.save-status,.logo small,.hud-num,
-  .set-blk .val,#vHeight,#vFocal,.help-step::before{font-family:'JetBrains Mono',monospace}
-
-  /* thanh trên */
-  header{background:#16191F;border-bottom:1px solid var(--line-soft);gap:6px;padding:0 14px}
-  .logo{font-weight:700;font-size:15px;letter-spacing:-.2px;margin-right:6px}
-  .logo .px{filter:none}
-  .logo small{font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:12px;font-weight:500;letter-spacing:0;color:var(--ink-dim);background:var(--panel-2);padding:3px 9px;border-radius:999px;margin-left:2px}
-  .topgrp{display:flex;gap:6px;align-items:center}
-  .topdiv{width:1px;height:22px;background:var(--line);margin:0 4px}
-  .topbtn{font-size:12.5px;font-weight:500;height:32px;padding:0 11px;border-radius:8px;color:var(--ink-dim);background:#1C2027;border:1px solid var(--line)}
-  .topbtn:hover{color:var(--ink);border-color:#3A404B;background:#22262E}
-  .topbtn svg{width:14px;height:14px}
-  .topbtn.iconly{width:34px;padding:0;justify-content:center}
-  .topbtn.primary,#btnStory{background:var(--accent-warm)!important;border-color:var(--accent-warm)!important;color:#1A1408!important;font-weight:700;height:34px;padding:0 15px}
-  .topbtn.primary:hover,#btnStory:hover{filter:brightness(1.06)}
-  .topbtn .key{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);margin-left:1px}
-  .topbtn.off{opacity:.45}
-
-  /* hai panel */
-  .panel.left{background:var(--panel-left);border-right:1px solid var(--line-soft)}
-  .panel.right{background:var(--panel-right);border-left:1px solid var(--line-soft)}
-  .phead{display:flex;align-items:center;gap:8px;padding:14px 14px 4px;font-size:12px;font-weight:700;letter-spacing:.4px}
-  .phead .dot{width:8px;height:8px;border-radius:999px}
-  .phead .hint{margin-left:auto;font-size:12px;font-weight:400;color:var(--ink-faint)}
-  .panel.left .phead{color:var(--accent-warm)}.panel.left .phead .dot{background:var(--accent-warm)}
-  .panel.right .phead{color:var(--accent)}.panel.right .phead .dot{background:var(--accent)}
-  .panel-tools{padding:6px 14px 0}
-  .panel-tools button{font-size:12px;border-radius:7px;padding:6px}
-
-  .sec{border-bottom:1px solid var(--line-soft);padding:12px 14px 14px}
-  .sec h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;gap:6px}
-  .sec h3::before{display:none}
-  .sec h3 .caret{width:20px;height:20px;border-radius:6px;font-size:11px;color:var(--ink-faint)}
-  .sec h3 .cnt{font-size:12px;font-weight:400;color:var(--ink-faint)}
-  .sec-body{padding-top:2px}
-
-  /* kho model: thẻ to, nhấn hổ phách khi rê chuột */
-  .search-box input{font-size:13px;height:36px;padding:0 12px 0 32px;border-radius:9px;background:var(--bg)}
-  .search-box input:focus{border-color:var(--accent-warm)}
-  .agrid{gap:6px}
-  .asset{border-radius:10px;aspect-ratio:auto;height:64px}
-  .asset svg{width:22px;height:22px;stroke:var(--ink);stroke-width:1.7}
-  .asset span{font-size:11.5px;color:var(--ink-dim)}
-  .panel.left .asset:hover{border-color:var(--accent-warm);background:#252118;transform:none}
-  .panel.left .asset:hover svg{stroke:var(--accent-warm)}
-  #grpSet3{grid-template-columns:1fr}
-  #grpSet3 .asset{height:auto;flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px}
-  #grpSet3 .asset svg{width:34px;height:34px;padding:7px;border-radius:8px;background:#2A2418;stroke:var(--accent-warm);flex-shrink:0}
-  #grpSet3 .asset span{text-align:left;font-size:13px;font-weight:600;color:var(--ink);padding:0;display:flex;flex-direction:column;gap:1px;min-width:0}
-  #grpSet3 .asset span small{font-size:11.5px;font-weight:400;color:var(--ink-faint)}
-
-  /* viewport: dock công cụ xuống dưới, số đo mono */
-  .vp-toolbar{top:auto;bottom:16px;padding:6px;border-radius:12px;background:rgba(17,19,24,.92);border-color:var(--line)}
-  .vt{font-size:12.5px;font-weight:500;height:40px;padding:0 14px;border-radius:8px;gap:8px;white-space:nowrap}
-  .vt svg{width:15px;height:15px}
-  .vt small{font-size:11px;opacity:.75;margin-left:2px}
-  .vt.active{font-weight:700}
-  .vp-hud{font-size:12px;border-radius:10px;padding:8px 12px;background:rgba(17,19,24,.9);color:var(--ink-dim);bottom:74px}
-  .monitor{bottom:74px}
-  .vp-msg{font-size:13px;line-height:1.9}
-  .monitor{border-radius:10px;border:1px solid var(--line)}
-  .collapse-tab{background:#1C2027;border-color:var(--line)}
-
-  /* panel phải: 4 tab thay cho cột cuộn */
-  .rtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;margin:8px 14px 4px;border-radius:10px;background:var(--bg)}
-  .rtabs button{height:34px;border:0;border-radius:7px;background:transparent;color:var(--ink-faint);font-size:12.5px;font-weight:500;cursor:pointer;transition:.13s}
-  .rtabs button:hover{color:var(--ink)}
-  .rtabs button.active{background:#2A3442;color:var(--ink);font-weight:600}
-  .panel.right .sec[data-tab]{display:none}
-  .panel.right .sec[data-tab].tab-on{display:block}
-  .panel.right .sec.tab-on:last-of-type{border-bottom:none}
-
-  /* chỉnh vật thể */
-  .ctrl label{font-size:12.5px;color:var(--ink-dim);margin-bottom:6px}
-  .ctrl label .val{color:var(--ink);font-weight:500}
-  .insp-name .swatch{width:36px;height:36px;border-radius:9px}
-  .insp-name .nm{font-size:14px;font-weight:700}
-  .insp-name .ty{font-size:12px;color:var(--ink-faint)}
-  .set-blk .jlabel{font-size:12.5px;font-weight:600;color:var(--ink-dim)}
-  .set-blk .jlabel .gear{font-size:12px}
-  .set-note{font-size:12px;line-height:1.55;border-radius:9px}
-  .setbar{gap:6px}
-  .setbar button{font-size:12.5px;height:36px;border-radius:8px}
-  .setbar button.prim{background:var(--accent);border-color:var(--accent);color:#06121B}
-  .partlist{border-radius:10px;background:var(--bg)}
-  .partrow{font-size:12.5px;height:36px;padding:0 10px}
-  .partrow .eye{font-size:13px}.partrow .eye.on{color:var(--good)}
-  .cambm{font-size:12.5px;height:38px;border-radius:8px;background:var(--bg)}
-  .cambm b{color:var(--accent-warm);min-width:36px}
-  .lp{font-size:12px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center}
-  .ang{font-size:12.5px;border-radius:8px;height:44px;justify-content:center}
-  .pose-sel{font-size:13px;border-radius:8px;padding:9px 10px}
-  .joint-grp .jlabel{font-size:12.5px;font-weight:600;color:var(--ink-dim)}
-  .tex-blk .jlabel{font-size:12.5px;font-weight:600;color:var(--ink-dim)}
-  .tex-mode button,.tex-src button{font-size:12.5px;border-radius:8px;padding:8px 4px}
-  .delbtn{font-size:12.5px;height:38px;border-radius:8px;background:#2A1B1E;border-color:#4A2A2E}
-  .multi-banner{font-size:12.5px;border-radius:9px}
-  .empty-insp{font-size:13px;line-height:1.7}
-  .no-result{font-size:13px}
-  .proj-label{font-size:12.5px;font-weight:600;color:var(--ink-dim)}
-  .help-section .ht{font-size:13px;font-weight:700;color:var(--accent)}
-  .help-step{font-size:13px}
-  /* các cụm nút chữ còn sót mono */
-  #lensTypeSeg button,#bgModeSeg button,.bg-drop,.bg-area,.ai-box,.ai-box *,.hint,#lensHint,#lensTypeHint,#apHint{font-family:'Be Vietnam Pro',system-ui,sans-serif;letter-spacing:0}
-  #aspectSeg button{font-family:'JetBrains Mono',monospace}
 </style>
 </head>
 <body>
@@ -594,28 +477,20 @@
   <!-- TOP BAR -->
   <header>
     <div class="logo"><span class="px"><i></i><i></i><i></i><i></i></span>Jenny Pixel Studio <small id="projName">3D Storyboard Studio</small></div>
-    <div class="topgrp">
-      <button class="topbtn" id="btnProjects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Project</button>
-      <button class="topbtn" id="btnLoad" title="Nhập file .json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Nhập</button>
-      <button class="topbtn" id="btnSave" title="Xuất file .json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Xuất</button>
-    </div>
+    <button class="topbtn" id="btnUndo" title="Hoàn tác (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H9"/></svg>Hoàn tác</button>
+    <button class="topbtn" id="btnRedo" title="Làm lại (Ctrl+Shift+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0-5 5v0a5 5 0 0 0 5 5h6"/></svg>Làm lại</button>
+    <button class="topbtn" id="btnFull" title="Toàn màn hình (phím ~ hoặc Tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>Full</button>
+    <button class="topbtn" id="btnHelp" title="Hướng dẫn & phím tắt (?)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Hướng dẫn</button>
+    <button class="topbtn" id="btnApiKey" title="Nhập API key để dùng AI khi chạy offline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7 7 5 5 0 0 1 7-7zm0 0L15 8m0 0l3 3 3-3-3-3"/></svg>API Key</button>
     <div class="topspacer"></div>
-    <div class="topgrp">
-      <button aria-label="Hoàn tác" class="topbtn iconly" id="btnUndo" title="Hoàn tác (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H9"/></svg></button>
-      <button aria-label="Làm lại" class="topbtn iconly" id="btnRedo" title="Làm lại (Ctrl+Shift+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0-5 5v0a5 5 0 0 0 5 5h6"/></svg></button>
-    </div>
-    <div class="topspacer"></div>
-    <div class="topgrp">
-      <button class="topbtn" id="btnAnno" title="Ẩn/hiện chữ chú thích previz (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>Chữ previz <span class="key">T</span></button>
-      <button class="topbtn" id="btnGrid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Lưới sàn</button>
-      <button class="topbtn" id="btnFull" title="Toàn màn hình (phím ~ hoặc Tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>Full</button>
-      <button aria-label="Hướng dẫn" class="topbtn iconly" id="btnHelp" title="Hướng dẫn & phím tắt (?)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
-      <button aria-label="API Key" class="topbtn iconly" id="btnApiKey" title="Nhập API key để dùng AI khi chạy offline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7 7 5 5 0 0 1 7-7zm0 0L15 8m0 0l3 3 3-3-3-3"/></svg></button>
-      <button aria-label="Xóa cảnh" class="topbtn iconly" id="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
-      <span class="topdiv"></span>
-      <button class="topbtn primary" id="btnShot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Chụp shot</button>
-      <button class="topbtn primary" id="btnStory" title="Xuất ảnh previz có nhãn + prompt cho AI image" style="background:linear-gradient(135deg,#ffb454,#ff8a4c);border-color:#ffb454"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>Storyboard</button>
-    </div>
+    <button class="topbtn" id="btnAnno" title="Ẩn/hiện chữ chú thích previz (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>Chữ previz</button>
+    <button class="topbtn" id="btnGrid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Lưới sàn</button>
+    <button class="topbtn" id="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Xóa cảnh</button>
+    <button class="topbtn" id="btnProjects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Project</button>
+    <button class="topbtn" id="btnSave" title="Xuất file .json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Xuất</button>
+    <button class="topbtn" id="btnLoad" title="Nhập file .json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Nhập</button>
+    <button class="topbtn primary" id="btnShot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Chụp shot</button>
+    <button class="topbtn primary" id="btnStory" title="Xuất ảnh previz có nhãn + prompt cho AI image" style="background:linear-gradient(135deg,#ffb454,#ff8a4c);border-color:#ffb454"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>Storyboard</button>
     <input type="file" id="fileInput" accept=".json" style="display:none">
   </header>
 
@@ -4857,12 +4732,8 @@ const ASSETS={
 Object.entries(ASSETS).forEach(([gid,items])=>{
   const el=document.getElementById(gid);
   if(!el)return;
-  const h3=el.parentElement&&el.parentElement.querySelector('h3');
-  if(h3&&!h3.querySelector('.cnt')){const c=document.createElement('span');c.className='cnt';c.textContent=items.length;h3.appendChild(c);}
   items.forEach(([key,label,icon])=>{
-    const d=document.createElement('div');d.className='asset';
-    const sd=(typeof SET_DEFS!=='undefined')&&SET_DEFS[key];
-    d.innerHTML=icon+(sd?`<span>${label}<small>${sd.parts.length} bộ phận · ${sd.cams.length} bookmark</small></span>`:`<span>${label}</span>`);
+    const d=document.createElement('div');d.className='asset';d.innerHTML=icon+`<span>${label}</span>`;
     d.dataset.search=(label+' '+key).toLowerCase();
     d.onclick=()=>addObject(key,label);
     el.appendChild(d);
@@ -4915,7 +4786,6 @@ function select(g){
   selection.forEach(o=>setOutline(o,false));
   selection=g?[g]:[];
   selected=g;
-  if(g&&typeof showRTab==='function')showRTab('object');
   if(g)setOutline(g,true);
   renderInspector();updGroupBtn();
 }
@@ -6683,50 +6553,16 @@ document.querySelectorAll('.panel .sec').forEach(sec=>{
   const caret=document.createElement('span');caret.className='caret';caret.innerHTML='▾';h3.appendChild(caret);
   h3.onclick=()=>sec.classList.toggle('collapsed');
 });
-// thanh "thu gọn / mở tất cả" ở đầu panel TRÁI (panel phải dùng tab, không cần)
+// thanh "thu gọn / mở tất cả" ở đầu mỗi panel (chỉ các mục có tiêu đề)
 document.querySelectorAll('.panel').forEach(panel=>{
   const secs=[...panel.querySelectorAll('.sec')].filter(s=>s.querySelector('h3'));
-  if(secs.length<2||panel.classList.contains('right'))return;
+  if(secs.length<2)return;
   const bar=document.createElement('div');bar.className='panel-tools';
   bar.innerHTML='<button data-act="collapse">▸ Thu gọn tất cả</button><button data-act="expand">▾ Mở tất cả</button>';
   panel.insertBefore(bar,panel.firstChild);
   bar.querySelector('[data-act=collapse]').onclick=()=>secs.forEach(s=>s.classList.add('collapsed'));
   bar.querySelector('[data-act=expand]').onclick=()=>secs.forEach(s=>s.classList.remove('collapsed'));
 });
-
-/* ════════════════════════ UI: TIÊU ĐỀ PANEL + 4 TAB PANEL PHẢI ════════════════════════ */
-// Trái = KHO (thêm vào cảnh) · Phải = CHỈNH (cái đang chọn), chia 4 tab thay vì một cột cuộn dài.
-(function(){
-  const L=document.querySelector('.panel.left'),R=document.querySelector('.panel.right');
-  const head=(txt,hint)=>{const h=document.createElement('div');h.className='phead';
-    h.innerHTML='<span class="dot"></span>'+txt+(hint?'<span class="hint">'+hint+'</span>':'');return h;};
-  if(L)L.insertBefore(head('KHO MODEL','bấm để thêm'),L.firstChild);
-  if(!R)return;
-  // gán tab theo tiêu đề mục
-  const TAB_OF=[[/AI dàn cảnh/,'ai'],[/AI tạo vật thể/,'ai'],[/Nhân vật từ ảnh/,'ai'],
-                [/Background 2D/,'camera'],[/Máy quay/,'camera'],[/Góc máy nhanh/,'camera'],
-                [/Vật thể đang chọn/,'object'],[/Shot đã chụp/,'shot']];
-  R.querySelectorAll('.sec').forEach(sec=>{
-    const h=sec.querySelector('h3');if(!h)return;
-    const t=h.textContent;const m=TAB_OF.find(([re])=>re.test(t));
-    sec.dataset.tab=m?m[1]:'object';
-  });
-  const bar=document.createElement('div');bar.className='rtabs';
-  bar.innerHTML='<button data-tab="object">Vật thể</button><button data-tab="camera">Camera</button><button data-tab="ai">AI</button><button data-tab="shot">Shot</button>';
-  R.insertBefore(bar,R.firstChild);
-  R.insertBefore(head('CHỈNH'),R.firstChild);
-  bar.querySelectorAll('button').forEach(b=>b.onclick=()=>showRTab(b.dataset.tab));
-  let cur='';
-  try{cur=localStorage.getItem('previz_rtab')||'';}catch(e){}
-  showRTab(cur||'object');
-  // chụp shot xong thì mở tab Shot cho thấy kết quả
-  const bs=document.getElementById('btnShot');if(bs)bs.addEventListener('click',()=>showRTab('shot'));
-})();
-function showRTab(name){
-  document.querySelectorAll('.panel.right .sec[data-tab]').forEach(sec=>sec.classList.toggle('tab-on',sec.dataset.tab===name));
-  document.querySelectorAll('.rtabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
-  try{localStorage.setItem('previz_rtab',name);}catch(e){}
-}
 
 /* ════════════════════════ UI: TÌM KIẾM MODEL ════════════════════════ */
 const searchInput=document.getElementById('assetSearch');

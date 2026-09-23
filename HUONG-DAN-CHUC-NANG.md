@@ -24,6 +24,12 @@ Công cụ dựng **storyboard / previz 3D** ngay trong trình duyệt. Bạn d�
 
 ## 1. Bố cục màn hình
 
+> **Giao diện mới (09/2026):** cột **trái = KHO** (mọi thứ để *thêm* vào cảnh, nhấn màu hổ phách),
+> cột **phải = CHỈNH** (cái đang chọn, nhấn màu xanh trời) và chia **4 tab**: `Vật thể` · `Camera` · `AI` · `Shot`.
+> Chọn một vật thể là tự nhảy sang tab Vật thể; bấm Chụp shot là nhảy sang tab Shot.
+> Công cụ Orbit / Di chuyển / Xoay / Tỉ lệ nằm ở **dock dưới viewport**. Số đo và phím tắt dùng font mono, chữ còn lại dùng Be Vietnam Pro.
+
+
 | Khu vực | Vai trò |
 |---|---|
 | **Thanh trên** | Undo/Redo, lưới sàn, project, xuất/nhập, chụp shot, storyboard |
