@@ -591,6 +591,40 @@
   .proj-label{font-size:12.5px;font-weight:600;color:var(--ink-dim)}
   .help-section .ht{font-size:13px;font-weight:700;color:var(--accent)}
   .help-step{font-size:13px}
+  /* ── Cú máy ── */
+  .cm-steps{font-size:12px;line-height:1.55;color:var(--ink-faint);margin-bottom:10px}
+  .cm-steps b{color:var(--ink-dim);font-weight:600}
+  .cm-slot{display:flex;align-items:center;gap:9px;padding:8px 9px;margin-bottom:6px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+  .cm-badge{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:#06121B;flex-shrink:0}
+  .cm-badge.a{background:var(--good)}.cm-badge.b{background:var(--danger)}
+  .cm-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .cm-info b{font-size:12.5px;font-weight:600}
+  .cm-info span{font-size:11.5px;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cm-info span.set{color:var(--ink-dim)}
+  .cm-set{height:32px;padding:0 13px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:12.5px;font-weight:600;cursor:pointer}
+  .cm-set:hover{background:var(--accent);color:#06121B}
+  .cm-ic{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink-dim);font-size:15px;cursor:pointer}
+  .cm-ic:hover{color:var(--ink);border-color:#3A404B}
+  .cm-ic:disabled{opacity:.35;cursor:default}
+  .cm-link{background:none;border:0;color:var(--accent);font-size:12px;cursor:pointer;padding:2px 0}
+  .cm-lbl{font-size:12.5px;color:var(--ink-dim);margin:10px 0 6px}
+  .cm-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:10px;background:var(--bg)}
+  .cm-seg button{height:30px;border:0;border-radius:7px;background:transparent;color:var(--ink-faint);font-size:12.5px;font-weight:500;cursor:pointer}
+  .cm-seg button:hover{color:var(--ink)}
+  .cm-seg button.active{background:#2A3442;color:var(--ink);font-weight:600}
+  .cm-chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--ink-dim);cursor:pointer}
+  .cm-chk input{accent-color:var(--accent);width:15px;height:15px}
+  .cm-actions{display:grid;grid-template-columns:1fr 1.3fr;gap:6px;margin-top:12px}
+  .cm-actions button{height:40px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--ink)}
+  .cm-actions button.prim{background:var(--accent-warm);border-color:var(--accent-warm);color:#1A1408;font-weight:700}
+  .cm-actions button:disabled{opacity:.4;cursor:default}
+  .cm-note{font-size:11.5px;line-height:1.5;color:var(--ink-faint);margin-top:9px}
+  .cm-overlay{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(10,12,16,.82);backdrop-filter:blur(4px)}
+  .cm-overlay.on{display:flex}
+  .cm-overlay b{font-size:16px;font-weight:700}
+  .cm-overlay span{font-size:13px;color:var(--ink-dim);font-family:'JetBrains Mono',monospace}
+  .cm-bar{width:320px;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+  .cm-bar i{display:block;height:100%;width:0;background:var(--accent-warm);transition:width .1s}
   /* các cụm nút chữ còn sót mono */
   #lensTypeSeg button,#bgModeSeg button,.bg-drop,.bg-area,.ai-box,.ai-box *,.hint,#lensHint,#lensTypeHint,#apHint{font-family:'Be Vietnam Pro',system-ui,sans-serif;letter-spacing:0}
   #aspectSeg button{font-family:'JetBrains Mono',monospace}
@@ -723,6 +757,7 @@
       <div class="mthirds"><i class="v" style="left:33.33%"></i><i class="v" style="left:66.66%"></i><i class="h" style="top:33.33%"></i><i class="h" style="top:66.66%"></i></div>
     </div>
     <div class="vp-hud" id="hud"></div>
+    <div class="cm-overlay" id="cmOverlay"><b id="cmOvTitle">Đang xuất video…</b><div class="cm-bar"><i id="cmOvBar"></i></div><span id="cmOvText">0 / 0 khung</span></div>
   </main>
 
   <!-- RIGHT: CAMERA + INSPECTOR + SHOTS -->
@@ -911,6 +946,50 @@
       <div class="hint">Bấm vào vật thể trước, các góc sẽ quay quanh nó.</div>
     </div>
 
+    <div class="sec">
+      <h3>Cú máy (camera move)</h3>
+      <div class="cm-steps">① Xoay camera tới góc đầu → <b>Đặt góc ĐẦU</b> · ② tới góc cuối → <b>Đặt góc CUỐI</b> · ③ chọn số giây → <b>Xem thử</b> → <b>Xuất video</b></div>
+      <div class="cm-slot">
+        <span class="cm-badge a">A</span>
+        <div class="cm-info"><b>Góc đầu</b><span id="cmInfoA">chưa đặt</span></div>
+        <button id="cmGoA" class="cm-ic" title="Đưa camera về góc đầu" aria-label="Về góc đầu">↺</button>
+        <button id="cmSetA" class="cm-set">Đặt</button>
+      </div>
+      <div class="cm-slot">
+        <span class="cm-badge b">B</span>
+        <div class="cm-info"><b>Góc cuối</b><span id="cmInfoB">chưa đặt</span></div>
+        <button id="cmGoB" class="cm-ic" title="Đưa camera về góc cuối" aria-label="Về góc cuối">↺</button>
+        <button id="cmSetB" class="cm-set">Đặt</button>
+      </div>
+      <button id="cmSwap" class="cm-link" title="Đổi chiều cú máy: B → A">⇄ Đảo chiều</button>
+      <div class="ctrl" style="margin-top:12px">
+        <label for="cmDur">Thời lượng <span class="val"><input type="number" id="cmDur" min="0.5" max="120" step="0.5" value="4"> giây</span></label>
+      </div>
+      <div class="cm-lbl">Đường đi</div>
+      <div class="cm-seg" id="cmPath">
+        <button data-v="line" class="active" title="Máy trượt thẳng từ A tới B — dolly, track, crane">Thẳng</button>
+        <button data-v="arc" title="Máy lượn vòng quanh chủ thể — orbit, xoay quanh">Vòng cung</button>
+      </div>
+      <div class="cm-lbl">Nhịp</div>
+      <div class="cm-seg" id="cmEase">
+        <button data-v="linear" title="Tốc độ đều từ đầu đến cuối">Đều</button>
+        <button data-v="inout" class="active" title="Khởi động và dừng êm — như có người vận hành">Êm</button>
+        <button data-v="in" title="Chậm rồi nhanh dần">Tăng tốc</button>
+        <button data-v="out" title="Nhanh rồi chậm dần, đáp nhẹ">Giảm tốc</button>
+      </div>
+      <div class="cm-lbl">Khung hình / giây</div>
+      <div class="cm-seg" id="cmFps">
+        <button data-v="24" class="active">24</button>
+        <button data-v="25">25</button>
+        <button data-v="30">30</button>
+      </div>
+      <label class="cm-chk"><input type="checkbox" id="cmHideAnno" checked> Ẩn chữ, vòng zone &amp; vạch đánh dấu trong video</label>
+      <div class="cm-actions">
+        <button id="cmPreview">▶ Xem thử</button>
+        <button id="cmExport" class="prim">⏺ Xuất video</button>
+      </div>
+      <div class="cm-note" id="cmNote">Video xuất theo đúng khung hình đang chọn (1.85, 2.39…), rộng tối đa 1920 px, file .mp4 lưu vào thư mục Tải về.</div>
+    </div>
     <div class="sec">
       <h3>Vật thể đang chọn</h3>
       <div id="inspector">
@@ -2613,7 +2692,7 @@ const EG={
 function gmesh(geo,c){const m=new THREE.Mesh(geo,mat(c));m.castShadow=true;m.receiveShadow=true;return m;}
 function annoMesh(geo,c,op){
   const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false,side:THREE.DoubleSide}));
-  m.userData.__anno=true;return m;
+  m.userData.__anno=true;m.userData.__marker=true;return m;
 }
 function torus3(r,t,c,seg=40){const m=gmesh(new THREE.TorusGeometry(r,t,6,seg),c);m.rotation.x=-Math.PI/2;return m;}
 function zoneRing(r,c){
@@ -2624,7 +2703,7 @@ function zoneRing(r,c){
 /* ── CHỮ + VÒNG ZONE PREVIZ: bật/tắt/xoá nhanh khi đang dựng (phím T) ──
    Chỉ đụng tới chữ (sprite) và vòng zone. Đĩa mặt trời và vòm trời KHÔNG bị ảnh hưởng. */
 let annoOn=true;
-function isAnnoNode(n){return (n.isSprite&&n.userData.__anno)||n.userData.__zone===true;}
+function isAnnoNode(n){return (n.isSprite&&n.userData.__anno)||n.userData.__zone===true||n.userData.__marker===true;}
 function applyAnno(){
   objects.forEach(o=>o.traverse(n=>{if(isAnnoNode(n))n.visible=annoOn;}));
 }
@@ -3091,6 +3170,7 @@ function buildSunLock(){
   const arrow=cone(.3,1.1,EG.warm,8);arrow.rotation.x=Math.PI/2;arrow.position.set(0,3,-.8);mk.add(arrow);
   const shaft=cyl(.07,.07,4,EG.warm,6);shaft.rotation.x=Math.PI/2;shaft.position.set(0,3,1.5);mk.add(shaft);
   mk.add(tag('MẶT TRỜI SAU NGAI · góc cao 13° · khóa cho cả C3',0,4.6,0,1.35,EG.warm));
+  mk.traverse(o=>o.userData.__marker=true);
   g.add(mk);
   g.userData.h=4.6;
   g.userData.sunDir=[0,Math.sin(13*Math.PI/180),-Math.cos(13*Math.PI/180)];
@@ -3452,7 +3532,7 @@ function buildScaleRef(){
   // khung khối đá 4 m
   const e=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(4,4,4)),
     new THREE.LineBasicMaterial({color:EG.mark}));
-  e.position.set(7.5,2,0);e.userData.__anno=true;g.add(e);
+  e.position.set(7.5,2,0);e.userData.__anno=true;e.userData.__marker=true;g.add(e);
   g.add(tag('KHỐI ĐÁ / CẦU ĐÁ 4 m',7.5,4.8,0,1.1));
   g.userData.h=4.8;
   return g;
@@ -3691,10 +3771,10 @@ function buildC2Horn(){
   // hoặc chấp nhận cheat hoạt hình (trong rộng hơn ngoài), hoặc phóng đầu tượng lên ~14 m.
   const room=new THREE.Mesh(new THREE.BoxGeometry(12,5,12),
     new THREE.MeshBasicMaterial({color:EG.warm,transparent:true,opacity:.12,depthWrite:false}));
-  room.position.set(0,ny+.9,-2.2);room.userData.__anno=true;g.add(room);
+  room.position.set(0,ny+.9,-2.2);room.userData.__anno=true;room.userData.__marker=true;g.add(room);
   const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(12,5,12)),
     new THREE.LineBasicMaterial({color:EG.warm}));
-  edge.position.copy(room.position);edge.userData.__anno=true;g.add(edge);
+  edge.position.copy(room.position);edge.userData.__anno=true;edge.userData.__marker=true;g.add(edge);
   g.add(tag('KHOANG PHÒNG BIDA 12×12×5 — rộng hơn đầu 10 m (cheat hoạt hình hoặc phóng đầu ~14 m)',0,ny+4.2,-2.2,1.2,EG.warm));
   // Hai lỗ mũi ĐỔ THẲNG vào phòng (chỉ đạo: cửa hang chính là hai lỗ mũi).
   // Phòng bida là khoang cộng hưởng: tiếng xì vào mũi trái, vang trong phòng, phụt ra mũi phải.
@@ -3712,7 +3792,7 @@ function buildC2Horn(){
     const p=curve.getPointAt(t),d=curve.getTangentAt(t);
     const a=cone(.4,.95,EG.mark,7);
     a.position.copy(p);a.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
-    a.userData.__anno=true;g.add(a);
+    a.userData.__anno=true;a.userData.__marker=true;g.add(a);
   });
   g.userData.h=0;
   return g;
@@ -4135,10 +4215,10 @@ function buildBdDoor(){
   // dấu quả cầu đá ø4 sẽ lao vào
   const ball=new THREE.Mesh(new THREE.SphereGeometry(2,16,10),
     new THREE.MeshBasicMaterial({color:EG.red,transparent:true,opacity:.16,depthWrite:false}));
-  ball.position.set(x+3.4,2,0);ball.userData.__anno=true;g.add(ball);
+  ball.position.set(x+3.4,2,0);ball.userData.__anno=true;ball.userData.__marker=true;g.add(ball);
   const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.SphereGeometry(2,12,8)),
     new THREE.LineBasicMaterial({color:EG.red}));
-  edge.position.copy(ball.position);edge.userData.__anno=true;g.add(edge);
+  edge.position.copy(ball.position);edge.userData.__anno=true;edge.userData.__marker=true;g.add(edge);
   g.add(tag('CẦU ĐÁ ø4 PHÁ CỬA (3:38) — phòng cao 4 m, quả cầu vừa khít',x+3.4,4.6,0,1.25,EG.red));
   g.userData.h=3.6;
   return g;
@@ -4282,19 +4362,19 @@ function buildBdTraj(){
   const cv=new THREE.CatmullRomCurve3(pts);
   const arc=new THREE.Mesh(new THREE.TubeGeometry(cv,40,.045,8,false),
     new THREE.MeshBasicMaterial({color:EG.red,transparent:true,opacity:.75}));
-  arc.userData.__anno=true;g.add(arc);
+  arc.userData.__anno=true;arc.userData.__marker=true;g.add(arc);
   // bi trắng → lỗ kích hoạt
   const line=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
       new THREE.Vector3(.95,T+.09,.3),
       new THREE.Vector3(-.4,T+.09,.55),
       new THREE.Vector3(BD_POCKET[0],T+.09,BD_POCKET[1])]),24,.035,8,false),
     new THREE.MeshBasicMaterial({color:EG.mark,transparent:true,opacity:.8}));
-  line.userData.__anno=true;g.add(line);
+  line.userData.__anno=true;line.userData.__marker=true;g.add(line);
   // vòng sáng đánh dấu LỖ KÍCH HOẠT
   const ring=new THREE.Mesh(new THREE.RingGeometry(.2,.34,24),
     new THREE.MeshBasicMaterial({color:EG.warm,transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false}));
   ring.rotation.x=-Math.PI/2;ring.position.set(BD_POCKET[0],T+.14,BD_POCKET[1]);
-  ring.userData.__anno=true;g.add(ring);
+  ring.userData.__anno=true;ring.userData.__marker=true;g.add(ring);
   g.add(tag('LỖ KÍCH HOẠT — CÙNG MỘT LỖ ở cả C2b và C8',BD_POCKET[0]-1.1,1.9,BD_POCKET[1]+.9,1.25,EG.warm));
   g.add(tag('Coppa văng từ ngai → mặt bàn → bụng đẩy bi trắng',2.4,2.9,.5,1.2,EG.red));
   g.userData.h=2.4;
@@ -4534,7 +4614,7 @@ function buildC6Burst(){
   const flat=gmesh(new THREE.SphereGeometry(C6_R+.05,18,12,0,Math.PI*.55,Math.PI*.25,Math.PI*.4),'#8f8a86');
   flat.position.y=C6_R;flat.rotation.y=-.4;kb.add(flat);                  // mảng "tem" ôm nửa vòng thân cầu
   const crown=cone(.3,.6,C6.gold,8);crown.position.set(0,C6_R+1.6,1.3);crown.rotation.x=1.1;kb.add(crown);
-  const arrow=cone(.5,1.6,EG.mark,7);arrow.rotation.z=-Math.PI/2;arrow.position.set(4.2,C6_R,0);arrow.userData.__anno=true;kb.add(arrow);
+  const arrow=cone(.5,1.6,EG.mark,7);arrow.rotation.z=-Math.PI/2;arrow.position.set(4.2,C6_R,0);arrow.userData.__anno=true;arrow.userData.__marker=true;kb.add(arrow);
   g.add(kb);
   g.add(tag('PHARAOH DÍNH BẸP NHƯ TEM — quả cầu lăn về Nile (2:37)',40,6.4,12,1.5,EG.red));
   g.add(tag('cách đứa bé ĐÚNG MỘT GANG (2:35)',-32,5.2,45,1.2,EG.warm));
@@ -4704,7 +4784,7 @@ function buildC7Sculptor(){
   // ĐƯỜNG NHÌN: từ mắt thợ (1.6 m) tới mặt Coppa trên cọc (~2.6 m)
   const a=new THREE.Vector3(P[0],1.6,P[2]),b=new THREE.Vector3(0,2.6,0);
   const los=new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(a,b),1,.03,6,false),new THREE.MeshBasicMaterial({color:EG.mark,transparent:true,opacity:.8}));
-  los.userData.__anno=true;g.add(los);
+  los.userData.__anno=true;los.userData.__marker=true;g.add(los);
   g.add(tag('THỢ ĐIÊU KHẮC — góc trái khung, đường nhìn THẲNG vào mặt Coppa (3:11)',P[0],3.4,P[2],1.4));
   g.userData.h=2.2;return g;
 }
@@ -4720,7 +4800,7 @@ function buildC7Sun(){
   const pole=cyl(.06,.06,3,EG.mark,6);pole.position.y=1.5;mk.add(pole);
   const arrow=cone(.3,1.1,EG.warm,8);arrow.rotation.x=Math.PI/2;arrow.position.set(0,3,-.8);mk.add(arrow);
   const shaft=cyl(.07,.07,4,EG.warm,6);shaft.rotation.x=Math.PI/2;shaft.position.set(0,3,1.5);mk.add(shaft);
-  mk.add(tag('HOÀNG HÔN — nắng thấp SAU ĐỀN, góc cao 9°',0,4.6,0,1.35,EG.warm));g.add(mk);
+  mk.add(tag('HOÀNG HÔN — nắng thấp SAU ĐỀN, góc cao 9°',0,4.6,0,1.35,EG.warm));mk.traverse(o=>o.userData.__marker=true);g.add(mk);
   g.userData.sunDir=[-.06,Math.sin(9*Math.PI/180),-Math.cos(9*Math.PI/180)];
   g.userData.h=4.6;return g;
 }
@@ -6683,6 +6763,7 @@ function gatherSceneData(){
          tx:orbit.target.x,ty:orbit.target.y,tz:orbit.target.z,aspect,
          apertureIdx:+apSlider.value,lensType},
     anno: annoOn,
+    camMove: camMoveSave(),
     bg: bgDataUrl?{data:bgDataUrl,mode:bgMode,opacity:+document.getElementById('bgOpacity').value,
          dist:+document.getElementById('bgDist').value,scale:+document.getElementById('bgScale').value}:null,
     objects:objects.map(o=>{
@@ -6790,6 +6871,7 @@ function applySceneData(d){
   }
   updateSetEnv();
   annoOn=(d.anno!==false);
+  camMoveLoad(d.camMove);
   const ab=document.getElementById('btnAnno');if(ab)ab.classList.toggle('off',!annoOn);
   applyAnno();
   document.getElementById('vpMsg').style.display=objects.length?'none':'block';
@@ -7342,6 +7424,7 @@ function updHud(){
 
 function loop(){
   requestAnimationFrame(loop);
+  if(camExporting)return;
   updHud();
   updateDecalBillboards();
   updateSetAnnotations();
@@ -7369,7 +7452,9 @@ function renderMonitor(){
   // monitor camera = camera chính nhưng aspect đúng theo khung hình chụp
   const prevAspect=camera.aspect;
   camera.aspect=aspect;camera.updateProjectionMatrix();
+  const gv=camGizmo&&camGizmo.visible;if(gv)camGizmo.visible=false;   // monitor = đúng cái sẽ chụp
   monRenderer.render(scene,camera);
+  if(gv)camGizmo.visible=true;
   camera.aspect=prevAspect;camera.updateProjectionMatrix();
 }
 document.getElementById('monToggle').onclick=()=>{
@@ -7377,6 +7462,294 @@ document.getElementById('monToggle').onclick=()=>{
   document.getElementById('monToggle').classList.toggle('active',monOn);
   document.getElementById('monitor').classList.toggle('hidden',!monOn);
 };
+
+
+/* ════════════════════════ CÚ MÁY: góc đầu → góc cuối → video ════════════════════════
+   Xuất MP4 bằng WebCodecs, dựng TỪNG KHUNG với dấu thời gian cố định nên video luôn đúng
+   số giây dù máy render nhanh hay chậm. Trình duyệt thiếu WebCodecs → ghi WebM thời gian thực. */
+const camMove={A:null,B:null,dur:4,path:'line',ease:'inout',fps:24,hideAnno:true};
+let camExporting=false, camPreviewing=false, camGizmo=null;
+const CM_EASE={
+  linear:t=>t,
+  inout:t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,
+  in:t=>t*t*t,
+  out:t=>1-Math.pow(1-t,3)
+};
+function camSnap(){return{tg:orbit.target.toArray(),pos:camera.position.toArray(),f:curFocal};}
+function camLerp(A,B,t,path){
+  const tA=new THREE.Vector3().fromArray(A.tg),tB=new THREE.Vector3().fromArray(B.tg);
+  const pA=new THREE.Vector3().fromArray(A.pos),pB=new THREE.Vector3().fromArray(B.pos);
+  const tg=tA.clone().lerp(tB,t);
+  let pos;
+  if(path==='arc'){                                    // lượn vòng: nội suy toạ độ cầu quanh tâm nhìn
+    const sA=new THREE.Spherical().setFromVector3(pA.clone().sub(tA));
+    const sB=new THREE.Spherical().setFromVector3(pB.clone().sub(tB));
+    let dth=sB.theta-sA.theta;
+    while(dth>Math.PI)dth-=2*Math.PI;while(dth<-Math.PI)dth+=2*Math.PI;   // đi đường vòng ngắn
+    const sp=new THREE.Spherical(sA.radius+(sB.radius-sA.radius)*t,sA.phi+(sB.phi-sA.phi)*t,sA.theta+dth*t);
+    pos=new THREE.Vector3().setFromSpherical(sp).add(tg);
+  }else pos=pA.clone().lerp(pB,t);                     // trượt thẳng: dolly / track / crane
+  return{tg,pos,f:A.f+(B.f-A.f)*t};
+}
+function camPlace(st){                                  // đặt máy trực tiếp (không qua orbit)
+  camera.position.copy(st.pos);camera.lookAt(st.tg);
+  if(Math.abs(curFocal-st.f)>1e-6){curFocal=st.f;camera.fov=focalToFov(st.f);camera.updateProjectionMatrix();updateDistortion();}
+}
+function camSyncOrbit(st,focalRound){                   // trả điều khiển lại cho orbit tại vị trí đó
+  orbit.target.copy(st.tg);
+  orbit.sph.setFromVector3(st.pos.clone().sub(st.tg));
+  orbit.sph.phi=Math.max(.05,Math.min(Math.PI-.05,orbit.sph.phi));
+  orbit.sph.radius=Math.max(orbit.minR,orbit.sph.radius);
+  orbit.maxR=Math.max(orbit.maxR,orbit.sph.radius*1.2);
+  orbit._update();
+  setFocal(focalRound?Math.round(st.f):st.f);
+}
+function camGo(which){
+  const st=camMove[which];if(!st)return;
+  camSyncOrbit({tg:new THREE.Vector3().fromArray(st.tg),pos:new THREE.Vector3().fromArray(st.pos),f:st.f});
+}
+function camInfo(st){
+  if(!st)return'chưa đặt';
+  const d=new THREE.Vector3().fromArray(st.pos).distanceTo(new THREE.Vector3().fromArray(st.tg));
+  const h=st.pos[1];
+  return Math.round(st.f)+'mm · cách '+d.toFixed(1)+' m · cao '+h.toFixed(1)+' m';
+}
+function camMoveUI(){
+  const set=(id,st)=>{const e=document.getElementById(id);if(!e)return;e.textContent=camInfo(st);e.classList.toggle('set',!!st);};
+  set('cmInfoA',camMove.A);set('cmInfoB',camMove.B);
+  const ga=document.getElementById('cmGoA'),gb=document.getElementById('cmGoB');
+  if(ga)ga.disabled=!camMove.A;if(gb)gb.disabled=!camMove.B;
+  const ok=!!(camMove.A&&camMove.B);
+  ['cmPreview','cmExport'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!ok||camExporting||camPreviewing;});
+  const dur=document.getElementById('cmDur');if(dur&&document.activeElement!==dur)dur.value=camMove.dur;
+  [['cmPath','path'],['cmEase','ease'],['cmFps','fps']].forEach(([id,k])=>{
+    document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('active',b.dataset.v===String(camMove[k])));
+  });
+  const ch=document.getElementById('cmHideAnno');if(ch)ch.checked=camMove.hideAnno;
+  const note=document.getElementById('cmNote');
+  if(note&&ok){const n=Math.round(camMove.dur*camMove.fps);note.textContent=n+' khung hình · '+camMove.dur+' giây · '+camMove.fps+' fps · khung '+exportSize().w+'×'+exportSize().h+' px';}
+  buildCamGizmo();
+}
+
+/* ---- đường bay vẽ trong cảnh: máy A (xanh) → máy B (đỏ) ---- */
+function buildCamGizmo(){
+  if(camGizmo){scene.remove(camGizmo);camGizmo.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose();}});camGizmo=null;}
+  if(!camMove.A&&!camMove.B)return;
+  const g=new THREE.Group();g.name='__camGizmo';
+  const ref=camMove.A||camMove.B;
+  const k=Math.max(.35,new THREE.Vector3().fromArray(ref.pos).distanceTo(new THREE.Vector3().fromArray(ref.tg))*.045);
+  const cam=(st,col,txt)=>{
+    const c=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.BoxGeometry(1,.7,1.3),new THREE.MeshBasicMaterial({color:col}));c.add(body);
+    const lens=new THREE.Mesh(new THREE.ConeGeometry(.7,1.2,4,1,true),new THREE.MeshBasicMaterial({color:col,wireframe:true}));
+    lens.rotation.x=-Math.PI/2;lens.rotation.y=Math.PI/4;lens.position.z=-1.2;c.add(lens);
+    c.scale.setScalar(k);
+    c.position.fromArray(st.pos);c.lookAt(new THREE.Vector3().fromArray(st.tg));
+    g.add(c);
+    const lb=makeLabel(txt,{size:k*1.1,border:col});lb.position.fromArray(st.pos);lb.position.y+=k*1.4;g.add(lb);
+  };
+  if(camMove.A)cam(camMove.A,'#3DD68C','A · góc đầu');
+  if(camMove.B)cam(camMove.B,'#FF8A8A','B · góc cuối');
+  if(camMove.A&&camMove.B){
+    const pts=[];for(let i=0;i<=48;i++)pts.push(camLerp(camMove.A,camMove.B,i/48,camMove.path).pos);
+    const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:'#E8B04B'}));
+    g.add(line);
+    // chấm mỗi giây để đọc nhịp
+    const secs=Math.max(1,Math.floor(camMove.dur));
+    for(let i=1;i<secs;i++){
+      const t=CM_EASE[camMove.ease](i/camMove.dur);
+      const d=new THREE.Mesh(new THREE.SphereGeometry(k*.22,8,6),new THREE.MeshBasicMaterial({color:'#E8B04B'}));
+      d.position.copy(camLerp(camMove.A,camMove.B,t,camMove.path).pos);g.add(d);
+    }
+  }
+  scene.add(g);camGizmo=g;
+  updateCamGizmoVis();
+}
+function updateCamGizmoVis(){
+  if(!camGizmo)return;
+  const tabCam=!!document.querySelector('.rtabs button.active[data-tab="camera"]');
+  camGizmo.visible=tabCam&&!camExporting&&!camPreviewing;
+}
+// ảnh chụp shot / storyboard không được dính đường bay
+const _compositeShotOrig=compositeShot;
+compositeShot=function(){
+  const gv=camGizmo&&camGizmo.visible;
+  if(gv){camGizmo.visible=false;renderView();}
+  return _compositeShotOrig().then(r=>{if(gv)camGizmo.visible=true;return r;});
+};
+
+/* ---- xem thử trong viewport, thời gian thực ---- */
+function camPreview(){
+  if(!(camMove.A&&camMove.B)||camPreviewing||camExporting)return;
+  camPreviewing=true;orbit.enabled=false;updateCamGizmoVis();camMoveUI();
+  const start=performance.now(),D=camMove.dur*1000;
+  const step=now=>{
+    const t=Math.min(1,(now-start)/D);
+    camPlace(camLerp(camMove.A,camMove.B,CM_EASE[camMove.ease](t),camMove.path));
+    const b=document.getElementById('cmPreview');if(b)b.textContent='▶ '+(t*camMove.dur).toFixed(1)+' / '+camMove.dur+' s';
+    if(t<1)requestAnimationFrame(step);
+    else{
+      camPreviewing=false;orbit.enabled=true;
+      camSyncOrbit(camLerp(camMove.A,camMove.B,1,camMove.path));
+      if(b)b.textContent='▶ Xem thử';
+      updateCamGizmoVis();camMoveUI();
+    }
+  };
+  requestAnimationFrame(step);
+}
+
+/* ---- xuất video ---- */
+function exportSize(){
+  let w=1920,h=Math.round(1920/aspect);
+  if(h>1080){h=1080;w=Math.round(1080*aspect);}
+  return{w:w-(w%2),h:h-(h%2)};
+}
+let _mp4mod=null;
+async function loadMp4Muxer(){
+  if(_mp4mod)return _mp4mod;
+  _mp4mod=await import('https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.mjs');
+  return _mp4mod;
+}
+async function pickAvc(w,h,fps){
+  if(typeof VideoEncoder==='undefined')return null;
+  for(const codec of ['avc1.640028','avc1.4d0028','avc1.42E028','avc1.640033']){
+    const cfg={codec,width:w,height:h,bitrate:10_000_000,framerate:fps,avc:{format:'avc'}};
+    try{const r=await VideoEncoder.isConfigSupported(cfg);if(r&&r.supported)return cfg;}catch(e){}
+  }
+  return null;
+}
+function camFileName(ext){
+  const base=((typeof currentProjName!=='undefined'&&currentProjName)||'previz').replace(/[^\p{L}\p{N}_-]+/gu,'_');
+  return base+'_cu-may_'+camMove.dur+'s_'+camMove.fps+'fps.'+ext;
+}
+function saveBlob(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+async function camExport(){
+  if(!(camMove.A&&camMove.B)||camExporting||camPreviewing)return;
+  const {w:W,h:H}=exportSize();
+  const fps=camMove.fps,N=Math.max(2,Math.round(camMove.dur*fps));
+  const ov=document.getElementById('cmOverlay'),bar=document.getElementById('cmOvBar'),txt=document.getElementById('cmOvText');
+  const title=document.getElementById('cmOvTitle');
+  // lưu trạng thái để trả lại y nguyên sau khi xuất
+  const keep={st:{tg:orbit.target.clone(),pos:camera.position.clone(),f:curFocal},pr:renderer.getPixelRatio(),anno:annoOn};
+  camExporting=true;orbit.enabled=false;updateCamGizmoVis();camMoveUI();
+  ov.classList.add('on');title.textContent='Đang xuất video '+W+'×'+H+'…';bar.style.width='0%';txt.textContent='chuẩn bị…';
+  if(camMove.hideAnno&&annoOn){annoOn=false;applyAnno();}
+  renderer.setPixelRatio(1);renderer.setSize(W,H,false);
+  camera.aspect=W/H;camera.updateProjectionMatrix();
+  // khung ghép: ảnh nền 2D (nếu dùng phông phẳng) + lớp 3D + viền lens như ảnh chụp
+  const out=document.createElement('canvas');out.width=W;out.height=H;
+  const ctx=out.getContext('2d');
+  let bgImg=null;
+  if(bgMode==='screen'&&bgDataUrl){bgImg=new Image();bgImg.src=bgDataUrl;await bgImg.decode().catch(()=>{bgImg=null;});}
+  const drawFrame=()=>{
+    ctx.fillStyle='#0a0e13';ctx.fillRect(0,0,W,H);
+    if(bgImg){
+      const ir=bgImg.width/bgImg.height,cr=W/H;let dw,dh,dx,dy;
+      if(ir>cr){dh=H;dw=H*ir;dx=(W-dw)/2;dy=0;}else{dw=W;dh=W/ir;dx=0;dy=(H-dh)/2;}
+      ctx.save();ctx.globalAlpha=+document.getElementById('bgOpacity').value/100;ctx.drawImage(bgImg,dx,dy,dw,dh);ctx.restore();
+    }
+    ctx.drawImage(renderer.domElement,0,0,W,H);
+    if(lensType==='vintage'||lensType==='ana'){
+      ctx.save();ctx.globalCompositeOperation='multiply';
+      const gr=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*(lensType==='ana'?.42:.32),W/2,H/2,Math.max(W,H)*.72);
+      gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(1,lensType==='ana'?'rgba(0,0,0,.5)':'rgba(70,45,20,.55)');
+      ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);ctx.restore();
+    }
+  };
+  const renderAt=f=>{
+    const t=CM_EASE[camMove.ease](f/(N-1));
+    camPlace(camLerp(camMove.A,camMove.B,t,camMove.path));
+    renderView();drawFrame();
+  };
+  const tick=()=>new Promise(r=>setTimeout(r,0));
+  const progress=f=>{bar.style.width=(100*f/N).toFixed(1)+'%';txt.textContent=f+' / '+N+' khung';};
+  let ok=false,err=null,kind='mp4';
+  try{
+    const cfg=await pickAvc(W,H,fps);
+    if(cfg){
+      const {Muxer,ArrayBufferTarget}=await loadMp4Muxer();
+      const muxer=new Muxer({target:new ArrayBufferTarget(),video:{codec:'avc',width:W,height:H,frameRate:fps},fastStart:'in-memory'});
+      const enc=new VideoEncoder({output:(chunk,meta)=>muxer.addVideoChunk(chunk,meta),error:e=>{err=e;}});
+      enc.configure(cfg);
+      const us=1e6/fps;
+      for(let f=0;f<N;f++){
+        if(err)throw err;
+        renderAt(f);
+        const vf=new VideoFrame(out,{timestamp:Math.round(f*us),duration:Math.round(us)});
+        enc.encode(vf,{keyFrame:f%(fps*2)===0});vf.close();
+        while(enc.encodeQueueSize>6)await new Promise(r=>setTimeout(r,4));
+        if(f%3===0){progress(f+1);await tick();}
+      }
+      await enc.flush();enc.close();
+      if(err)throw err;
+      muxer.finalize();
+      saveBlob(new Blob([muxer.target.buffer],{type:'video/mp4'}),camFileName('mp4'));
+      ok=true;
+    }
+  }catch(e){err=e;ok=false;}
+  if(!ok){                                               // dự phòng: ghi WebM thời gian thực
+    try{
+      kind='webm';title.textContent='Trình duyệt không có bộ mã MP4 — ghi WebM thời gian thực…';
+      const stream=out.captureStream(0),track=stream.getVideoTracks()[0];
+      const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
+      const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:10_000_000});
+      const chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+      const done=new Promise(r=>rec.onstop=r);
+      rec.start();
+      const t0=performance.now();
+      for(let f=0;f<N;f++){
+        renderAt(f);track.requestFrame&&track.requestFrame();
+        progress(f+1);
+        const wait=t0+(f+1)*1000/fps-performance.now();
+        await new Promise(r=>setTimeout(r,Math.max(0,wait)));
+      }
+      rec.stop();await done;
+      saveBlob(new Blob(chunks,{type:'video/webm'}),camFileName('webm'));
+      ok=true;
+    }catch(e2){err=e2;}
+  }
+  // trả lại y nguyên
+  renderer.setPixelRatio(keep.pr);resize();
+  if(keep.anno!==annoOn){annoOn=keep.anno;applyAnno();}
+  camExporting=false;orbit.enabled=true;
+  camSyncOrbit(keep.st);
+  ov.classList.remove('on');updateCamGizmoVis();camMoveUI();
+  toast(ok?('Đã xuất '+(kind==='mp4'?'MP4':'WebM')+' '+W+'×'+H+' · '+camMove.dur+' s — xem thư mục Tải về')
+          :('Không xuất được video: '+(err&&err.message||err)));
+}
+
+/* ---- lưu cùng project ---- */
+function camMoveSave(){
+  if(!camMove.A&&!camMove.B)return null;
+  return{A:camMove.A,B:camMove.B,dur:camMove.dur,path:camMove.path,ease:camMove.ease,fps:camMove.fps,hideAnno:camMove.hideAnno};
+}
+function camMoveLoad(d){
+  camMove.A=d&&d.A||null;camMove.B=d&&d.B||null;
+  if(d){['dur','path','ease','fps','hideAnno'].forEach(k=>{if(d[k]!==undefined)camMove[k]=d[k];});}
+  camMoveUI();
+}
+
+/* ---- nối giao diện ---- */
+(function(){
+  const $=id=>document.getElementById(id);
+  const changed=()=>{camMoveUI();if(typeof autosave==='function')autosave();};
+  $('cmSetA').onclick=()=>{camMove.A=camSnap();changed();toast('Đã đặt góc ĐẦU (A)');};
+  $('cmSetB').onclick=()=>{camMove.B=camSnap();changed();toast('Đã đặt góc CUỐI (B)');};
+  $('cmGoA').onclick=()=>camGo('A');
+  $('cmGoB').onclick=()=>camGo('B');
+  $('cmSwap').onclick=()=>{const a=camMove.A;camMove.A=camMove.B;camMove.B=a;changed();};
+  $('cmDur').onchange=e=>{const v=+e.target.value;if(isFinite(v)&&v>0){camMove.dur=Math.min(120,Math.max(.5,v));changed();}};
+  [['cmPath','path'],['cmEase','ease'],['cmFps','fps']].forEach(([id,k])=>{
+    document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{camMove[k]=k==='fps'?+b.dataset.v:b.dataset.v;changed();});
+  });
+  $('cmHideAnno').onchange=e=>{camMove.hideAnno=e.target.checked;changed();};
+  $('cmPreview').onclick=camPreview;
+  $('cmExport').onclick=camExport;
+  camMoveUI();
+})();
 
 /* ════════════════════════ UI: SECTION COLLAPSE ════════════════════════ */
 // bọc nội dung mỗi .sec (sau h3) vào .sec-body và cho gập lại
@@ -7409,7 +7782,7 @@ document.querySelectorAll('.panel').forEach(panel=>{
   if(!R)return;
   // gán tab theo tiêu đề mục
   const TAB_OF=[[/AI dàn cảnh/,'ai'],[/AI tạo vật thể/,'ai'],[/Nhân vật từ ảnh/,'ai'],
-                [/Background 2D/,'camera'],[/Máy quay/,'camera'],[/Góc máy nhanh/,'camera'],
+                [/Background 2D/,'camera'],[/Máy quay/,'camera'],[/Góc máy nhanh/,'camera'],[/Cú máy/,'camera'],
                 [/Vật thể đang chọn/,'object'],[/Shot đã chụp/,'shot']];
   R.querySelectorAll('.sec').forEach(sec=>{
     const h=sec.querySelector('h3');if(!h)return;
@@ -7428,6 +7801,7 @@ document.querySelectorAll('.panel').forEach(panel=>{
   const bs=document.getElementById('btnShot');if(bs)bs.addEventListener('click',()=>showRTab('shot'));
 })();
 function showRTab(name){
+  if(typeof updateCamGizmoVis==='function')setTimeout(updateCamGizmoVis,0);
   document.querySelectorAll('.panel.right .sec[data-tab]').forEach(sec=>sec.classList.toggle('tab-on',sec.dataset.tab===name));
   document.querySelectorAll('.rtabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
   try{localStorage.setItem('previz_rtab',name);}catch(e){}

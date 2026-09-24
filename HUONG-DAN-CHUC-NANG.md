@@ -149,6 +149,19 @@ Mô phỏng máy quay thật:
 | **Khung hình** | 2.39:1 · 1.85 · 16:9 · 1:1 |
 | **Khung 1/3 & safe area** | Bật đường gióng bố cục |
 
+### 5.5b. Cú máy — xuất video tham chiếu
+
+Tab **Camera** → mục **Cú máy**:
+
+1. Xoay camera tới **góc đầu** → bấm **Đặt** ở dòng **A**. Tới **góc cuối** → **Đặt** ở dòng **B**. (Bấm bookmark theo timecode rồi Đặt cũng được.)
+2. Chọn **Thời lượng** (giây), **Đường đi** (*Thẳng* = dolly/track/crane · *Vòng cung* = lượn quanh chủ thể), **Nhịp** (*Đều · Êm · Tăng tốc · Giảm tốc*), **fps** 24/25/30.
+3. **▶ Xem thử** chạy ngay trong viewport. **⏺ Xuất video** ra file **.mp4** vào thư mục *Tải về*.
+
+- Tiêu cự nội suy theo: A ở 24mm, B ở 85mm là ra một cú zoom kết hợp dolly.
+- Đường bay (A xanh → B đỏ, chấm vàng mỗi giây) chỉ hiện khi đang mở tab Camera, không dính vào ảnh chụp hay video.
+- Video đúng khung hình đang chọn (1.85, 2.39, 16:9, 9:16…), rộng tối đa 1920 px, và **đúng số giây** dù máy render chậm (dựng từng khung một).
+- ↺ đưa camera về A hoặc B để chỉnh; ⇄ đảo chiều cú máy. Cú máy lưu cùng project.
+
 ### 5.6. Góc máy nhanh
 Bấm để camera nhảy về góc dựng sẵn: **Chính diện, 3/4, Hông, Trên cao, Thấp, Bird's eye**. Chọn vật thể trước thì camera sẽ quay quanh vật đó.
 
