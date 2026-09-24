@@ -3203,6 +3203,18 @@ function buildZonesC3(){
 const RAMP_LEN=78, RAMP_H=16.6, RAMP_W=14;
 const RAMP_A=Math.atan(RAMP_H/RAMP_LEN);        // 12°
 function rampY(z){return Math.max(0,Math.min(1,-z/RAMP_LEN))*RAMP_H;}   // z ∈ [-78..0]
+// Đê dốc đất nện: mặt trên nghiêng 12°, hai bên VÁT ~58° xuống chân (không vách đứng),
+// đầu cao tựa vào mép sàn thi công của tháp. Đầu thấp ở z=0, đầu cao ở z=-len.
+function rampEmbankment(w,len,h,c){
+  const hw=w/2,b=h/Math.tan(58*Math.PI/180);
+  const L0=[-hw,0,0],R0=[hw,0,0],LT=[-hw,h,-len],RT=[hw,h,-len],LB=[-hw-b,0,-len],RB=[hw+b,0,-len];
+  const tri=[L0,R0,RT, L0,RT,LT,  L0,LT,LB,  R0,RB,RT,  LT,RT,RB, LT,RB,LB,  L0,LB,RB, L0,RB,R0];
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(tri.flat(),3));
+  geo.computeVertexNormals();
+  const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:c,roughness:.92,metalness:0,flatShading:true,side:THREE.DoubleSide}));
+  m.castShadow=true;m.receiveShadow=true;return m;
+}
 function rampWedge(w,len,h,c){
   const s=new THREE.Shape();
   s.moveTo(0,0);s.lineTo(len,0);s.lineTo(len,h);s.lineTo(0,0);
@@ -3214,7 +3226,17 @@ function rampWedge(w,len,h,c){
 // DỐC KÉO ĐÁ: dài 80 m, dốc 12°, đất nện, rộng 14 m
 function buildRamp(){
   const g=new THREE.Group();
-  const w=rampWedge(RAMP_W,RAMP_LEN,RAMP_H,EG.mud);g.add(w);
+  const w=rampEmbankment(RAMP_W,RAMP_LEN,RAMP_H,'#b39571');g.add(w);
+  // lớp gạch bùn ốp hai sườn vát: vài dải ngang cho mắt đọc ra "đắp từng lớp"
+  const bat=RAMP_H/Math.tan(58*Math.PI/180);
+  for(let k=1;k<5;k++){
+    const y=RAMP_H*k/5, zEnd=-RAMP_LEN, zStart=-RAMP_LEN*k/5;   // dải ở độ cao y chạy từ chỗ mặt dốc = y tới đầu cao
+    const len=zStart-zEnd, off=bat*(1-k/5);
+    [-1,1].forEach(s=>{
+      const band=box(.25,.18,len,EG.mud);band.castShadow=false;
+      band.position.set(s*(RAMP_W/2+off*.5+.1),y,(zStart+zEnd)/2);band.rotation.z=s*.55;g.add(band);
+    });
+  }
   const SLOPE=RAMP_LEN/Math.cos(RAMP_A);
   // mặt dốc phủ cát nện sáng hơn
   const deck=box(RAMP_W-1.2,.25,SLOPE,EG.sand2);
@@ -3240,38 +3262,41 @@ function buildRamp(){
 
 // NỀN MÓNG + THÂN THÁP ĐANG XÂY trên đỉnh dốc + giàn giáo
 function buildFoundation(){
+  // Tháp xây dở ĐẶT TRÊN MẶT ĐẤT. 5 bậc × 3.32 m → mặt sàn thi công phẳng ở y = 16.6 = đúng đỉnh dốc.
+  // Gốc ở tâm đáy tháp; mép trước (+Z) của sàn thi công là chỗ đầu dốc đổ vào.
   const g=new THREE.Group();
-  const courses=[[46,3.2],[38,3.2],[30,3.2],[22,3.2]];
+  const H=RAMP_H/5, sizes=[46,38,30,22,14];
   let y=0;
-  courses.forEach(([s,h],i)=>{
-    const c=box(s,h,s,i%2?EG.stone:EG.stone2);c.position.y=y+h/2;g.add(c);
-    // đường ron khối đá
-    for(let k=-s/2+4;k<s/2;k+=4){
-      const j=box(.12,h*.96,s*1.002,EG.granite);j.position.set(k,y+h/2,0);j.material.opacity=1;g.add(j);
-      const j2=box(s*1.002,h*.96,.12,EG.granite);j2.position.set(0,y+h/2,k);g.add(j2);
+  sizes.forEach((s,i)=>{
+    const c=box(s,H,s,i%2?EG.stone:EG.stone2);c.position.y=y+H/2;g.add(c);
+    for(let k=-s/2+4;k<s/2-.5;k+=4){                 // ron khối đá 4 m
+      const j1=box(.12,H*.96,s*1.002,EG.granite);j1.position.set(k,y+H/2,0);j1.castShadow=false;g.add(j1);
+      const j2=box(s*1.002,H*.96,.12,EG.granite);j2.position.set(0,y+H/2,k);j2.castShadow=false;g.add(j2);
     }
-    y+=h;
+    y+=H;
   });
-  // lớp đang xây dở: vài khối rời trên cùng
+  // SÀN THI CÔNG (14×14) ở đỉnh: khối rời đang đặt, xe trượt, dân công, cần kéo gỗ
   const R=rnd(5);
-  for(let i=0;i<7;i++){
-    const b=box(3.6,3.2,3.6,EG.stone);
-    b.position.set(-8+i*2.9+R()*.4,y+1.6,-6+R()*3);b.rotation.y=(R()-.5)*.12;g.add(b);
+  [[-4.6,-4.6],[0,-4.6],[4.6,-4.6],[-4.6,0]].forEach(([x,z])=>{
+    const b=box(3.6,3.3,3.6,EG.stone);b.position.set(x+R()*.3,y+1.65,z+R()*.3);b.rotation.y=(R()-.5)*.1;g.add(b);
+  });
+  const sl=makeSledge();sl.position.set(2.2,y,3.4);g.add(sl);
+  const nb=makeStoneBlock(true);nb.position.set(2.2,y+.45,3.4);nb.scale.setScalar(.9);g.add(nb);
+  const top=[];for(let k=0;k<10;k++)top.push({x:-5+R()*10,y:y,z:-1+R()*6,ry:R()*6.28,lean:.2,s:.96+R()*.12});
+  g.add(peopleField(top,'stand'));
+  // cần kéo (đòn bẩy gỗ) trên góc sàn
+  const post=cyl(.2,.25,5,EG.wood,8);post.position.set(-5.5,y+2.5,5.2);g.add(post);
+  const arm=box(.2,.2,9,EG.wood2);arm.position.set(-5.5,y+5,3.2);arm.rotation.x=.45;g.add(arm);
+  // thang tre dựa các bậc phía +X
+  for(let k=0;k<4;k++){
+    const lad=new THREE.Group();
+    [-.5,.5].forEach(x=>{const r=box(.1,4.4,.1,EG.wood);r.position.set(x,2.2,0);lad.add(r);});
+    for(let q=0;q<6;q++){const st=box(1.1,.08,.08,EG.wood2);st.position.set(0,.4+q*.7,0);lad.add(st);}
+    lad.rotation.z=.3;lad.position.set(sizes[k]/2+.9,k*H,-6+k*3);lad.rotation.y=Math.PI/2;g.add(lad);
   }
-  // giàn giáo gỗ áp mặt +X
-  for(let i=0;i<4;i++){
-    const pole=cyl(.16,.16,y,EG.wood,7);pole.position.set(23.6,y/2,-9+i*6);g.add(pole);
-    for(let k=1;k<4;k++){
-      const bar=box(.14,.14,6.2,EG.wood2);bar.position.set(23.6,k*3.2,-6+i*6);g.add(bar);
-    }
-    const brace=box(.12,.12,7,EG.wood2);brace.position.set(23.6,y*.55,-6+i*6);brace.rotation.x=.7;g.add(brace);
-  }
-  // thang gỗ dựa giàn giáo
-  const ladder=new THREE.Group();
-  [-.55,.55].forEach(x=>{const r=box(.12,14,.12,EG.wood);r.position.set(x,7,0);ladder.add(r);});
-  for(let k=0;k<12;k++){const s=box(1.2,.1,.1,EG.wood2);s.position.set(0,1+k*1.1,0);ladder.add(s);}
-  ladder.rotation.x=-.2;ladder.position.set(24.4,0,11);g.add(ladder);
-  g.userData.h=y+3.2;
+  // đống khối đá chờ dưới chân tháp (bãi tập kết)
+  for(let k=0;k<6;k++){const b=box(3.6,3.3,3.6,k%2?EG.stone:EG.stone2);b.position.set(-30-(k%3)*4.2,1.65+Math.floor(k/3)*3.3,8+(k%2)*.3);g.add(b);}
+  g.userData.h=y+3.3;
   return g;
 }
 
@@ -4955,7 +4980,7 @@ const C3_PARTS=[
 ];
 const C5_PARTS=[
   {k:'c5_ramp',       p:[45,0,42]},
-  {k:'c5_foundation', p:[45,16.6,-58]},
+  {k:'c5_foundation', p:[45,0,-43]},
   {k:'c5_blocks',     p:[45,0,42]},
   {k:'c5_workers',    p:[45,0,42]},
   {k:'c5_slip',       p:[45,0,42]},
