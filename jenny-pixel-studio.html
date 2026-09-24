@@ -3119,119 +3119,179 @@ function instParts(geo,items,defColor,basic){
 const PT_Y0=.5, PT_SHAFT=5.6, PT_CAP=1.3;            // nền 0.5 · thân 5.6 · đầu cột 1.3
 const PT_TOP=PT_Y0+.35+PT_SHAFT+PT_CAP+.35;          // mặt khối đỡ = chân dầm (8.1 m)
 function papyrusColumn(){
+  // mỗi loại chi tiết lặp gom thành 1 InstancedMesh → ~13 lệnh vẽ/cột (hành lang 11 cột vẫn nhẹ)
   const c=new THREE.Group();
   const y0=PT_Y0, ys=y0+.35, yc=ys+PT_SHAFT;
-  // chân cột: trống đá tròn thấp
   const base=cyl(.98,1.02,.35,PT.stone2,20);base.position.y=y0+.175;c.add(base);
-  // thân: bó thân cói — lõi thon + 8 sống dọc
   const core=cyl(.56,.66,PT_SHAFT,PT.cream,16);core.position.y=ys+PT_SHAFT/2;c.add(core);
   const ribs=[];for(let k=0;k<8;k++){const a=k/8*Math.PI*2;ribs.push({p:[Math.cos(a)*.6,ys+PT_SHAFT/2,Math.sin(a)*.6],r:[0,-a,0],c:k%2?PT.cream:PT.stone});}
   c.add(instParts(new THREE.BoxGeometry(.16,PT_SHAFT,.16),ribs,PT.cream));
-  // bẹ lá nhọn ôm chân thân (nét đặc trưng cột papyrus), sơn xanh lá / xanh lam
   const sep=[];for(let k=0;k<8;k++){const a=(k+.5)/8*Math.PI*2;sep.push({p:[Math.cos(a)*.7,ys+.6,Math.sin(a)*.7],r:[0,-a+Math.PI/2,0],s:[1,1,.28],c:k%2?PT.green:PT.blue});}
   c.add(instParts(new THREE.ConeGeometry(.3,1.2,4),sep,PT.green));
-  // dải màu buộc bó cói: 2 dải giữa thân + 5 vòng dưới đầu cột
-  [[ys+2.0,PT.blue],[ys+2.25,PT.red],[ys+3.9,PT.red],[ys+4.15,PT.blue]].forEach(([y,col])=>{const b=cyl(.67,.67,.2,col,18);b.position.y=y;c.add(b);});
-  [PT.red,PT.blue,PT.ochre,PT.blue,PT.red].forEach((col,k)=>{const t=torus3(.6,.06,col,18);t.position.y=yc-.22-k*.2;c.add(t);});
-  // ô cartouche hướng ra sân (+X): khung vàng viền đỏ + chữ tượng hình
+  c.add(instParts(new THREE.CylinderGeometry(.67,.67,.2,18),
+    [[ys+2.0,PT.blue],[ys+2.25,PT.red],[ys+3.9,PT.red],[ys+4.15,PT.blue]].map(([y,col])=>({p:[0,y,0],c:col})),PT.blue));
+  c.add(instParts(new THREE.TorusGeometry(.6,.06,6,18),
+    [PT.red,PT.blue,PT.ochre,PT.blue,PT.red].map((col,k)=>({p:[0,yc-.22-k*.2,0],r:[Math.PI/2,0,0],c:col})),PT.red));
   const cart=new THREE.Group();cart.position.set(.69,ys+3.05,0);
-  const cf=box(.06,1.5,.56,PT.ochre);cart.add(cf);
+  cart.add(box(.06,1.5,.56,PT.ochre));
   const cr=box(.07,1.56,.62,PT.red);cr.position.x=-.01;cart.add(cr);
-  const gl=[];for(let k=0;k<4;k++)gl.push({p:[.04,.5-k*.33,(k%2?.1:-.1)],c:PT.dark});
-  cart.add(instParts(new THREE.BoxGeometry(.03,.18,.18),gl,PT.dark));
+  cart.add(instParts(new THREE.BoxGeometry(.03,.18,.18),[0,1,2,3].map(k=>({p:[.04,.5-k*.33,(k%2?.1:-.1)],c:PT.dark})),PT.dark));
   c.add(cart);
-  // ĐẦU CỘT papyrus NỞ LOE (hình chuông): xanh lá, gân sơn xanh lam/đỏ, vành vàng
   const bell=cyl(1.38,.6,PT_CAP,PT.green,20);bell.position.y=yc+PT_CAP/2;c.add(bell);
-  // gân sơn nghiêng theo độ loe của chuông
-  const veinG=new THREE.Group();
-  for(let k=0;k<12;k++){
-    const a=k/12*Math.PI*2;
-    const rib=box(.07,PT_CAP*1.08,.1,k%2?PT.blue:PT.red);
-    const arm=new THREE.Group();arm.rotation.y=-a;
-    rib.position.set(.99,0,0);rib.rotation.z=-Math.atan2(.78,PT_CAP);arm.add(rib);
-    arm.position.y=yc+PT_CAP/2;veinG.add(arm);
-  }
-  c.add(veinG);
+  const tilt=Math.atan2(.78,PT_CAP);                   // gân sơn nghiêng theo độ loe của chuông
+  c.add(instParts(new THREE.BoxGeometry(.07,PT_CAP*1.08,.1),
+    Array.from({length:12},(_,k)=>{const a=k/12*Math.PI*2;return{p:[.99*Math.cos(a),yc+PT_CAP/2,.99*Math.sin(a)],r:[0,-a,-tilt],c:k%2?PT.blue:PT.red};}),PT.blue));
   const rim=torus3(1.36,.07,PT.ochre,26);rim.position.y=yc+PT_CAP-.02;c.add(rim);
-  // khối đỡ vuông (abacus) — dầm gác lên đây
   const ab=box(1.3,.35,1.3,PT.stone);ab.position.y=yc+PT_CAP+.175;c.add(ab);
   return c;
 }
+// Hành lang cột chạy DÀI SUỐT một bên sân: 11 cột cách 6 m, dài 64 m, BỊT KÍN HAI ĐẦU.
 function buildColumnRow(){
   const g=new THREE.Group();
-  const Zs=[-6,0,6],L=20;
+  const N=11,SP=6,L=(N-1)*SP+4;
+  const Zs=Array.from({length:N},(_,k)=>(k-(N-1)/2)*SP);
   const sub=label=>{const s2=new THREE.Group();s2.userData.partLabel=label;g.add(s2);return s2;};
   const R=rnd(307);
+  const AH=1.2, ay=PT_TOP, ry0=ay+AH, RX0=-5.9, RX1=.76, RW=RX1-RX0, WX=-5.6;
 
-  // 1. NỀN hành lang (stylobate) + bậc xuống sân
   const base=sub('Nền hành lang + bậc xuống sân');
   base.add(bx(7.4,PT_Y0,L+1,PT.stone2,-2.4,0,0));
   base.add(bx(1.0,PT_Y0*.5,L-2,PT.stone,1.8,0,0));
 
-  // 2. BA CỘT papyrus
-  Zs.forEach((z,k)=>{const c=sub('Cột papyrus '+(k+1)+' (sơn màu)');const col=papyrusColumn();c.add(col);c.position.z=z;});
+  const cols=sub('Hàng '+N+' cột papyrus (sơn màu)');
+  Zs.forEach((z,k)=>{const c=papyrusColumn();c.position.z=z;c.userData.partLabel='Cột papyrus '+(k+1);cols.add(c);});
 
-  // 3. DẦM ĐÁ nối đầu cột + dải sơn + ĐĨA MẶT TRỜI CÓ CÁNH ở giữa, mặt hướng ra sân
   const arch=sub('Dầm đá + đĩa mặt trời có cánh');
-  const AH=1.2, ay=PT_TOP;
   arch.add(bx(1.5,AH,L+1,PT.stone,0,ay,0));
   [[ay+.2,PT.blue],[ay+.36,PT.red],[ay+AH-.16,PT.blue]].forEach(([y,col])=>{const st=box(.04,.1,L+1,col);st.position.set(.77,y,0);arch.add(st);});
-  const sun=new THREE.Group();sun.position.set(.8,ay+AH*.55,0);
-  const disc=gmesh(new THREE.CylinderGeometry(.34,.34,.08,20),PT.red);disc.rotation.z=Math.PI/2;sun.add(disc);
-  const discRim=torus3(.36,.05,PT.ochre,20);discRim.rotation.set(0,Math.PI/2,0);sun.add(discRim);
-  [-1,1].forEach(sd=>{
-    for(let k=0;k<3;k++){
-      const w=box(.05,.14,1.9-k*.35,[PT.blue,PT.green,PT.ochre][k]);
-      w.position.set(0,.14-k*.14,sd*(1.25-k*.1));w.rotation.x=sd*.08;sun.add(w);
-    }
-    const ur=cone(.07,.34,PT.ochre,6);ur.position.set(.02,-.1,sd*.42);sun.add(ur);   // rắn uraeus hai bên đĩa
+  // đĩa mặt trời có cánh lặp mỗi 3 nhịp cột
+  [-(SP*3),0,SP*3].forEach(zc=>{
+    const sun=new THREE.Group();sun.position.set(.8,ay+AH*.55,zc);
+    const disc=gmesh(new THREE.CylinderGeometry(.34,.34,.08,20),PT.red);disc.rotation.z=Math.PI/2;sun.add(disc);
+    const dr=torus3(.36,.05,PT.ochre,20);dr.rotation.set(0,Math.PI/2,0);sun.add(dr);
+    [-1,1].forEach(sd=>{for(let k=0;k<3;k++){const w=box(.05,.14,1.9-k*.35,[PT.blue,PT.green,PT.ochre][k]);w.position.set(0,.14-k*.14,sd*(1.25-k*.1));w.rotation.x=sd*.08;sun.add(w);}
+      const ur=cone(.07,.34,PT.ochre,6);ur.position.set(.02,-.1,sd*.42);sun.add(ur);});
+    arch.add(sun);
   });
-  arch.add(sun);
 
-  // 4. GỜ CORNICE LÕM kiểu Ai Cập: gờ tròn (torus) + mái hắt nghiêng ra, sơn sọc lá dọc
   const corn=sub('Gờ cornice lõm (sọc lá)');
-  const torus=cyl(.14,.14,L+1,PT.stone,10);torus.rotation.x=Math.PI/2;torus.position.set(.78,ay+AH+.12,0);corn.add(torus);
-  const lip=new THREE.Group();lip.position.set(.6,ay+AH+.24,0);lip.rotation.z=-.42;
+  const tor=cyl(.14,.14,L+1,PT.stone,10);tor.rotation.x=Math.PI/2;tor.position.set(.78,ry0+.12,0);corn.add(tor);
+  const lip=new THREE.Group();lip.position.set(.6,ry0+.24,0);lip.rotation.z=-.42;
   lip.add(bx(.3,.95,L+1.2,PT.stone2,0,0,0));
   const leaf=[];for(let k=0;k<Math.round(L*2.4);k++)leaf.push({p:[.16,.48,-L/2-.4+k/2.4],c:[PT.blue,PT.red,PT.green][k%3]});
   lip.add(instParts(new THREE.BoxGeometry(.02,.8,.22),leaf,PT.blue));
   corn.add(lip);
 
-  // 5. MÁI ĐÁ PHẲNG: tấm lát từ dầm vào tường sau; TRẦN sơn xanh rắc SAO VÀNG (nhìn từ dưới lên)
   const roof=sub('Mái đá phẳng + trần sao');
-  const RX0=-5.9,RX1=.76,RW=RX1-RX0,ry0=ay+AH;
   roof.add(bx(RW,.7,L+1,PT.stone2,(RX0+RX1)/2,ry0,0));
-  const slabs=[];for(let k=0;k<11;k++)slabs.push({p:[(RX0+RX1)/2,ry0+.71,-L/2+(k+.5)*(L+1)/11],c:k%2?PT.stone3:PT.stone2});
-  roof.add(instParts(new THREE.BoxGeometry(RW-.1,.03,.08),slabs,PT.stone3));   // ron giữa các tấm
+  const nSlab=Math.round(L/1.8);
+  roof.add(instParts(new THREE.BoxGeometry(RW-.1,.03,.08),Array.from({length:nSlab},(_,k)=>({p:[(RX0+RX1)/2,ry0+.71,-L/2+(k+.5)*(L+1)/nSlab],c:PT.stone3})),PT.stone3));
   const ceil=new THREE.Mesh(new THREE.PlaneGeometry(RW-1.6,L+.6),new THREE.MeshBasicMaterial({color:'#24468e',side:THREE.DoubleSide}));
   ceil.rotation.x=Math.PI/2;ceil.position.set((RX0+RX1)/2-.4,ry0-.02,0);roof.add(ceil);
-  const stars=[];for(let k=0;k<70;k++)stars.push({p:[RX0+.9+R()*(RW-2.4),ry0-.035,-L/2+.4+R()*(L-.4)],r:[0,R()*3,0],c:PT.ochre});
+  const stars=[];for(let k=0;k<Math.round(L*3.5);k++)stars.push({p:[RX0+.9+R()*(RW-2.4),ry0-.035,-L/2+.4+R()*(L-.4)],r:[0,R()*3,0],c:PT.ochre});
   roof.add(instParts(new THREE.BoxGeometry(.22,.01,.22),stars,PT.ochre,true));
-  roof.add(instParts(new THREE.BoxGeometry(.22,.01,.22),stars.map(t=>({p:t.p,r:[0,(t.r[1]||0)+.785,0],c:PT.ochre})),PT.ochre,true));   // hai ô vuông chéo = sao 8 cánh   // hai ô vuông chéo = sao 8 cánh
+  roof.add(instParts(new THREE.BoxGeometry(.22,.01,.22),stars.map(t=>({p:t.p,r:[0,t.r[1]+.785,0],c:PT.ochre})),PT.ochre,true));
 
-  // 6. TƯỜNG SAU (phía ngoài) + PHÙ ĐIÊU sơn màu mặt hướng vào hành lang
   const wall=sub('Tường sau + phù điêu');
-  const WX=-5.6,WH=ry0-PT_Y0;
+  const WH=ry0-PT_Y0;
   wall.add(bx(.8,WH,L+1,PT.stone,WX,PT_Y0,0));
-  // chân tường sơn đen-vàng, diềm "kheker" trên đỉnh
   wall.add(bx(.04,.5,L+1,PT.dark,WX+.42,PT_Y0,0));
-  const kh=[];for(let k=0;k<Math.round(L*2);k++)kh.push({p:[WX+.43,ry0-.55,-L/2+.25+k/2],c:k%2?PT.ochre:PT.blue});
-  wall.add(instParts(new THREE.BoxGeometry(.03,.6,.2),kh,PT.ochre));
-  // hai tầng phù điêu: đoàn người dâng lễ (dáng đứng cao gầy) + hàng chữ tượng hình
-  const fig=[];
-  for(let row=0;row<2;row++)for(let k=0;k<14;k++){
-    const z=-L/2+1.2+k*1.35+(row?.6:0), y=PT_Y0+1.5+row*2.7;
-    fig.push({p:[WX+.43,y,z],s:[1,1,1],c:[PT.red,PT.blue,PT.green,PT.ochre][(k+row)%4]});
-  }
+  wall.add(instParts(new THREE.BoxGeometry(.03,.6,.2),Array.from({length:Math.round(L*2)},(_,k)=>({p:[WX+.43,ry0-.55,-L/2+.25+k/2],c:k%2?PT.ochre:PT.blue})),PT.ochre));
+  const fig=[];const nFig=Math.round(L/1.35)-1;
+  for(let row=0;row<2;row++)for(let k=0;k<nFig;k++)fig.push({p:[WX+.43,PT_Y0+1.5+row*2.7,-L/2+1.2+k*1.35+(row?.6:0)],c:[PT.red,PT.blue,PT.green,PT.ochre][(k+row)%4]});
   wall.add(instParts(new THREE.BoxGeometry(.03,1.4,.34),fig,PT.red));
-  const heads=fig.map(f=>({p:[f.p[0],f.p[1]+.86,f.p[2]],c:PT.dark}));
-  wall.add(instParts(new THREE.BoxGeometry(.03,.26,.22),heads,PT.dark));
-  const hier=[];for(let k=0;k<44;k++)hier.push({p:[WX+.43,PT_Y0+3.3+(k%2)*.3,-L/2+.6+k*.43],c:PT.dark});
-  wall.add(instParts(new THREE.BoxGeometry(.03,.18,.18),hier,PT.dark));
-  // vạch tầng phù điêu
+  wall.add(instParts(new THREE.BoxGeometry(.03,.26,.22),fig.map(f=>({p:[f.p[0],f.p[1]+.86,f.p[2]],c:PT.dark})),PT.dark));
+  wall.add(instParts(new THREE.BoxGeometry(.03,.18,.18),Array.from({length:Math.round(L*2.2)},(_,k)=>({p:[WX+.43,PT_Y0+3.3+(k%2)*.3,-L/2+.6+k*.43],c:PT.dark})),PT.dark));
   [PT_Y0+.72,PT_Y0+2.6,PT_Y0+4.2,PT_Y0+5.4].forEach(y=>{const ln=box(.03,.06,L+1,PT.ochre);ln.position.set(WX+.43,y,0);wall.add(ln);});
 
+  // TƯỜNG BỊT HAI ĐẦU: hết cảnh "nhà chờ xe buýt" hở hai đầu
+  const ends=sub('Tường bịt hai đầu hành lang');
+  [-1,1].forEach(sd=>{
+    ends.add(bx(RW,WH,.8,PT.stone,(RX0+RX1)/2,PT_Y0,sd*(L/2+.1)));
+    const pil=box(1.5,WH+AH,1.1,PT.stone2);pil.position.set(0,PT_Y0+(WH+AH)/2,sd*(L/2+.1));ends.add(pil);   // trụ đầu hồi
+  });
   g.userData.h=ry0+.9;
+  return g;
+}
+
+/* ── hộp vát (thân tháp pylon / obelisk): đáy wb×db, đỉnh wt×dt, cao h ── */
+function frustumBox(wb,db,wt,dt,h,c){
+  const geo=new THREE.BoxGeometry(wb,h,db);
+  const pos=geo.attributes.position;
+  for(let k=0;k<pos.count;k++){if(pos.getY(k)>0){pos.setX(k,pos.getX(k)*wt/wb);pos.setZ(k,pos.getZ(k)*dt/db);}}
+  geo.computeVertexNormals();
+  const m=new THREE.Mesh(geo,mat(c));m.castShadow=true;m.receiveShadow=true;m.position.y=h/2;return m;
+}
+
+/* ── CỔNG THÁP PYLON: hai tháp vát 18 m + cổng giữa + cột cờ đuôi nheo; mặt chính hướng vào sân (-Z) ── */
+function buildC3Pylon(){
+  const g=new THREE.Group();
+  const sub=label=>{const s2=new THREE.Group();s2.userData.partLabel=label;g.add(s2);return s2;};
+  const H=18;
+  [-1,1].forEach(sd=>{
+    const t=sub('Tháp pylon '+(sd<0?'trái':'phải'));
+    const tw=frustumBox(16,7,13,5.4,H,PT.stone);tw.position.set(sd*11,H/2,0);t.add(tw);
+    const tor=box(13.4,.3,5.8,PT.stone2);tor.position.set(sd*11,H+.15,0);t.add(tor);
+    const cap=box(14.4,1.3,6.6,PT.stone2);cap.position.set(sd*11,H+.95,0);t.add(cap);
+    const cb=[];for(let k=0;k<36;k++)cb.push({p:[sd*11-7+k*.4,H+.95,-3.32],c:[PT.blue,PT.red,PT.green][k%3]});
+    t.add(instParts(new THREE.BoxGeometry(.2,1.1,.02),cb,PT.blue));
+    // phù điêu lớn: Pharaoh vung chùy trước thần — khối màu cách điệu
+    const rel=[
+      {p:[sd*11-2.2,7,-3.55],s:[1,1,1],c:PT.blue},{p:[sd*11+2.4,6.2,-3.55],s:[.8,.8,1],c:PT.red},
+      {p:[sd*11-2.2,10.2,-3.55],s:[.5,.35,1],c:PT.ochre},{p:[sd*11+2.4,8.6,-3.55],s:[.45,.3,1],c:PT.green}];
+    t.add(instParts(new THREE.BoxGeometry(2.6,6,.05),rel,PT.blue));
+    // rãnh cột cờ + cột cờ gỗ tuyết tùng + đuôi nheo đỏ
+    [-4.2,-1.6].forEach(dx=>{
+      const x=sd*11+(sd<0?dx:-dx);
+      const gr=box(.9,H-2,.2,PT.stone3);gr.position.set(x,(H-2)/2+.3,-3.3);t.add(gr);
+      const pole=cyl(.2,.28,H+8,EG.wood,8);pole.position.set(x,(H+8)/2,-3.9);t.add(pole);
+      const fl=box(.05,1.3,3.2,PT.red);fl.position.set(x,H+6.2,-3.9-1.6);fl.rotation.y=.12;t.add(fl);
+    });
+  });
+  const gate=sub('Cổng giữa + đĩa mặt trời');
+  [-1,1].forEach(sd=>{const j=box(1.6,12,6,PT.stone2);j.position.set(sd*3.8,6,0);gate.add(j);});
+  const lin=box(9.2,2.4,6.4,PT.stone);lin.position.set(0,13.2,0);gate.add(lin);
+  const lcap=box(9.8,.9,6.8,PT.stone2);lcap.position.set(0,14.85,0);gate.add(lcap);
+  const leafL=box(2.9,11,.3,EG.wood2);leafL.position.set(-1.5,5.5,.4);leafL.rotation.y=-.9;gate.add(leafL);   // cánh cổng gỗ mở
+  const leafR=box(2.9,11,.3,EG.wood2);leafR.position.set(1.5,5.5,.4);leafR.rotation.y=.9;gate.add(leafR);
+  const disc=gmesh(new THREE.CylinderGeometry(.9,.9,.1,24),PT.red);disc.rotation.x=Math.PI/2;disc.position.set(0,13.3,-3.26);gate.add(disc);
+  [-1,1].forEach(sd=>{const w=box(3.2,.35,.08,PT.blue);w.position.set(sd*2.2,13.35,-3.25);gate.add(w);});
+  g.userData.h=H+8;
+  return g;
+}
+
+/* ── HAI COT OBELISK 20 m sau bục: kẹp mặt trời ở giữa, không che; chóp mạ vàng ── */
+function buildC3Obelisks(){
+  const g=new THREE.Group();
+  [-1,1].forEach(sd=>{
+    const o=new THREE.Group();o.userData.partLabel='Obelisk '+(sd<0?'trái':'phải');o.position.x=sd*9;
+    o.add(bx(3,1.2,3,PT.stone2,0,0,0));
+    o.add(bx(2.4,.5,2.4,PT.stone,0,1.2,0));
+    const sh=frustumBox(1.8,1.8,1.15,1.15,18,'#cdb58f');sh.position.y=1.7+9;o.add(sh);
+    const tip=cone(.82,1.6,EG.gold,4);tip.rotation.y=Math.PI/4;tip.position.y=1.7+18+.8;o.add(tip);
+    const gl=[];for(let side=0;side<4;side++)for(let k=0;k<14;k++){
+      const h=2.6+k*1.1, half=.9-(.9-.575)*(h-1.7)/18;
+      const a=side*Math.PI/2;gl.push({p:[Math.sin(a)*(half+.01),h,Math.cos(a)*(half+.01)],r:[0,a,0],c:PT.dark});}
+    o.add(instParts(new THREE.BoxGeometry(.32,.32,.02),gl,PT.dark));
+    g.add(o);
+  });
+  g.userData.h=21.3;
+  return g;
+}
+
+/* ── TƯỜNG THẤP 3.2 m khép phía sau sân, khe giữa đúng trục mặt trời (không che nắng ngược) ── */
+function buildC3BackWall(){
+  const g=new THREE.Group();
+  const H=3.2,W=62,gap=6;
+  [-1,1].forEach(sd=>{
+    const len=(W-gap)/2, cx=sd*(gap/2+len/2);
+    g.add(bx(len,H,1,PT.stone,cx,0,0));
+    const cap=box(len+.2,.4,1.4,PT.stone2);cap.position.set(cx,H+.2,0);g.add(cap);
+    const bd=box(len,.14,.04,PT.blue);bd.position.set(cx,H-.5,.52);g.add(bd);
+    const bd2=box(len,.1,.04,PT.red);bd2.position.set(cx,H-.72,.52);g.add(bd2);
+    const pil=box(1.4,H+1.2,1.6,PT.stone2);pil.position.set(sd*gap/2,(H+1.2)/2,0);g.add(pil);   // trụ hai bên khe
+  });
+  g.userData.h=H+1.2;
   return g;
 }
 
@@ -5020,6 +5080,9 @@ regPart('c3_throne','Ngai vàng (ghế 1.2 m)',buildThrone);
 regPart('c3_basket','Giỏ chà là 1.2 m',buildBasket);
 regPart('c3_cagepost','Cột + lồng chim vàng PET',buildCagePost);
 regPart('c3_columns','Hành lang cột có mái (portico)',buildColumnRow);
+regPart('c3_pylon','Cổng tháp pylon + cột cờ',buildC3Pylon);
+regPart('c3_obelisks','Hai obelisk kẹp mặt trời',buildC3Obelisks);
+regPart('c3_backwall','Tường thấp khép sau sân',buildC3BackWall);
 regPart('c3_crowd','Đám đông quỳ (200)',buildCrowdKneel);
 regPart('c3_guards','2 lính gác cầm giáo',buildGuards);
 regPart('c3_sun','Khóa hướng mặt trời C3',buildSunLock);
@@ -5092,8 +5155,11 @@ const C3_PARTS=[
   {k:'c3_throne',   p:[-45,1.5,-1.2]},
   {k:'c3_basket',   p:[-46.9,1.5,-0.6], l:'Giỏ chà là (trái ngai)'},
   {k:'c3_cagepost', p:[-43.0,1.5,-0.6], l:'Lồng PET (phải ngai)'},
-  {k:'c3_columns',  p:[-59,0,2], l:'Hành lang cột — bên trái sân'},
-  {k:'c3_columns',  p:[-31,0,2], ry:Math.PI, l:'Hành lang cột — bên phải sân'},
+  {k:'c3_columns',  p:[-69,0,16], l:'Hành lang cột — bên trái sân (64 m)'},
+  {k:'c3_columns',  p:[-21,0,16], ry:Math.PI, l:'Hành lang cột — bên phải sân (64 m)'},
+  {k:'c3_pylon',    p:[-45,0,51]},
+  {k:'c3_obelisks', p:[-45,0,-8]},
+  {k:'c3_backwall', p:[-45,0,-17]},
   {k:'c3_guards',   p:[-45,1.5,2.2]},
   {k:'c3_crowd',    p:[-45,0,0]},
   {k:'c3_sun',      p:[-45,0,0]},
