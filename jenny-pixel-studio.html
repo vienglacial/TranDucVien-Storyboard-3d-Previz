@@ -4985,11 +4985,11 @@ const C5_PARTS=[
   {k:'c5_workers',    p:[45,0,42]},
   {k:'c5_slip',       p:[45,0,42]},
   {k:'c5_zones',      p:[45,0,42]},
-  {k:'c5_ball',       p:[45,4.68,20], ry:0, l:'Cầu đá — đang lăn lên dốc'},
-  {k:'c5_ball',       p:[30,0,40], l:'Cầu đá — vừa đục xong'},
+  {k:'c5_ball',       p:[45,4.68,20], ry:0, l:'SAU 1:45 · Cầu đá lăn lên dốc', hidden:true},
+  {k:'c5_ball',       p:[30,0,40], l:'SAU 1:45 · Cầu đá vừa đục xong', hidden:true},
   {k:'c5_sandpad',    p:[20,0,44]},
   {k:'c5_padzone',    p:[20,0,44]},
-  {k:'c5_chisel',     p:[8,0,30]},
+  {k:'c5_chisel',     p:[8,0,30], l:'SAU 1:45 · Trạm đục vuông → cầu', hidden:true},
   {k:'c5_onlookers',  p:[22,0,52]},
   {k:'c5_palanquin',  p:[2,0,47], ry:Math.PI/2},
   {k:'c5_cagecarry',  p:[-5,0,47.6], ry:Math.PI/2}
@@ -5005,8 +5005,8 @@ const C5_CAMS=[
   {t:'1:30',n:'Wide dốc + dân công',      p:[95,15,72],    tg:[45,8,8],    f:28},
   {t:'1:35',n:'Khối tuột đè hàng người',  p:[62,4.5,44],   tg:[45,2.2,32], f:50},
   {t:'1:42',n:'Top-down Coppa vẽ cát',    p:[20,15,44.3],  tg:[20,0,44],   f:35},
-  {t:'1:50',n:'Cầu đá lăn lên dốc',       p:[68,8,38],     tg:[45,5,20],   f:40},
-  {t:'1:57',n:'Pharaoh rắc vàng lên Coppa',p:[9,2.8,55],   tg:[2,1.9,47],  f:50}
+  {t:'1:50',n:'Cầu đá lăn lên dốc (bật SAU 1:45)',p:[68,8,38], tg:[45,5,20],   f:40},
+  {t:'1:57',n:'Pharaoh rắc vàng (bật SAU 1:45)',p:[9,2.8,55],  tg:[2,1.9,47],  f:50}
 ];
 const BOTH_CAMS=[
   {t:'—',n:'Tổng thể 2 bối cảnh',   p:[10,64,175], tg:[5,6,10],  f:28},
@@ -5164,7 +5164,7 @@ const SET_DEFS={
   },
   setC5:{
     label:'C5 · Công trường kim tự tháp',
-    note:'Riêng công trường (đã dời về gốc toạ độ).',
+    note:'Riêng công trường (đã dời về gốc toạ độ). ĐẦU CẢNH chỉ có khối đá VUÔNG. Cầu đá + trạm đục là trạng thái SAU khi Coppa vẽ hình tròn (~1:45) — bật 3 dòng "SAU 1:45" trong danh sách bộ phận.',
     parts:[{k:'eg_sky',p:[-20,0,0]},{k:'eg_sand',p:[-20,0,0]},{k:'eg_nile',p:[95,0,0]},
            ...C5_PARTS.map(o=>({...o,p:[o.p[0]-25,o.p[1],o.p[2]]})),
            {k:'eg_scaleref',p:[-28,0,52]}],
