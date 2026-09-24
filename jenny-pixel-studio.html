@@ -4005,12 +4005,15 @@ function buildBdHoles(){
   // HAI CỬA HANG BẰNG NHAU ø2.4 (ref: hai lỗ mũi giống hệt). Trái khung x=-1.5 = lỗ mũi PHẢI tượng (bắn ra C9),
   // phải khung x=+1.5 = lỗ mũi TRÁI tượng (chui vào). Ống thu dần ra ngoài tới ø1.5 ở mặt tượng.
   const R1=1.2;
-  [-1.5,1.5].forEach(x=>{
+  [[-1.5,'Cửa hang TRÁI khung (= lỗ mũi phải tượng) — bắn ra 3:48'],
+   [ 1.5,'Cửa hang PHẢI khung (= lỗ mũi trái tượng) — chui vào 0:43']].forEach(([x,label])=>{
+    const gate=new THREE.Group();gate.userData.partLabel=label;      // tách tiếp ra có tên tử tế
     const tube=gmesh(new THREE.CylinderGeometry(R1,.75,2.4,24,1,true),BD.wall2);
-    tube.rotation.x=Math.PI/2;tube.position.set(x,BD_NOSE_Y,fz-.6);tube.material.side=THREE.DoubleSide;g.add(tube);
-    const rim=gmesh(new THREE.TorusGeometry(R1,.18,8,24),BD.wall);rim.position.set(x,BD_NOSE_Y,fz+.35);g.add(rim);
+    tube.rotation.x=Math.PI/2;tube.position.set(x,BD_NOSE_Y,fz-.6);tube.material.side=THREE.DoubleSide;gate.add(tube);
+    const rim=gmesh(new THREE.TorusGeometry(R1,.18,8,24),BD.wall);rim.position.set(x,BD_NOSE_Y,fz+.35);gate.add(rim);
     const day=new THREE.Mesh(new THREE.CircleGeometry(.75,24),new THREE.MeshBasicMaterial({color:'#ffe6b0',transparent:true,opacity:.85}));
-    day.position.set(x,BD_NOSE_Y,fz-1.75);g.add(day);
+    day.position.set(x,BD_NOSE_Y,fz-1.75);gate.add(day);
+    g.add(gate);
   });
   // máng đá xoắn ngắn dẫn xuống sàn (kịch bản: "trượt theo ống đá xoắn, rớt bịch")
   const pts=[new THREE.Vector3(1.5,BD_NOSE_Y-.3,fz+.4),
@@ -4018,10 +4021,11 @@ function buildBdHoles(){
              new THREE.Vector3(1.4,.55,fz+2.6),
              new THREE.Vector3(.7,.18,fz+3.4)];
   const chuteCurve=new THREE.CatmullRomCurve3(pts);
+  const slideG=new THREE.Group();slideG.userData.partLabel='Máng đá xoắn dẫn xuống sàn';
   const slide=new THREE.Mesh(new THREE.TubeGeometry(chuteCurve,30,.62,10,false),
     new THREE.MeshStandardMaterial({color:BD.wall3,roughness:.95,flatShading:true,
       side:THREE.DoubleSide,transparent:true,opacity:.55}));
-  g.add(slide);
+  slideG.add(slide);g.add(slideG);
   // đèn thật: ánh ngày lọt qua hai cửa hang — nguồn sáng nền của phòng
   [[-1.5,1.3],[1.5,1.3]].forEach(([x,pw])=>{
     const L=new THREE.PointLight('#ffe0ae',pw,16,1.6);
@@ -5088,6 +5092,52 @@ Object.keys(SET_DEFS).forEach(sk=>{
 /* ══════════ TÁCH KHỐI / GỘP / BOOKMARK ══════════ */
 
 // biến một child của khối thành vật thể độc lập, giữ nguyên vị trí trong không gian
+// Đánh số gốc cho các con MỘT LẦN, để tách bớt vài cái rồi tách tiếp vẫn đúng chỉ số.
+function ensureFragIdx(parent){
+  parent.children.forEach((c,i)=>{if(c.userData.fragIdx===undefined)c.userData.fragIdx=i;});
+}
+// Dựng lại một mảnh con: gọi lại builder gốc rồi đi theo đường chỉ số.
+// Builder đều dùng random có hạt giống cố định nên lần nào dựng cũng ra y hệt.
+function fragFromBuilder(src,path){
+  let node=BUILDERS[src]?BUILDERS[src]():null;
+  if(!node)return null;
+  for(const i of (path||[])){node=node.children[i];if(!node)return null;}
+  node.position.set(0,0,0);node.rotation.set(0,0,0);node.scale.setScalar(1);
+  if(!node.isGroup){const w=new THREE.Group();w.add(node);node=w;}
+  node.userData.noTint=true;
+  return node;
+}
+// Tách một con BẤT KỲ ra thành vật thể riêng, giữ nguyên vị trí thế giới.
+// Con là bộ phận có builder riêng → tách như cũ; không thì thành "mảnh" nhớ đường về nguồn.
+function detachChild(parent,child){
+  ensureFragIdx(parent);
+  const idx=child.userData.fragIdx;
+  child.updateWorldMatrix(true,false);
+  const p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+  child.matrixWorld.decompose(p,q,sc);
+  parent.remove(child);
+  let obj=child;
+  if(!child.isGroup){                                  // mảnh là mesh trần → bọc lại cho đồng nhất
+    obj=new THREE.Group();
+    child.position.set(0,0,0);child.rotation.set(0,0,0);child.scale.setScalar(1);
+    obj.add(child);
+  }
+  obj.position.copy(p);obj.rotation.setFromQuaternion(q);obj.scale.setScalar(sc.x);
+  const hasBuilder=child.userData.partKey&&BUILDERS[child.userData.partKey];
+  if(hasBuilder){                                      // bộ phận của khối set / khối gộp
+    obj.userData.key=child.userData.partKey;
+    obj.userData.label=child.userData.partLabel;
+  }else{                                               // mảnh con: nhớ nguồn + đường chỉ số
+    const src=parent.userData.fragSrc||parent.userData.key;
+    obj.userData.key='__frag';
+    obj.userData.fragSrc=src;
+    obj.userData.fragPath=(parent.userData.fragPath||[]).concat([idx]);
+    obj.userData.label=child.userData.partLabel||((parent.userData.label||'Mảnh')+' · mảnh '+(idx+1));
+  }
+  obj.userData.id=++idCounter;obj.userData.noTint=true;obj.visible=true;
+  scene.add(obj);objects.push(obj);
+  return obj;
+}
 function detachPart(setObj,child){
   child.updateWorldMatrix(true,false);
   const p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();
@@ -5107,20 +5157,21 @@ function detachPart(setObj,child){
 function splitSet(setObj){
   const kids=setObj.children.slice();
   if(!kids.length)return[];
-  const out=kids.map(k=>detachPart(setObj,k));
+  ensureFragIdx(setObj);
+  const out=kids.map(k=>detachChild(setObj,k));
   scene.remove(setObj);
   const i=objects.indexOf(setObj);if(i>=0)objects.splice(i,1);
   selection.forEach(o=>setOutline(o,false));
   selection=out.slice();selected=out[0];
   selection.forEach(o=>setOutline(o,true));
   renderInspector();
-  toast('Đã tách '+out.length+' bộ phận — mỗi cái chọn/di chuyển riêng được');
+  toast('Đã tách '+out.length+' phần — chọn một phần rồi tách tiếp được nữa');
   if(typeof autosave==='function')autosave();
   if(typeof pushHistory==='function')pushHistory();
   return out;
 }
 function detachOne(setObj,child){
-  const o=detachPart(setObj,child);
+  const o=detachChild(setObj,child);
   if(!setObj.children.length){
     scene.remove(setObj);const i=objects.indexOf(setObj);if(i>=0)objects.splice(i,1);
   }
@@ -5228,6 +5279,7 @@ function setEnvRestore(){
 function updateSetEnv(){
   const has=objects.some(o=>{
     if(!o.userData)return false;
+    if(o.userData.key==='__frag')return !!SET_PART_LABEL[o.userData.fragSrc]&&!/^bd_/.test(o.userData.fragSrc||'');
     if(o.userData.isSet==='__group')return o.children.some(c=>!!SET_PART_LABEL[c.userData.partKey]&&!/^bd_/.test(c.userData.partKey||''));
     if(o.userData.isSet)return !(SET_DEFS[o.userData.isSet]||{}).small;
     return !!SET_PART_LABEL[o.userData.key]&&!/^bd_/.test(o.userData.key||'');
@@ -5268,15 +5320,31 @@ function gotoSetCam(setObj,bm){
 }
 
 /* ── giao diện khối set trong Inspector ── */
+// Có thể tách tiếp không? Bất kỳ vật nào còn từ 2 phần con trở lên.
+function canSplitMore(g){return !!g&&g.children&&g.children.length>=2;}
 function setBlockHTML(g){
+  const isSet=!!g.userData.isSet;
   const def=SET_DEFS[g.userData.isSet];
-  const rows=g.children.map((c,i)=>`
+  ensureFragIdx(g);
+  const rows=g.children.map((c,i)=>{
+    const nm=c.userData.partLabel||c.userData.partKey||((g.userData.label||'Phần')+' · mảnh '+((c.userData.fragIdx??i)+1));
+    const sub=(c.children&&c.children.length>=2)?' <small style="color:var(--ink-faint)">('+c.children.length+' mảnh)</small>':'';
+    return `
     <div class="partrow" data-i="${i}">
-      <span class="eye${c.visible?' on':''}" title="Ẩn/hiện bộ phận">${c.visible?'●':'○'}</span>
-      <span class="nm" title="Bấm để lia camera vào bộ phận">${c.userData.partLabel||c.userData.partKey}</span>
-      <span class="cut" title="Tách riêng bộ phận này">✂</span>
-    </div>`).join('');
-  const cams=(def?def.cams:[]).map((c,i)=>`
+      <span class="eye${c.visible?' on':''}" title="Ẩn/hiện phần này">${c.visible?'●':'○'}</span>
+      <span class="nm" title="Bấm để lia camera vào phần này">${nm}${sub}</span>
+      <span class="cut" title="Tách riêng phần này ra">✂</span>
+    </div>`;}).join('');
+  if(!isSet)return `
+  <div class="set-blk">
+    <div class="jlabel"><span>Tách tiếp · ${g.children.length} phần</span><span class="gear" id="setFrameAll">Khung vừa</span></div>
+    <div class="set-note">Vật này còn tách nhỏ được nữa. Bấm ✂ ở một dòng để tách riêng phần đó, hoặc tách rời toàn bộ. Mỗi mảnh tách ra vẫn lưu/nạp và Ctrl+Z được.</div>
+    <div class="setbar">
+      <button id="setSplit" class="prim" title="Tách thành các phần rời, giữ nguyên vị trí">✂ Tách rời toàn bộ</button>
+    </div>
+    <div class="partlist">${rows}</div>
+  </div>`;
+  const cams=(def&&def.cams?def.cams:[]).map((c,i)=>`
     <button class="cambm" data-c="${i}"><b>${c.t}</b><span>${c.n}</span></button>`).join('');
   return `
   <div class="set-blk">
@@ -5294,6 +5362,7 @@ function setBlockHTML(g){
 }
 function bindSetBlockUI(g){
   const def=SET_DEFS[g.userData.isSet];
+  ensureFragIdx(g);
   const fa=document.getElementById('setFrameAll');
   if(fa)fa.onclick=()=>{orbit.frame(getCenter(g),getRadius(g)*0.62);};
   const sp=document.getElementById('setSplit');
@@ -5314,6 +5383,8 @@ function bindSetBlockUI(g){
   document.querySelectorAll('#inspector .cambm').forEach(b=>{
     b.onclick=()=>gotoSetCam(g,def.cams[+b.dataset.c]);
   });
+  const fr=document.getElementById('setFrameAll');
+  if(fr&&!g.userData.isSet)fr.onclick=()=>orbit.frame(getCenter(g),getRadius(g)*0.9);
 }
 
 /* ════════════════════════ ASSET PALETTE (UI) ════════════════════════ */
@@ -5598,7 +5669,7 @@ function renderInspector(){
       <input id="objNameEn" value="${(u.enName||'').replace(/"/g,'&quot;')}" placeholder="vd: yellow chicken Pipo — để trống = tự dịch"
         style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-dim);font-family:'JetBrains Mono';font-size:12px;padding:7px 9px;outline:none">
     </div>
-    ${u.isSet?setBlockHTML(selected):''}
+    ${(u.isSet||canSplitMore(selected))?setBlockHTML(selected):''}
     <div class="ctrl">
       <label>Xoay ngang (trục Y) <span class="val" id="vObjRotY">${Math.round(selected.rotation.y*180/Math.PI)}°</span></label>
       <input type="range" id="objRot" min="0" max="360" data-default="0" value="${Math.round(((selected.rotation.y*180/Math.PI)%360+360)%360)}">
@@ -5989,7 +6060,7 @@ function renderInspector(){
     updRange(texOff);
   }
   document.getElementById('delBtn').onclick=deleteSelected;
-  if(u.isSet)bindSetBlockUI(selected);
+  if(u.isSet||canSplitMore(selected))bindSetBlockUI(selected);
   const spBtn=document.getElementById('splitPaxBtn');if(spBtn)spBtn.onclick=()=>runSplitPax(selection.slice(),false);
   const spAll=document.getElementById('splitPaxAll');if(spAll)spAll.onclick=()=>runSplitPax(objects.slice(),true);
   const nameInp=document.getElementById('objName');
@@ -6623,6 +6694,8 @@ function gatherSceneData(){
       if(o.userData.charImg){rec.charImg=o.userData.charImg;rec.charH=o.userData.h;}
       if(o.userData.key==='__custom'||o.userData.fixedChar)rec.parts=o.userData.parts;
       if(o.userData.noTint)rec.noTint=1;
+      if(o.userData.key==='__frag'){rec.fragSrc=o.userData.fragSrc;rec.fragPath=o.userData.fragPath;}
+      if(!o.visible)rec.hidden=1;
       if(o.userData.isSet==='__group')rec.kids=o.children.map(c=>({key:c.userData.partKey,label:c.userData.partLabel,
         pos:[c.position.x,c.position.y,c.position.z],rotX:c.rotation.x,rotY:c.rotation.y,rotZ:c.rotation.z,scale:c.scale.x}));
       if(o.userData.isSet){
@@ -6664,6 +6737,7 @@ function applySceneData(d){
     let g;
     if((od.key==='__custom'||od.fixedChar)&&od.parts)g=buildFromParts(od.parts);
     else if(od.figure)g=makeFigure({...od.figure,color:od.color,pose:od.pose,poseName:od.poseName,features:od.features||[]});
+    else if(od.key==='__frag')g=fragFromBuilder(od.fragSrc,od.fragPath);
     else if(od.key==='__group')g=buildGroupFromKids(od.kids);
     else g=BUILDERS[od.key]?BUILDERS[od.key](od.variant):null;
     if(g&&g.userData.extras)delete g.userData.extras; // khoang máy bay: các dãy ghế đã được lưu thành vật riêng
@@ -6685,6 +6759,8 @@ function applySceneData(d){
       if(od.setParts)g.children.slice().forEach(c=>{if(od.setParts.indexOf(c.userData.partIdx)<0)g.remove(c);});
       (od.setHidden||[]).forEach(ix=>{const c=g.children.find(k=>k.userData.partIdx===ix);if(c)c.visible=false;});
     }
+    if(od.key==='__frag'){g.userData.fragSrc=od.fragSrc;g.userData.fragPath=od.fragPath;}
+    if(od.hidden)g.visible=false;
     scene.add(g);objects.push(g);
     // áp lại ảnh nhân vật billboard nếu có
     if(od.key==='cardchar'&&od.charImg){
