@@ -3267,15 +3267,103 @@ function buildC3Obelisks(){
     const o=new THREE.Group();o.userData.partLabel='Obelisk '+(sd<0?'trái':'phải');o.position.x=sd*9;
     o.add(bx(3,1.2,3,PT.stone2,0,0,0));
     o.add(bx(2.4,.5,2.4,PT.stone,0,1.2,0));
-    const sh=frustumBox(1.8,1.8,1.15,1.15,18,'#cdb58f');sh.position.y=1.7+9;o.add(sh);
+    const sh=frustumBox(1.8,1.8,1.15,1.15,18,'#d9ab3f');sh.position.y=1.7+9;o.add(sh);
     const tip=cone(.82,1.6,EG.gold,4);tip.rotation.y=Math.PI/4;tip.position.y=1.7+18+.8;o.add(tip);
     const gl=[];for(let side=0;side<4;side++)for(let k=0;k<14;k++){
       const h=2.6+k*1.1, half=.9-(.9-.575)*(h-1.7)/18;
       const a=side*Math.PI/2;gl.push({p:[Math.sin(a)*(half+.01),h,Math.cos(a)*(half+.01)],r:[0,a,0],c:PT.dark});}
-    o.add(instParts(new THREE.BoxGeometry(.32,.32,.02),gl,PT.dark));
+    o.add(instParts(new THREE.BoxGeometry(.32,.32,.02),gl.map(t=>({...t,c:'#7a4f1c'})),'#7a4f1c'));
+    const trim=box(2.5,.12,2.5,EG.gold);trim.position.y=1.66;o.add(trim);
     g.add(o);
   });
   g.userData.h=21.3;
+  return g;
+}
+
+/* ── TƯỢNG MÈO BASTET đen ngồi trên bệ (ref): vòng cổ vàng, bông tai, mặt dây ankh ── */
+function buildBastet(){
+  const g=new THREE.Group();
+  const K='#24222b', GD=EG.gold;
+  const ped=new THREE.Group();ped.userData.partLabel='Bệ đá';g.add(ped);
+  ped.add(bx(3.4,2.2,4.4,PT.stone,0,0,0));
+  ped.add(bx(3.9,.3,4.9,PT.stone2,0,2.2,0));
+  ped.add(bx(3.5,.12,.04,PT.blue,0,1.75,2.21));ped.add(bx(3.5,.08,.04,PT.red,0,1.58,2.21));
+  ped.add(instParts(new THREE.BoxGeometry(.3,.3,.03),Array.from({length:12},(_,k)=>({p:[-1.25+(k%6)*.5,.55+Math.floor(k/6)*.55,2.21],c:k%3?PT.dark:GD})),PT.dark));
+  const cat=new THREE.Group();cat.userData.partLabel='Mèo Bastet';cat.position.y=2.5;g.add(cat);
+  const put=(m,x,y,z)=>{m.position.set(x,y,z);cat.add(m);return m;};
+  put(sph(1.3,K,14),0,1.1,-.7).scale.set(1,1,1.2);                     // hông ngồi
+  put(cyl(.85,1.2,3.2,K,14),0,2.4,-.25).rotation.x=-.15;               // thân
+  put(sph(.95,K,14),0,3.15,.35);                                       // ngực
+  [-.45,.45].forEach(x=>{put(cyl(.28,.32,2.6,K,10),x,1.3,.8);put(sph(.38,K,10),x,.2,1.0).scale.set(1,.6,1.3);});
+  put(sph(.85,K,14),0,4.6,.25);                                        // đầu
+  put(sph(.42,K,10),0,4.35,.85).scale.set(1,.8,1);                     // mõm
+  put(box(.16,.1,.08,'#3a2c30'),0,4.5,1.24);                           // mũi
+  [-1,1].forEach(sd=>{
+    const e=put(cone(.36,.95,K,3),sd*.45,5.45,.1);e.rotation.z=-sd*.2;   // tai nhọn
+    const ey=new THREE.Mesh(new THREE.SphereGeometry(.15,10,8),new THREE.MeshBasicMaterial({color:'#f2c230'}));
+    ey.scale.set(1.3,.8,.5);put(ey,sd*.32,4.75,.8);                      // mắt vàng
+    put(box(.04,.18,.05,'#111'),sd*.32,4.75,.87);                        // đồng tử khe
+    put(torus3(.13,.035,GD,12),sd*.72,4.55,.25).rotation.set(0,0,Math.PI/2);  // bông tai
+  });
+  const col1=put(torus3(.98,.16,GD,24),0,3.85,.2);col1.rotation.x=-Math.PI/2+.4;   // vòng cổ vàng bản rộng
+  const col2=put(torus3(1.02,.08,PT.blue,24),0,3.6,.28);col2.rotation.x=-Math.PI/2+.4;
+  const col3=put(torus3(1.06,.06,PT.red,24),0,3.42,.34);col3.rotation.x=-Math.PI/2+.4;
+  const ak=put(torus3(.15,.05,GD,12),0,3.3,1.3);ak.rotation.set(0,0,0);  // ankh: vòng
+  put(box(.09,.45,.06,GD),0,2.95,1.3);put(box(.4,.09,.06,GD),0,3.08,1.3);
+  const tail=new THREE.Mesh(new THREE.TorusGeometry(1.1,.14,6,16,Math.PI*.9),mat(K));
+  tail.rotation.set(-Math.PI/2,0,.1);put(tail,0,.12,.1);               // đuôi cuộn quanh chân trước
+  g.userData.h=8.4;
+  return g;
+}
+function buildC3Cats(){
+  const g=new THREE.Group();
+  [-1,1].forEach(sd=>{const c=buildBastet();c.position.x=sd*13.5;c.rotation.y=-sd*.12;c.userData.partLabel='Tượng mèo Bastet '+(sd<0?'trái':'phải');g.add(c);});
+  g.userData.h=8.4;return g;
+}
+
+/* ── LỄ VẬT QUANH BỤC (ref): thảm đỏ viền vàng, 2 quạt lông, lò lửa, cờ hiệu dọc lối ── */
+function brazier(){
+  const b=new THREE.Group();
+  for(let k=0;k<3;k++){const a=k/3*Math.PI*2;const l=cyl(.04,.05,1.1,EG.gold2,5);l.position.set(Math.cos(a)*.22,.55,Math.sin(a)*.22);l.rotation.set(Math.sin(a)*.25,0,-Math.cos(a)*.25);b.add(l);}
+  const bw=cyl(.42,.22,.32,EG.gold2,12);bw.position.y=1.2;b.add(bw);
+  const fl=new THREE.Mesh(new THREE.ConeGeometry(.3,.7,8),new THREE.MeshBasicMaterial({color:'#ffae3a'}));fl.position.y=1.7;b.add(fl);
+  const fl2=new THREE.Mesh(new THREE.ConeGeometry(.16,.45,6),new THREE.MeshBasicMaterial({color:'#fff0a0'}));fl2.position.y=1.62;b.add(fl2);
+  return b;
+}
+function buildC3Regalia(){
+  const g=new THREE.Group();
+  const sub=label=>{const s2=new THREE.Group();s2.userData.partLabel=label;g.add(s2);return s2;};
+  const RED='#a8262a';
+  // thảm: mặt bục → 3 bậc → chạy dọc lối giữa đám đông
+  const cp=sub('Thảm đỏ viền vàng');
+  const run=(z0,z1,y)=>{const L=z1-z0;cp.add(bx(2.4,.03,L,RED,0,y,(z0+z1)/2));[-1,1].forEach(sd=>cp.add(bx(.14,.035,L,EG.gold,sd*1.1,y,(z0+z1)/2)));};
+  run(-.4,3.7,1.5);run(3.7,4.4,1.0);run(4.4,5.1,.5);run(5.1,34,0);
+  [[3.7,1.0,1.5],[4.4,.5,1.0],[5.1,0,.5]].forEach(([z,y0,y1])=>cp.add(bx(2.4,y1-y0,.03,RED,0,y0,z+.02)));
+  cp.add(instParts(new THREE.BoxGeometry(.5,.035,.5),Array.from({length:14},(_,k)=>({p:[0,.02,7+k*2],r:[0,.785,0],c:EG.gold})),EG.gold));
+  // 2 quạt lông đà điểu (flabellum) cắm hai bên ngai
+  const fan=sub('2 quạt lông trắng');
+  [-1,1].forEach(sd=>{
+    const f=new THREE.Group();f.position.set(sd*3.3,1.5,-2.2);f.rotation.z=-sd*.12;
+    f.add(bx(.5,.2,.5,EG.gold2,0,0,0));
+    const pole=cyl(.05,.05,3.2,EG.gold,6);pole.position.y=1.8;f.add(pole);
+    for(let k=0;k<9;k++){const a=(k/8-.5)*2.3;const fe=sph(.32,EG.linen,8);fe.scale.set(.55,1.9,.2);fe.position.set(Math.sin(a)*.75,3.55+Math.cos(a)*.75,0);fe.rotation.z=-a;f.add(fe);}
+    fan.add(f);
+  });
+  // lò lửa: 2 góc bục + 2 chân bậc + dọc lối
+  const br=sub('Lò lửa đồng');
+  [[-3.6,1.5,2.7],[3.6,1.5,2.7],[-3.2,0,6],[3.2,0,6],[-2,0,20],[2,0,20]].forEach(([x,y,z])=>{const b=brazier();b.position.set(x,y,z);br.add(b);});
+  // cờ hiệu dọc lối giữa (xanh-đỏ-vàng, đầu gắn đĩa mặt trời)
+  const fl=sub('Cờ hiệu dọc lối giữa');
+  [10,16,22].forEach((z,k)=>[-1,1].forEach(sd=>{
+    const x=sd*1.55;
+    const p=cyl(.05,.05,4.6,EG.wood2,6);p.position.set(x,2.3,z);fl.add(p);
+    const d=gmesh(new THREE.CylinderGeometry(.22,.22,.05,14),EG.gold);d.rotation.x=Math.PI/2;d.position.set(x,4.75,z);fl.add(d);
+    const fx=x+sd*.45;                                // lá cờ mặt hướng ra cổng (nhìn thấy từ phía dân quỳ)
+    fl.add(bx(.8,1.5,.05,[PT.red,PT.blue][(k+(sd>0))%2],fx,2.9,z));
+    fl.add(bx(.8,.12,.06,EG.gold,fx,3.02,z));fl.add(bx(.8,.12,.06,EG.gold,fx,4.28,z));
+    fl.add(bx(.3,.3,.06,EG.gold,fx,3.5,z+.01));
+  }));
+  g.userData.h=5;
   return g;
 }
 
@@ -3304,7 +3392,8 @@ function buildCrowdKneel(){
     const col=i%20;
     const rad=9+row*2.7+R()*.8;
     const spread=(col/19-.5)*2;                       // -1..1
-    const ang=spread*(0.95-row*0.03);                 // quạt hẹp dần về sau
+    const amax=0.95-row*0.03, gap=2.2/rad;           // quạt hẹp dần về sau; chừa lối giữa rộng ~4.4 m
+    const ang=Math.sign(spread||1)*(gap+Math.abs(spread)*(amax-gap));
     const x=Math.sin(ang)*rad+(R()-.5)*.5;
     const z=Math.cos(ang)*rad+(R()-.5)*.5;
     list.push({x,z,ry:Math.atan2(-x,-z),s:.95+R()*.15});  // quay mặt về bục (gốc)
@@ -5083,6 +5172,8 @@ regPart('c3_columns','Hành lang cột có mái (portico)',buildColumnRow);
 regPart('c3_pylon','Cổng tháp pylon + cột cờ',buildC3Pylon);
 regPart('c3_obelisks','Hai obelisk kẹp mặt trời',buildC3Obelisks);
 regPart('c3_backwall','Tường thấp khép sau sân',buildC3BackWall);
+regPart('c3_cats','2 tượng mèo Bastet đen',buildC3Cats);
+regPart('c3_regalia','Thảm đỏ + quạt lông + lò lửa + cờ hiệu',buildC3Regalia);
 regPart('c3_crowd','Đám đông quỳ (200)',buildCrowdKneel);
 regPart('c3_guards','2 lính gác cầm giáo',buildGuards);
 regPart('c3_sun','Khóa hướng mặt trời C3',buildSunLock);
@@ -5160,6 +5251,8 @@ const C3_PARTS=[
   {k:'c3_pylon',    p:[-45,0,51]},
   {k:'c3_obelisks', p:[-45,0,-8]},
   {k:'c3_backwall', p:[-45,0,-17]},
+  {k:'c3_cats',     p:[-45,0,-9]},
+  {k:'c3_regalia',  p:[-45,0,0]},
   {k:'c3_guards',   p:[-45,1.5,2.2]},
   {k:'c3_crowd',    p:[-45,0,0]},
   {k:'c3_sun',      p:[-45,0,0]},
