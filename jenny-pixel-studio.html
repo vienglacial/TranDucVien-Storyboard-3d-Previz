@@ -1829,6 +1829,7 @@ function buildFromParts(parts){
       if(p.rot)mesh.rotation.set((p.rot[0]||0)*Math.PI/180,(p.rot[1]||0)*Math.PI/180,(p.rot[2]||0)*Math.PI/180);
       if(p.scale)mesh.scale.set(p.scale[0]||1,p.scale[1]||1,p.scale[2]||1); // bóp méo (cầu dẹt...)
       if(p.part)mesh.userData.part=p.part;
+      if(p.bone)mesh.userData.bone=p.bone;   // ép vào xương (vd. gậy đi theo bàn tay)
       g.add(mesh);
       const top=(pos[1]||0)+(s[1]||s[0]||1)/2;if(top>maxY)maxY=top;
     }catch(e){}
@@ -2022,10 +2023,10 @@ const FIXED_CHARS={
       // tay + bàn tay
       [-1,1].forEach(sd=>{add('sph',[.13],[sd*.5,1.02,.04],G,'arm',{scale:[.9,2.1,.9],rot:[0,0,sd*12]});add('sph',[.11],[sd*.56,.77,.12],G,'arm');});
       // gậy đen đầu rắn hổ mang vàng (tay phải nv = -x)
-      add('cyl',[.028,2.0],[-.58,1.0,.16],'#1c1c1c','arm');
-      add('cyl',[.035,.18],[-.58,2.06,.16],AU,'arm');
-      add('sph',[.1],[-.58,2.2,.16],AU,'arm',{scale:[1.15,1.4,.4]});
-      add('sph',[.055],[-.58,2.3,.22],AU,'arm',{scale:[1,.8,1.5]});
+      add('cyl',[.028,2.0],[-.58,1.0,.16],'#1c1c1c','arm',{bone:'foreL'});
+      add('cyl',[.035,.18],[-.58,2.06,.16],AU,'arm',{bone:'foreL'});
+      add('sph',[.1],[-.58,2.2,.16],AU,'arm',{scale:[1.15,1.4,.4],bone:'foreL'});
+      add('sph',[.055],[-.58,2.3,.22],AU,'arm',{scale:[1,.8,1.5],bone:'foreL'});
       // ĐẦU: sọ + mõm bè to phía trước
       add('sph',[.36],[0,1.55,0],G,'head');
       add('sph',[.38],[0,1.36,.17],G,'head',{scale:[1.25,.85,1]});
@@ -2101,9 +2102,76 @@ const FIXED_CHARS={
     })(),
   },
 };
+// ── RIG CHO NHÂN VẬT CỐ ĐỊNH: tự dựng khung xương từ nhãn part (leg/arm/torso/head) ──
+// Cùng quy ước khớp với makeFigure → dùng chung dropdown Tư thế + slider gập khớp.
+//  chân: hông ở đỉnh khối chân, gối ở giữa chân; tay: vai ở đầu khối tay cao nhất, khuỷu giữa vai↔bàn tay;
+//  khối thân trên hông + đầu → xương sống (ngả thân); khối thân dưới hông (quần, đuôi) ở lại chậu.
+//  Tư thế tính CHÊNH so với dáng đã nặn (đứng = nguyên mẫu).
+function buildRigFromParts(parts,poseIn){
+  const pose=Object.assign({},POSE_PRESETS.stand,poseIn||{});
+  const D=Math.PI/180;
+  const src=buildFromParts(parts);
+  const ms=[...src.children];
+  const bbOf=m=>{m.updateMatrix();m.geometry.computeBoundingBox();return m.geometry.boundingBox.clone().applyMatrix4(m.matrix);};
+  const info=ms.map(m=>{const b=bbOf(m);return{m,b,c:b.getCenter(new THREE.Vector3()),sd:m.position.x<0?-1:1};});
+  const g=new THREE.Group(),root=new THREE.Group();g.add(root);
+  const legs=info.filter(i=>i.m.userData.part==='leg'&&!i.m.userData.bone);
+  const hipY=legs.length?Math.max(...legs.map(i=>i.b.max.y)):0;
+  const pelvis=new THREE.Group();root.add(pelvis);
+  const spine=new THREE.Group();spine.position.y=hipY;root.add(spine);
+  const attach=(i,parent)=>{const wp=i.m.position.clone();
+    // chuyển toạ độ gốc → toạ độ khớp (các khớp chỉ tịnh tiến ở dáng đứng)
+    let o=parent,off=new THREE.Vector3();while(o&&o!==root){off.add(o.position);o=o.parent;}
+    i.m.position.copy(wp.sub(off));parent.add(i.m);};
+  const bones={};
+  // chân
+  [-1,1].forEach(sd=>{
+    const L=legs.filter(i=>i.sd===sd);if(!L.length)return;
+    const x=L.reduce((a,i)=>a+i.c.x,0)/L.length, z=L.reduce((a,i)=>a+i.c.z,0)/L.length;
+    const hip=new THREE.Group();hip.position.set(x,hipY,z);root.add(hip);
+    const kneeY=hipY*.5;
+    const knee=new THREE.Group();knee.position.set(0,kneeY-hipY,0);hip.add(knee);
+    L.forEach(i=>attach(i,i.c.y<kneeY?knee:hip));
+    bones[sd<0?'hipL':'hipR']=hip;bones[sd<0?'kneeL':'kneeR']=knee;
+  });
+  // tay
+  [-1,1].forEach(sd=>{
+    const A=info.filter(i=>i.m.userData.part==='arm'&&!i.m.userData.bone&&i.sd===sd);if(!A.length)return;
+    const up=A.reduce((a,i)=>i.c.y>a.c.y?i:a), hand=A.reduce((a,i)=>i.c.y<a.c.y?i:a);
+    const shW=new THREE.Vector3(up.c.x-sd*(up.b.max.x-up.b.min.x)*.25, up.b.max.y-(up.b.max.y-up.b.min.y)*.2, up.c.z);
+    const elW=shW.clone().lerp(hand.c,.5), dEl=elW.distanceTo(shW);
+    const sh=new THREE.Group();sh.position.copy(shW).sub(spine.position);spine.add(sh);
+    const el=new THREE.Group();el.position.copy(elW).sub(shW);sh.add(el);
+    A.forEach(i=>attach(i,i.c.distanceTo(shW)>dEl?el:sh));
+    bones[sd<0?'shL':'shR']=sh;bones[sd<0?'elL':'elR']=el;
+  });
+  // còn lại: xương ép tay, thân, đầu
+  info.forEach(i=>{
+    if(i.m.parent!==src)return;
+    const bn=i.m.userData.bone;
+    if(bn&&bn.startsWith('fore')){const el=bones[bn==='foreL'?'elL':'elR'];if(el){attach(i,el);return;}}
+    if(i.m.userData.part==='torso'&&i.c.y<hipY)attach(i,pelvis);else attach(i,spine);
+  });
+  // ── áp tư thế (chênh so với dáng nặn) ──
+  spine.rotation.x=(pose.torsoLean||0)*D;
+  const sp=(pose.spread||0)*D, hipA=(pose.hip||0)*D, kneeA=(pose.knee||0)*D;
+  if(bones.hipL){bones.hipL.rotation.z=sp;bones.hipL.rotation.x=hipA;bones.kneeL.rotation.x=kneeA;}
+  if(bones.hipR){bones.hipR.rotation.z=-sp;bones.hipR.rotation.x=pose.stride?-hipA*.7:hipA;bones.kneeR.rotation.x=pose.stride?kneeA*.3:kneeA;}
+  const shF=(pose.shoulderF||0)*D, shZ=((pose.shoulder!==undefined?pose.shoulder:5)-5)*D, elA=(pose.elbow||0)*D;
+  if(bones.shL){bones.shL.rotation.x=pose.oneArm?5*D:shF;bones.shL.rotation.z=shZ;bones.elL.rotation.x=elA;}
+  if(bones.shR){bones.shR.rotation.x=pose.stride?-shF:shF;bones.shR.rotation.z=-shZ;bones.elR.rotation.x=elA;}
+  if(pose.lying)root.rotation.x=-Math.PI/2;
+  // chạm sàn: quỳ/xổm/chạy/nằm hạ người xuống cho điểm thấp nhất = 0. Ngồi ghế (cẳng chân dựng đứng) giữ độ cao để đặt lên ghế.
+  const chair=(pose.hip||0)<-45&&Math.abs((pose.hip||0)+(pose.knee||0))<25;
+  if(!chair){g.updateMatrixWorld(true);root.position.y-=new THREE.Box3().setFromObject(g).min.y;}
+  g.userData.h=src.userData.h;
+  g.userData.rig=true;
+  return g;
+}
 function makeFixedChar(id){
   const c=FIXED_CHARS[id]; if(!c)return null;
-  const g=buildFromParts(c.parts);
+  const g=buildRigFromParts(c.parts);
+  g.userData.pose=Object.assign({},POSE_PRESETS.stand);g.userData.poseName='stand';
   g.userData.key=id; g.userData.fixedChar=id; g.userData.label=c.vi; g.userData.enName=c.en;
   g.userData.parts=JSON.parse(JSON.stringify(c.parts)); // lưu để khôi phục + chỉnh màu
   g.userData.id=++idCounter;
@@ -6241,8 +6309,9 @@ function renderInspector(){
     <div class="ctrl">
       <label>Bề ngang vai <span class="val" id="vFigS">${(u.figure.shoulder||1).toFixed(2)}</span></label>
       <input type="range" id="figS" min="0.8" max="1.4" step="0.01" value="${u.figure.shoulder||1}">
-    </div>
-    <div class="joint-grp">
+    </div>`:''}
+    ${(u.figure||u.fixedChar)&&u.pose?`
+    <div class="joint-grp"${u.fixedChar?' style="border-top:1px solid var(--line-soft);padding-top:11px"':''}>
       <div class="jlabel">Tư thế</div>
       <select class="pose-sel" id="poseSel">
         <option value="stand">Đứng</option>
@@ -6396,8 +6465,8 @@ function renderInspector(){
   const sc=document.getElementById('objScale');
   sc.oninput=e=>{const v=+e.target.value;selection.forEach(o=>o.scale.setScalar(v));updRange(sc);refreshSc();};
   updRange(sc);
-  // slider chỉnh dáng nhân vật
-  if(u.figure){
+  // slider chỉnh dáng nhân vật (figure tham số) + tư thế (cả nhân vật cố định có rig)
+  if((u.figure||u.fixedChar)&&u.pose){
     const rebuild=()=>{
       const f=selected.userData.figure;const ps=selected.userData.pose;
       // lưu màu từng phần (head/torso/arm/leg) trước khi tạo lại
@@ -6413,13 +6482,18 @@ function renderInspector(){
       const pos=selected.position.clone(),rotY=selected.rotation.y,rotX=selected.rotation.x,rotZ=selected.rotation.z,scl=selected.scale.x;
       const savedEn=selected.userData.enName;
       const savedFeats=selected.userData.features?JSON.parse(JSON.stringify(selected.userData.features)):null;
-      const ng=makeFigure({height:f.height,build:f.build,legRatio:f.legRatio,shoulder:f.shoulder,headScale:f.headScale,bodyShape:f.bodyShape,headShape:f.headShape,torsoTaper:f.torsoTaper,color:col,pose:ps,poseName:selected.userData.poseName,features:savedFeats||[]});
+      const ng=selected.userData.fixedChar?buildRigFromParts(selected.userData.parts,ps):makeFigure({height:f.height,build:f.build,legRatio:f.legRatio,shoulder:f.shoulder,headScale:f.headScale,bodyShape:f.bodyShape,headShape:f.headShape,torsoTaper:f.torsoTaper,color:col,pose:ps,poseName:selected.userData.poseName,features:savedFeats||[]});
       ng.userData.key=selected.userData.key;ng.userData.label=selected.userData.label;ng.userData.id=selected.userData.id;
+      if(selected.userData.fixedChar){
+        ['fixedChar','parts','pose','poseName'].forEach(k=>ng.userData[k]=selected.userData[k]);
+        const pc=selected.userData.partColors;partCols.torso=partCols.head=partCols.arm=partCols.leg=undefined;   // nhiều màu → chỉ áp màu người dùng đã tô
+        if(pc)Object.assign(partCols,pc);
+      }
       if(savedEn)ng.userData.enName=savedEn;
       if(selected.userData.bodyTpl)ng.userData.bodyTpl=selected.userData.bodyTpl;
       // áp lại màu từng phần (bỏ qua phụ kiện)
       ng.traverse(m=>{if(m.isMesh && m.userData.part && !m.userData.__feat && partCols[m.userData.part] && m.material && m.material.color){m.material.color.set(partCols[m.userData.part]);}});
-      ng.userData.partColors=partCols;
+      if(!selected.userData.fixedChar||selected.userData.partColors)ng.userData.partColors=partCols;
       ng.position.copy(pos);ng.rotation.set(rotX,rotY,rotZ);ng.scale.setScalar(scl);
       const i=objects.indexOf(selected);scene.remove(selected);
       scene.add(ng);if(i>=0)objects[i]=ng;
@@ -7322,7 +7396,8 @@ function applySceneData(d){
   objects.slice().forEach(o=>scene.remove(o));objects.length=0;select(null);
   (d.objects||[]).forEach(od=>{
     let g;
-    if((od.key==='__custom'||od.fixedChar)&&od.parts)g=buildFromParts(od.parts);
+    if(od.fixedChar&&od.parts)g=buildRigFromParts(od.parts,od.pose);
+    else if(od.key==='__custom'&&od.parts)g=buildFromParts(od.parts);
     else if(od.figure)g=makeFigure({...od.figure,color:od.color,pose:od.pose,poseName:od.poseName,features:od.features||[]});
     else if(od.key==='__frag')g=fragFromBuilder(od.fragSrc,od.fragPath);
     else if(od.key==='__group')g=buildGroupFromKids(od.kids);
@@ -7339,6 +7414,7 @@ function applySceneData(d){
     if(od.partColors){g.userData.partColors=od.partColors;
       g.traverse(m=>{if(m.isMesh&&m.userData.part&&!m.userData.__feat&&od.partColors[m.userData.part]&&m.material&&m.material.color)m.material.color.set(od.partColors[m.userData.part]);});}
     if(od.pose){g.userData.pose=od.pose;g.userData.poseName=od.poseName;}
+    else if(od.fixedChar){g.userData.pose=Object.assign({},POSE_PRESETS.stand);g.userData.poseName='stand';}
     g.position.set(...od.pos);g.rotation.y=od.rotY;if(od.rotX)g.rotation.x=od.rotX;if(od.rotZ)g.rotation.z=od.rotZ;g.scale.setScalar(od.scale);
     if(od.key!=='__custom'&&!od.figure&&!od.fixedChar&&od.key!=='cardchar'&&!od.noTint&&!g.userData.noTint&&od.color!==lastMeshColor(g))g.traverse(m=>{if(m.isMesh&&m.material.color.getHexString()!=='2a2a2a')m.material.color.set(od.color);});
     if(g.userData.isSet){

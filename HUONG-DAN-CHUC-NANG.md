@@ -185,6 +185,7 @@ Khi chọn một vật, cột phải hiện đầy đủ điều khiển:
 **Với nhân vật có khung xương**, có thêm:
 - **Chiều cao, độ mập, tỉ lệ chân, bề ngang vai**
 - **Tư thế dựng sẵn:** Đứng · Ngồi ghế · Ngồi ghế máy bay (ngả lưng nhẹ, cẳng tay đặt lên tay vịn; nhân vật *Ngồi máy bay* trong kho sinh ra đúng độ cao để thả lên ghế máy bay) · Ngồi lái xe · Nằm · Ngồi xổm · Quỳ · Giơ tay · Chỉ tay · Chạy
+- **Nhân vật chính ★ Pipo · Buro · Coppa · Pharaoh hà mã** cũng có khung xương: dùng chung dropdown Tư thế + các thanh gập khớp (thân/hông/gối/tay/khuỷu). Dáng đứng = đúng mẫu thiết kế; quỳ/xổm/chạy/nằm tự chạm sàn, ngồi ghế giữ độ cao để thả lên ghế. Gậy của hà mã đi theo bàn tay. Project cũ có sẵn các nhân vật này cũng tự có khớp khi mở lại
 - **Khớp tinh chỉnh:** cúi/ngả thân, gập hông, gập gối, đưa tay, gập khuỷu
 - **Chỉnh phụ kiện** (mắt/mỏ/tóc/mũ/áo): vị trí 3 chiều, kích thước, màu riêng
 - **Màu theo bộ phận:** cả người / đầu / thân / tay / chân
