@@ -1889,41 +1889,67 @@ function makeFromTemplate(tplId, color, name, enName){
 // rồi co giãn cả nhân vật cho đỉnh cao đúng H mét (khớp thước tỉ lệ Set Bible).
 function partTop(p){const s=p.size||[1],sc=p.scale||[1,1,1];
   return p.shape==='sph'?p.pos[1]+s[0]*(sc[1]||1):p.shape==='box'?p.pos[1]+s[1]/2*(sc[1]||1):p.pos[1]+(s[1]||s[0])/2*(sc[1]||1);}
-function xfParts(P,{pick,pivot,k,H,topOf}={}){
-  if(pick)P.forEach(p=>{if(!pick(p))return;p.pos=p.pos.map((v,i)=>pivot[i]+(v-pivot[i])*k);p.size=p.size.map(v=>v*k);});
+function xfParts(P,{pick,pivot,k=1,off=[0,0,0],H,topOf}={}){
+  if(pick)P.forEach(p=>{if(!pick(p))return;p.pos=p.pos.map((v,i)=>pivot[i]+(v-pivot[i])*k+off[i]);p.size=p.size.map(v=>v*k);});
   if(H){const f=H/Math.max(...P.filter(topOf||(()=>true)).map(partTop));P.forEach(p=>{p.pos=p.pos.map(v=>+(v*f).toFixed(4));p.size=p.size.map(v=>+(v*f).toFixed(4));});}
   return P;
 }
 const FIXED_CHARS={
+  // ════ PIPO — gà vàng 1.0 m (Set Bible): đầu trứng vàng TO (~½ người), tóc đỏ rẽ ngôi giữa, mí mắt sụp
+  // khó chịu, môi hồng trề; khăn bandana đỏ cam; áo quân phục xanh xám + huy chương (nắp chai, sao), thắt lưng
+  // da khoá vàng, quần soóc xanh, chân vàng, bốt da nâu. Tay chống nạnh.
   pipo:{
     vi:'🐤 Pipo (gà vàng)',
-    en:'Pipo, a chubby round yellow chick cartoon character with red hair fringe, big white eyes and pink lips',
-    parts:[
-      // chân que vàng
-      {shape:'box', size:[0.16,0.4,0.18], pos:[-0.24,0.2,0.05], color:'#E8A81C', part:'leg'},
-      {shape:'box', size:[0.16,0.4,0.18], pos:[0.24,0.2,0.05],  color:'#E8A81C', part:'leg'},
-      // bàn chân
-      {shape:'box', size:[0.26,0.1,0.34],  pos:[-0.24,0.05,0.12], color:'#E8A81C', part:'leg'},
-      {shape:'box', size:[0.26,0.1,0.34],  pos:[0.24,0.05,0.12],  color:'#E8A81C', part:'leg'},
-      // THÂN cầu vàng TO — tâm thấp, là quả cầu riêng ở dưới
-      {shape:'sph', size:[0.8], pos:[0,0.85,0], scale:[1.0,1.05,0.95], color:'#E0B81A', part:'torso'},
-      // cánh tay nhỏ vàng ép sát thân hai bên
-      {shape:'sph', size:[0.22], pos:[-0.76,0.85,0.05], scale:[0.6,1.35,0.7], color:'#E8C42A', part:'arm'},
-      {shape:'sph', size:[0.22], pos:[0.76,0.85,0.05],  scale:[0.6,1.35,0.7], color:'#E8C42A', part:'arm'},
-      // ĐẦU cầu RIÊNG ở trên (= 3/4 thân), nâng cao để KHÔNG chồng lên thân — chỉ chạm nhẹ ở cổ
-      {shape:'sph', size:[0.6], pos:[0,2.25,0], color:'#E8C42A', part:'head'},
-      // tóc đỏ GỌN trên ĐỈNH đầu (chỏm + mái ngắn) — kéo lên cao, không che mắt
-      {shape:'sph', size:[0.61], pos:[0,2.48,-0.02], scale:[1.02,0.45,1.02], color:'#C0341A', part:'head'},
-      {shape:'box', size:[0.95,0.18,0.32], pos:[0,2.5,0.46], rot:[22,0,0], color:'#C0341A', part:'head'},
-      // mắt trắng to lồi
-      {shape:'sph', size:[0.25], pos:[-0.27,2.22,0.46], color:'#FFFFFF', part:'head'},
-      {shape:'sph', size:[0.25], pos:[0.27,2.22,0.46],  color:'#FFFFFF', part:'head'},
-      // con ngươi
-      {shape:'sph', size:[0.1], pos:[-0.27,2.22,0.68], color:'#1A1A1A', part:'head'},
-      {shape:'sph', size:[0.1], pos:[0.27,2.22,0.68],  color:'#1A1A1A', part:'head'},
-      // mỏ/môi hồng
-      {shape:'box', size:[0.34,0.2,0.18], pos:[0,1.92,0.54], color:'#E86A7A', part:'head'},
-    ],
+    en:'Pipo, a round yellow chick cartoon character with a huge egg-shaped head, red middle-parted hair, grumpy half-lidded eyes, big pink pouty lips, red bandana, blue-grey military jacket with bottle-cap medals, brown belt with gold buckle, blue shorts, brown boots, hands on hips',
+    parts:(()=>{
+      const Y='#f2c417',Y2='#e3b10c',R='#d23a16',BLU='#5b6e8f',BLU2='#4d5f7e',BR='#5a3a22',AU='#d6a53a',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      // bốt da nâu + chân vàng
+      [-1,1].forEach(sd=>{add('box',[.12,.08,.18],[sd*.1,.04,.025],BR,'leg');add('cyl',[.06,.06],[sd*.1,.09,0],BR,'leg');add('cyl',[.045,.05],[sd*.1,.14,0],Y,'leg');});
+      // quần soóc xanh
+      add('cyl',[.2,.09],[0,.2,0],BLU2,'torso',{scale:[1,1,.78]});
+      [-1,1].forEach(sd=>add('cyl',[.085,.05],[sd*.1,.155,0],BLU2,'leg'));
+      // áo quân phục: thân + vạt dưới + vai tròn
+      add('cyl',[.22,.3],[0,.37,0],BLU,'torso',{scale:[1,1,.78]});
+      add('cyl',[.232,.05],[0,.235,0],BLU,'torso',{scale:[1,1,.8]});
+      add('sph',[.22],[0,.5,0],BLU,'torso',{scale:[1.05,.35,.8]});
+      [-1,1].forEach(sd=>{add('box',[.08,.02,.07],[sd*.19,.53,0],BLU2,'torso');add('sph',[.012],[sd*.17,.545,.02],AU,'torso');});   // cầu vai
+      [.45,.39,.33].forEach(y=>add('sph',[.012],[-.035,y,.172],AU,'torso'));                                                          // cúc vàng
+      // thắt lưng da + khoá vàng
+      add('cyl',[.226,.045],[0,.29,0],BR,'torso',{scale:[1,1,.8]});
+      add('box',[.095,.06,.02],[0,.29,.182],AU,'torso');
+      // huy chương bên ngực trái nv (+x): nắp chai bạc/đồng + ngôi sao
+      [[.06,.44,'#a9adb2'],[.12,.46,'#a9adb2'],[.15,.4,'#b27a3a'],[.05,.38,'#a9adb2']].forEach(([x,y,c])=>add('cyl',[.022,.01],[x,y,.17],c,'torso',{rot:[90,0,0]}));
+      add('cone',[.03,.012],[.1,.37,.172],'#b9bcc0','torso',{rot:[90,0,0]});
+      add('sph',[.02],[.16,.34,.168],'#b27a3a','torso',{scale:[1,1.3,.4]});
+      // tay chống nạnh: bắp tay chéo ra ngoài, cẳng tay gập vào hông, nắm tay vàng
+      [-1,1].forEach(sd=>{
+        add('sph',[.06],[sd*.265,.43,0],BLU,'arm',{scale:[1,1.75,1],rot:[0,0,sd*28]});
+        add('sph',[.055],[sd*.265,.32,.02],BLU,'arm',{scale:[1.7,1,1],rot:[0,0,sd*-25]});
+        add('sph',[.05],[sd*.215,.295,.05],Y,'arm');
+      });
+      // khăn bandana: vòng cổ + tam giác trước ngực + nút thắt bên phải khung
+      add('cyl',[.19,.05],[0,.51,.01],R,'torso',{scale:[1,1,.85]});
+      add('cone',[.1,.15],[0,.45,.15],R,'torso',{rot:[180,0,0],scale:[1,1,.3]});
+      add('sph',[.03],[.2,.53,.02],R,'torso');
+      [[20],[-25]].forEach(([rz],k)=>add('cone',[.03,.1],[.25,.54+k*.03,.02],R,'torso',{rot:[0,0,-90+rz]}));
+      // ĐẦU trứng vàng to
+      add('sph',[.2],[0,.72,0],Y,'head',{scale:[1,1.2,1]});
+      // mắt: tròng trắng + mí sụp nửa trên + con ngươi liếc ngang
+      [-1,1].forEach(sd=>{
+        add('sph',[.052],[sd*.075,.775,.165],'#ffffff','head');
+        add('sph',[.055],[sd*.075,.79,.168],Y2,'head',{scale:[1.05,.62,1.05]});
+        add('sph',[.017],[sd*.075+.02,.768,.212],'#151515','head');
+        add('box',[.07,.012,.02],[sd*.07,.832,.172],Y2,'head',{rot:[0,0,sd*-14]});   // cau mày
+      });
+      // môi hồng trề
+      add('sph',[.05],[0,.65,.195],'#e8667a','head',{scale:[1.2,.75,.8]});
+      add('sph',[.042],[0,.622,.19],'#d9546a','head',{scale:[1.3,.6,.8]});
+      // tóc đỏ: chỏm + 2 mảng buông hai bên + đường rẽ ngôi giữa
+      add('sph',[.2],[0,.87,-.005],R,'head',{scale:[1.03,.6,1.03]});
+      [-1,1].forEach(sd=>add('sph',[.085],[sd*.175,.78,-.02],R,'head',{scale:[.55,1.5,1]}));
+      return xfParts(P,{H:1.0});
+    })(),
   },
   // ════ COPPA — ngựa lông kem đốm nâu, 1.0 m (Set Bible tập 3). Thân quả lê, đầu mõm dài, mắt lé lồi
   // (mắt TRÁI nhân vật nằm trong mảng nâu), 2 răng thỏ + lưỡi thè, bờm gừng dựng, đuôi gừng, miếng yên da sau lưng.
@@ -2019,46 +2045,60 @@ const FIXED_CHARS={
       return xfParts(P,{H:2.0,topOf:p=>p.part==='head'});   // 1.4 m thân + 0.6 m khăn = đỉnh khăn 2.0 m (gậy đầu rắn nhô cao hơn chút)
     })(),
   },
+  // ════ BURO — lửng mật cơ bắp (tạm 1.4 m): đầu nhỏ đen, chỏm trắng xám chạy xuống gáy, mắt trắng lồi to,
+  // mõm đen + mũi nâu, môi hồng lộ răng; ngực xám, vai tay đồ sộ, băng tay đỏ (tay phải nv), áo gi-lê da nâu mở,
+  // thắt lưng khoá vàng, bao súng hình đầu thỏ hồng bên hông trái nv, bốt da nâu, đuôi.
   badger:{
-    vi:'🦡 Honey Badger (cơ bắp)',
-    en:'a muscular honey badger cartoon character, very broad shoulders, narrow waist and legs, square dark head with white stripe, grey snout, big white eyes, turquoise shorts',
-    parts:[
-      // chân ngắn mập đen
-      {shape:'box', size:[0.32,0.45,0.34], pos:[-0.34,0.23,0], color:'#1f1f22', part:'leg'},
-      {shape:'box', size:[0.32,0.45,0.34], pos:[0.34,0.23,0],  color:'#1f1f22', part:'leg'},
-      {shape:'box', size:[0.38,0.12,0.46], pos:[-0.34,0.06,0.06], color:'#1f1f22', part:'leg'},
-      {shape:'box', size:[0.38,0.12,0.46], pos:[0.34,0.06,0.06],  color:'#1f1f22', part:'leg'},
-      // hông + quần xanh (hẹp hơn ngực)
-      {shape:'box', size:[1.0,0.42,0.6], pos:[0,0.62,0], color:'#1BB8C4', part:'torso'},
-      // THÂN cơ bắp ĐỒ SỘ — phình rộng dần lên, ngực rất bè
-      {shape:'box', size:[1.3,0.5,0.72], pos:[0,1.05,0], color:'#33333A', part:'torso'},
-      {shape:'box', size:[1.7,0.55,0.8], pos:[0,1.52,0], color:'#33333A', part:'torso'},
-      // ngực/vai trên nở bè nhất
-      {shape:'box', size:[1.85,0.4,0.82], pos:[0,1.9,0], color:'#2A2A2E', part:'torso'},
-      // 2 cục vai cơ bắp tròn to (gắn liền mép thân)
-      {shape:'sph', size:[0.46], pos:[-0.9,1.78,0], color:'#2A2A2E', part:'arm'},
-      {shape:'sph', size:[0.46], pos:[0.9,1.78,0],  color:'#2A2A2E', part:'arm'},
-      // bắp tay to buông xuống sát thân
-      {shape:'box', size:[0.46,0.75,0.5], pos:[-0.98,1.25,0.02], color:'#2A2A2E', part:'arm'},
-      {shape:'box', size:[0.46,0.75,0.5], pos:[0.98,1.25,0.02],  color:'#2A2A2E', part:'arm'},
-      // nắm tay
-      {shape:'sph', size:[0.26], pos:[-0.98,0.85,0.06], color:'#1f1f22', part:'arm'},
-      {shape:'sph', size:[0.26], pos:[0.98,0.85,0.06],  color:'#1f1f22', part:'arm'},
-      // ĐẦU hộp đen (nhỏ so với thân vai)
-      {shape:'box', size:[0.82,0.74,0.74], pos:[0,2.45,0], color:'#2A2A2E', part:'head'},
-      // mảng trắng đỉnh đầu + sọc trán
-      {shape:'box', size:[0.84,0.3,0.76], pos:[0,2.78,0], color:'#E8E4D8', part:'head'},
-      {shape:'box', size:[0.32,0.5,0.05], pos:[0,2.5,0.38], color:'#E8E4D8', part:'head'},
-      // mắt trắng to
-      {shape:'sph', size:[0.21], pos:[-0.21,2.52,0.42], color:'#FFFFFF', part:'head'},
-      {shape:'sph', size:[0.21], pos:[0.21,2.52,0.42],  color:'#FFFFFF', part:'head'},
-      {shape:'sph', size:[0.08], pos:[-0.21,2.52,0.6], color:'#1A1A1A', part:'head'},
-      {shape:'sph', size:[0.08], pos:[0.21,2.52,0.6],  color:'#1A1A1A', part:'head'},
-      // mõm xám nhô ra
-      {shape:'box', size:[0.36,0.32,0.36], pos:[0,2.24,0.42], color:'#4a4a50', part:'head'},
-      // miệng hồng
-      {shape:'box', size:[0.26,0.13,0.08], pos:[0,2.12,0.58], color:'#C04060', part:'head'},
-    ],
+    vi:'🦡 Buro (lửng mật)',
+    en:'Buro, a hulking muscular honey badger cartoon character, small black head with a grey-white crown stripe, huge bulging white eyes, pink lips showing teeth, grey chest, giant arms with a red armband, open brown leather vest, brown belt with gold buckle, pink bunny-head holster with a silver revolver, brown boots',
+    parts:(()=>{
+      const K='#26262b',K2='#1c1c20',GR='#8b8b90',WH='#d9d7d1',BR='#7a4a26',BR2='#8f5a30',BT='#5e3a1e',AU='#c9a13b',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      // bốt + chân ngắn đứng dạng
+      [-1,1].forEach(sd=>{add('box',[.16,.1,.25],[sd*.17,.05,.04],BT,'leg');add('cyl',[.1,.09],[sd*.17,.13,0],BT,'leg');add('cyl',[.1,.22],[sd*.16,.3,0],K,'leg');});
+      add('sph',[.28],[0,.52,0],K,'torso',{scale:[1.1,.6,.8]});                      // hông
+      add('cone',[.06,.3],[0,.45,-.3],K,'torso',{rot:[-125,0,0]});                    // đuôi
+      // thân trên đồ sộ + ngực xám
+      add('sph',[.38],[0,.93,-.03],K,'torso',{scale:[1.15,1,.8]});
+      add('sph',[.25],[0,.86,.19],GR,'torso',{scale:[1,1.2,.45]});
+      // áo gi-lê da nâu mở: 2 vạt trước + ve áo + 2 sườn + tấm lưng
+      [-1,1].forEach(sd=>{
+        add('box',[.14,.5,.05],[sd*.25,.83,.24],BR,'torso',{rot:[0,sd*28,0]});
+        add('box',[.07,.2,.03],[sd*.18,1.0,.29],BR2,'torso',{rot:[0,sd*28,sd*-12]});
+        add('box',[.06,.46,.34],[sd*.41,.84,-.03],BR,'torso');
+      });
+      add('box',[.66,.5,.07],[0,.86,-.3],BR,'torso');
+      // thắt lưng + khoá vàng
+      add('cyl',[.36,.07],[0,.62,0],BT,'torso',{scale:[1,1,.78]});
+      add('box',[.1,.08,.02],[0,.62,.285],AU,'torso');
+      // bao súng đầu thỏ hồng + báng súng bạc (hông trái nv, +x)
+      add('sph',[.08],[.23,.5,.25],'#e27aa0','torso',{scale:[.9,1.1,.6]});
+      [-1,1].forEach(e=>add('cone',[.025,.1],[.23+e*.045,.6,.23],'#e27aa0','torso',{rot:[0,0,e*-35]}));
+      [-1,1].forEach(e=>add('sph',[.012],[.23+e*.025,.52,.3],'#151515','torso'));
+      add('box',[.05,.09,.04],[.23,.65,.22],'#b8bcc2','torso',{rot:[0,0,-15]});
+      // vai + tay đồ sộ + nắm đấm; băng tay đỏ tay phải nv (-x)
+      [-1,1].forEach(sd=>{
+        add('sph',[.2],[sd*.4,1.05,0],K,'arm');
+        add('sph',[.17],[sd*.5,.85,0],K,'arm',{scale:[1,1.6,1]});
+        add('sph',[.15],[sd*.53,.6,.03],K,'arm',{scale:[1,1.5,1]});
+        add('sph',[.11],[sd*.53,.42,.06],K2,'arm');
+      });
+      add('cyl',[.185,.1],[-.5,.9,0],'#b8262a','arm');
+      // ĐẦU nhỏ đen + chỏm trắng xám chạy xuống gáy
+      add('sph',[.19],[0,1.23,.02],K,'head',{scale:[1.05,1,1]});
+      add('sph',[.195],[0,1.32,.0],WH,'head',{scale:[1.02,.55,1.05]});
+      add('sph',[.17],[0,1.18,-.12],WH,'head',{scale:[1,1.3,.6]});
+      [-1,1].forEach(sd=>{
+        add('sph',[.045],[sd*.2,1.25,-.02],K,'head');                                // tai
+        add('sph',[.085],[sd*.09,1.25,.14],'#ffffff','head');                         // mắt lồi to
+        add('sph',[.021],[sd*.085,1.25,.225],'#111111','head');
+      });
+      add('sph',[.1],[0,1.1,.12],K,'head');                                          // mõm
+      add('sph',[.04],[0,1.16,.21],'#4a3a38','head',{scale:[1.3,.8,.8]});            // mũi
+      add('sph',[.07],[0,1.07,.17],'#c24a6a','head',{scale:[1.3,.65,.7]});           // môi hồng
+      add('box',[.1,.022,.02],[0,1.075,.215],'#f4f2ea','head');                      // răng
+      return xfParts(P,{pick:p=>p.part==='head',pivot:[0,1.1,.05],k:1.12,off:[0,.13,.07],H:1.4});   // đầu nhô khỏi vai như ref
+    })(),
   },
 };
 function makeFixedChar(id){
@@ -5893,7 +5933,7 @@ const ASSETS={
     ['pipo','★ Pipo (gà)',ic('<circle cx="12" cy="8" r="4"/><path d="M12 12v3M8 14h8M10 19l2-4 2 4M9.5 7l1 1M14.5 7l-1 1"/><path d="M8.5 5.5q3.5-2 7 0"/>')],
     ['coppa','★ Coppa (ngựa)',ic('<path d="M8 21v-3M16 21v-3M7 18c-1-4 1-8 5-8s6 4 5 8zM12 10V8M9 8c0-3 1.5-5 3-5s3 2 3 5M9.5 3.5 9 1.5M14.5 3.5l.5-2M10 5.5h.01M14 5.5h.01"/>')],
     ['hippo','★ Pharaoh hà mã',ic('<path d="M7 21v-2M17 21v-2M5 19c0-5 3-7 7-7s7 2 7 7zM7 11c0-4 2-7 5-7s5 3 5 7M6 11h12M9 7.5h.01M15 7.5h.01M3 21V3M3 3l1.5 1.5"/>')],
-    ['badger','★ Badger',ic('<circle cx="12" cy="7" r="3.5"/><path d="M12 10.5v5M7 12h10M8 19l4-3.5 4 3.5M12 4v6"/>')],
+    ['badger','★ Buro (lửng)',ic('<circle cx="12" cy="7" r="3.5"/><path d="M12 10.5v5M7 12h10M8 19l4-3.5 4 3.5M12 4v6"/>')],
     ['human','Người',ic('<circle cx="12" cy="5" r="2.5"/><path d="M12 7.5v7M8 18l4-4 4 4M9 11h6"/>')],
     ['chibi','Chibi / Gà',ic('<circle cx="12" cy="7" r="3.5"/><path d="M12 10.5v4M8 13h8M10 18l2-3 2 3M10.5 6.5h.01M13.5 6.5h.01"/>')],
     ['tall','Cao gầy',ic('<circle cx="12" cy="4" r="2"/><path d="M12 6v9M9 21l3-6 3 6M10 10h4"/>')],
