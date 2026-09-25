@@ -6513,14 +6513,55 @@ vp.addEventListener('dblclick',e=>{
   toast('Đã lấy điểm này làm tâm xoay (bấm đúp)');
 });
 
+/* ── CHỌN VẬT DƯỚI CON TRỎ, có "vùng bắt" ──
+   Zoom xa thì người/đạo cụ chỉ còn vài pixel: bấm lệch chút là tia rơi xuống khối nền to.
+   Cách làm: bắn thêm tia theo các vòng 5/10/15 px quanh con trỏ. Nếu tia giữa trúng vật đã đủ to trên màn hình
+   (hoặc trúng đúng vật nhỏ) thì giữ nó; nếu không, vật NHỎ HƠN nhiều mà tia quanh đó trúng thật sẽ được ưu tiên
+   (vòng gần con trỏ xét trước). Tia chỉ trúng mặt thấy được → vật bị che không bị chọn nhầm. */
+const PICK_RINGS=[5,10,15], PICK_SMALL=70*70;
+const _pb=new THREE.Box3(),_pv=new THREE.Vector3(),_pn=new THREE.Vector2();
+function screenArea(o){
+  _pb.setFromObject(o);if(_pb.isEmpty())return 0;
+  const r=canvas.getBoundingClientRect();
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(let k=0;k<8;k++){
+    _pv.set(k&1?_pb.max.x:_pb.min.x,k&2?_pb.max.y:_pb.min.y,k&4?_pb.max.z:_pb.min.z);
+    if(_pv.clone().applyMatrix4(camera.matrixWorldInverse).z>-camera.near)return Infinity;   // vật trùm qua máy quay
+    _pv.project(camera);
+    const sx=(_pv.x+1)/2*r.width, sy=(1-_pv.y)/2*r.height;
+    x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy);
+  }
+  return (x1-x0)*(y1-y0);
+}
+function pickRoot(e){
+  const r=canvas.getBoundingClientRect();
+  const meshes=[];objects.forEach(o=>{if(o.visible)o.traverseVisible(m=>{if(m.isMesh)meshes.push(m);});});   // bỏ qua bộ phận đang ẩn
+  const rootAt=(dx,dy)=>{
+    _pn.set(((e.clientX+dx-r.left)/r.width)*2-1,-((e.clientY+dy-r.top)/r.height)*2+1);
+    ray.setFromCamera(_pn,camera);
+    const hit=ray.intersectObjects(meshes,false)[0];if(!hit)return null;
+    let o=hit.object;while(o.parent&&!objects.includes(o))o=o.parent;
+    return objects.includes(o)?o:null;
+  };
+  const areas=new Map(),area=o=>{if(!areas.has(o))areas.set(o,screenArea(o));return areas.get(o);};
+  const root=rootAt(0,0);
+  if(root&&area(root)<=PICK_SMALL)return root;            // bấm trúng vật nhỏ rồi → giữ
+  const limit=Math.min(PICK_SMALL,root?area(root)/4:Infinity);   // chỉ đổi sang vật khó bấm (nhỏ trên màn hình) và nhỏ hơn hẳn
+  for(const rad of PICK_RINGS){
+    let best=null,bestA=limit;
+    for(let k=0;k<12;k++){
+      const a=k/12*Math.PI*2, o=rootAt(Math.cos(a)*rad,Math.sin(a)*rad);
+      if(o&&o!==root&&area(o)<bestA){best=o;bestA=area(o);}
+    }
+    if(best)return best;
+  }
+  return root;
+}
+
 vp.addEventListener('mousedown',e=>{
   if(e.button!==0)return;
-  ndc(e);ray.setFromCamera(mouse,camera);
-  const meshes=[];objects.forEach(o=>o.traverse(m=>{if(m.isMesh)meshes.push(m);}));
-  const hit=ray.intersectObjects(meshes,false)[0];
-  if(hit){
-    let root=hit.object;while(root.parent&&!objects.includes(root))root=root.parent;
-    if(objects.includes(root)){
+  const root=pickRoot(e);
+  if(root){
       if(e.shiftKey&&tool==='orbit'){
         // Shift+bấm (ở chế độ Orbit) = chọn thêm/bớt vào nhóm
         toggleSelect(root);
@@ -6539,7 +6580,6 @@ vp.addEventListener('mousedown',e=>{
         dragPlane.setFromNormalAndCoplanarPoint(n,root.position);
         e.stopPropagation();
       }
-    }
   }else if(tool==='orbit'){
     // bấm nền => bỏ chọn (trừ khi đang giữ Shift)
     if(!e.shiftKey)select(null);

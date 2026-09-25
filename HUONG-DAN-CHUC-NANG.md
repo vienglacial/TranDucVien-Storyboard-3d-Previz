@@ -101,6 +101,7 @@ Các nhóm có sẵn:
 - **Chuột phải kéo** — lia (pan), tốc độ tự co theo độ xa gần
 - **Bấm vật thể** — chọn để chỉnh
 - **Shift + bấm** — chọn thêm nhiều vật, di chuyển/xoay cả nhóm (cần ở chế độ Orbit)
+- **Bấm vật nhỏ khi zoom xa** — không cần trúng từng pixel: bấm lệch khoảng 15 px quanh một người/đạo cụ tí hon vẫn chọn được nó chứ không dính khối nền bên dưới
 - **Phím T** — ẩn/hiện chữ chú thích previz của các khối bối cảnh
 - **Nâng lên / hạ xuống** — chọn vật, bấm **W** (Di chuyển) rồi **giữ Alt và kéo chuột lên/xuống**; hoặc gõ thẳng số vào ô **Độ cao** ở panel phải (vd `-6` để xuống đáy hố nhân sư)
 - **Phím End** (hoặc nút **⤓ Thả xuống bề mặt**) — đặt vật xuống đúng mặt nền ngay bên dưới: đáy hố, mặt dốc, mặt bục, sàn phòng
