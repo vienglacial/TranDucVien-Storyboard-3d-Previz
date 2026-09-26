@@ -528,11 +528,11 @@
   .asset span{font-size:11.5px;color:var(--ink-dim)}
   .panel.left .asset:hover{border-color:var(--accent-warm);background:#252118;transform:none}
   .panel.left .asset:hover svg{stroke:var(--accent-warm)}
-  #grpSet3{grid-template-columns:1fr}
-  #grpSet3 .asset{height:auto;flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px}
-  #grpSet3 .asset svg{width:34px;height:34px;padding:7px;border-radius:8px;background:#2A2418;stroke:var(--accent-warm);flex-shrink:0}
-  #grpSet3 .asset span{text-align:left;font-size:13px;font-weight:600;color:var(--ink);padding:0;display:flex;flex-direction:column;gap:1px;min-width:0}
-  #grpSet3 .asset span small{font-size:11.5px;font-weight:400;color:var(--ink-faint)}
+  #grpSet3,#grpSetTi{grid-template-columns:1fr}
+  #grpSet3 .asset,#grpSetTi .asset{height:auto;flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px}
+  #grpSet3 .asset svg,#grpSetTi .asset svg{width:34px;height:34px;padding:7px;border-radius:8px;background:#2A2418;stroke:var(--accent-warm);flex-shrink:0}
+  #grpSet3 .asset span,#grpSetTi .asset span{text-align:left;font-size:13px;font-weight:600;color:var(--ink);padding:0;display:flex;flex-direction:column;gap:1px;min-width:0}
+  #grpSet3 .asset span small,#grpSetTi .asset span small{font-size:11.5px;font-weight:400;color:var(--ink-faint)}
 
   /* viewport: dock công cụ xuống dưới, số đo mono */
   .vp-toolbar{top:auto;bottom:16px;padding:6px;border-radius:12px;background:rgba(17,19,24,.92);border-color:var(--line)}
@@ -677,6 +677,10 @@
     <div class="sec">
       <h3>Tập 3 · Khối bối cảnh</h3>
       <div class="agrid" id="grpSet3"></div>
+    </div>
+    <div class="sec">
+      <h3>Titanic · Khối bối cảnh</h3>
+      <div class="agrid" id="grpSetTi"></div>
     </div>
     <div class="sec">
       <h3>Người &amp; Động vật</h3>
@@ -5365,6 +5369,437 @@ function buildC7Zones(){
 
 /* ══════════ ĐĂNG KÝ BỘ PHẬN VÀO BUILDERS ══════════ */
 const SET_PART_LABEL={};
+/* ════════════════════════ TITANIC (tỉ lệ thật 1:1) + TẢNG BĂNG ════════════════════════
+   Mực nước y=0 · mũi tàu +Z (z=+134.5) · đuôi -Z · mạn PHẢI (starboard) = -X.
+   Dài 269 m · rộng 28.2 m · boong vỏ tàu ~15 m · boong xuồng cứu sinh 20.8 m · ống khói cao tới ~40 m.
+   Boong mũi (forecastle) = chỗ Rose & Jack "I'm flying". */
+const TI={L:134.5,B:14.1,BOAT:20.8,BDECK:17.9,WELL:12.6,
+  hull:'#1b1b1f',red:'#8e2b22',gold:'#c9a13b',white:'#f1eee4',white2:'#dcd8cc',deck:'#c7a878',deck2:'#b39462',
+  buff:'#d4943a',black:'#18181a',wood:'#8a6238',mast:'#b8925a',rail:'#e9e6dc',win:'#2d3440',lit:'#f3e7b8'};
+function tiHB(z){                                   // nửa bề rộng mặt boong tại z
+  if(z>50){const t=Math.min(1,(z-50)/(TI.L-50));return TI.B*Math.max(0,1-.55*t*t-.45*Math.pow(t,6));}
+  if(z<-88){const t=Math.min(1,(-88-z)/(TI.L-88));return TI.B*Math.sqrt(Math.max(0,1-t*t));}
+  return TI.B;
+}
+function tiSheer(z){                                // đường mép boong vỏ (cong vồng lên ở mũi/đuôi)
+  const a=Math.max(0,(z-40)/94.5),b=Math.max(0,(-z-60)/74.5);return 15+1.8*a*a+1.0*b*b;
+}
+function tiStations(z0,z1,step){                    // dày hơn ở hai đầu cho mũi/đuôi tròn trịa
+  const out=[];for(let z=z0;z<z1;){out.push(z);const fine=z>110||z<-112;z+=fine?Math.min(step,1):step;}out.push(z1);return out;
+}
+// mặt boong: dải tam giác giữa 2 mép trái/phải, cao theo hàm yf(z)
+function tiDeck(z0,z1,yf,inset,color,step=2){
+  const zs=tiStations(z0,z1,step),pos=[];
+  for(let i=0;i<zs.length-1;i++){
+    const za=zs[i],zb=zs[i+1],ha=Math.max(0,tiHB(za)-inset),hb=Math.max(0,tiHB(zb)-inset),ya=yf(za),yb=yf(zb);
+    pos.push(-ha,ya,za, ha,ya,za, hb,yb,zb,  -ha,ya,za, hb,yb,zb, -hb,yb,zb);
+  }
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.computeVertexNormals();
+  const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,roughness:.85,flatShading:true,side:THREE.DoubleSide}));
+  m.receiveShadow=true;m.castShadow=true;return m;
+}
+// lan can: cọc + 2 thanh chạy theo danh sách điểm [x,y,z]
+function tiRail(pts,h=1.1,col=TI.rail){
+  const g=new THREE.Group(),posts=[];
+  for(let i=0;i<pts.length-1;i++){
+    const a=new THREE.Vector3(...pts[i]),b=new THREE.Vector3(...pts[i+1]),len=a.distanceTo(b);if(len<.01)continue;
+    const n=Math.max(1,Math.round(len/1.6));
+    for(let k=0;k<n;k++){const p=a.clone().lerp(b,k/n);posts.push({p:[p.x,p.y+h/2,p.z]});}
+    [h,h*.5].forEach(yy=>{const r=box(.07,.07,len,col);r.castShadow=false;r.position.copy(a).lerp(b,.5);r.position.y+=yy;r.lookAt(b.x,b.y+yy,b.z);g.add(r);});
+  }
+  const last=pts[pts.length-1];posts.push({p:[last[0],last[1]+h/2,last[2]]});
+  g.add(instParts(new THREE.BoxGeometry(.06,h,.06),posts,col));
+  return g;
+}
+const tiEdge=(sd,z0,z1,yf,inset=.15,step=3)=>tiStations(z0,z1,step).map(z=>[sd*Math.max(0,tiHB(z)-inset),yf(z),z]);
+
+/* ── VỎ TÀU: đen, đỏ dưới nước, chỉ vàng, cửa sổ tròn sáng; bảng tên TITANIC ở mũi ── */
+function buildTiHull(){
+  const g=new THREE.Group();
+  const zs=tiStations(-TI.L,TI.L,2.5);
+  // mặt cắt ngang (hệ số bề rộng, độ cao); đỉnh = mép boong
+  const SEC=[[1,null],[1,14.55],[1,14.3],[1,.3],[1,0],[1,-6],[.96,-8.4],[.8,-9.8],[.45,-10.4],[0,-10.5]];
+  const pos=[],col=[],c=new THREE.Color();
+  const pt=(z,k,sd)=>{const [f,y]=SEC[k];return[sd*f*tiHB(z),y===null?tiSheer(z):y,z];};
+  const faceCol=y=>y>14.3&&y<14.55?TI.gold:y<0?TI.red:TI.hull;
+  const tri=(a,b,d)=>{pos.push(...a,...b,...d);c.set(faceCol((a[1]+b[1]+d[1])/3));for(let q=0;q<3;q++)col.push(c.r,c.g,c.b);};
+  for(let i=0;i<zs.length-1;i++)[-1,1].forEach(sd=>{
+    for(let k=0;k<SEC.length-1;k++){
+      const a=pt(zs[i],k,sd),b=pt(zs[i+1],k,sd),a2=pt(zs[i],k+1,sd),b2=pt(zs[i+1],k+1,sd);
+      if(sd>0){tri(a,a2,b);tri(b,a2,b2);}else{tri(a,b,a2);tri(b,b2,a2);}
+    }
+  });
+  // mặt đuôi tàu (vòm tròn) đã khép nhờ tiHB→0; mũi dựng đứng
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  geo.computeVertexNormals();
+  const hull=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.6,metalness:.1,flatShading:true,side:THREE.DoubleSide}));
+  hull.castShadow=true;hull.receiveShadow=true;hull.userData.partLabel='Vỏ tàu (đen · đỏ · chỉ vàng)';g.add(hull);
+  // cửa sổ tròn: 3 hàng dọc thân, bám theo độ cong vỏ
+  const ports=[];
+  [5.2,8,10.8,13].forEach((y,row)=>{
+    for(let z=-118;z<124;z+=2.3){
+      const h=tiHB(z);if(h<5)continue;if(row===3&&(z>95||z<-98))continue;
+      const dh=(tiHB(z+.5)-tiHB(z-.5));const ang=Math.atan2(dh,1);
+      [-1,1].forEach(sd=>ports.push({p:[sd*(h+.03),y,z],r:[0,sd*ang,0],c:TI.lit}));
+    }
+  });
+  const pm=instParts(new THREE.BoxGeometry(.06,.42,.42),ports,TI.lit,true);pm.userData.partLabel='Cửa sổ tròn';g.add(pm);
+  // bảng tên TITANIC hai bên mũi
+  const cv=document.createElement('canvas');cv.width=512;cv.height=96;const x=cv.getContext('2d');
+  x.fillStyle='#1b1b1f';x.fillRect(0,0,512,96);x.fillStyle='#e0bb54';x.font='bold 70px Georgia,serif';x.textAlign='center';x.textBaseline='middle';x.fillText('TITANIC',256,52);
+  const tex=new THREE.CanvasTexture(cv);if(THREE.SRGBColorSpace)tex.colorSpace=THREE.SRGBColorSpace;
+  [-1,1].forEach(sd=>{
+    const z=122,h=tiHB(z),ang=Math.atan2(tiHB(z+.5)-tiHB(z-.5),1);
+    const pl=new THREE.Mesh(new THREE.PlaneGeometry(7,1.3),new THREE.MeshBasicMaterial({map:tex}));
+    pl.position.set(sd*(h+.06),13.4,z);pl.rotation.y=sd*(Math.PI/2)+sd*ang;g.add(pl);
+  });
+  g.userData.h=16.8;
+  return g;
+}
+
+/* ── BOONG MŨI (forecastle): nơi Rose & Jack. Tời neo, cọc buộc, xích neo, chuông, lan can nhọn ở mũi ── */
+function buildTiBow(){
+  const g=new THREE.Group();
+  const d=tiDeck(95.5,TI.L,z=>tiSheer(z)+.02,.12,TI.deck,1.5);d.userData.partLabel='Sàn gỗ boong mũi';g.add(d);
+  const r=new THREE.Group();r.userData.partLabel='Lan can mũi (điểm nhọn "I\'m flying")';
+  // lan can chạy 2 mạn gặp nhau ở mũi nhọn
+  const L=tiEdge(-1,95.5,TI.L-.4,z=>tiSheer(z)),R=tiEdge(1,95.5,TI.L-.4,z=>tiSheer(z));
+  r.add(tiRail([...L,...R.reverse()],1.15));
+  // tường chắn sóng thấp (bulwark) sát mép
+  g.add(r);
+  const eq=new THREE.Group();eq.userData.partLabel='Tời neo · xích · cọc buộc · chuông';
+  const y0=z=>tiSheer(z);
+  [-2.2,2.2].forEach(x=>{const cp=cyl(.55,.7,.9,TI.black,14);cp.position.set(x,y0(118)+.45,118);eq.add(cp);
+    const top=cyl(.62,.62,.12,TI.gold,14);top.position.set(x,y0(118)+.95,118);eq.add(top);
+    // xích neo từ tời ra lỗ neo mạn
+    const hx=Math.sign(x)*(tiHB(127)-.6),len=Math.hypot(hx-x,127-118);
+    const ch=box(.28,.12,len,'#3a3a3e');ch.position.set((x+hx)/2,y0(122)+.08,122.5);ch.rotation.y=Math.atan2(hx-x,127-118);eq.add(ch);
+  });
+  const wl=box(3.6,.9,1.4,TI.black);wl.position.set(0,y0(114)+.45,114);eq.add(wl);            // máy tời
+  const an=box(1.6,.3,2.6,'#2a2a2e');an.position.set(0,y0(125)+.15,125);eq.add(an);         // neo dự phòng giữa boong
+  const bl=[];[100,106,112,120,126].forEach(z=>[-1,1].forEach(sd=>{const x=sd*(tiHB(z)-1.1);bl.push({p:[x,y0(z)+.35,z-.35]},{p:[x,y0(z)+.35,z+.35]});}));
+  eq.add(instParts(new THREE.CylinderGeometry(.2,.22,.7,10),bl,TI.black));                   // cọc buộc đôi
+  const bell=cone(.35,.5,TI.gold,12);bell.position.set(0,y0(101)+2.2,101);eq.add(bell);
+  const bf=box(.1,2.3,.1,TI.mast);bf.position.set(-.5,y0(101)+1.15,101);eq.add(bf);const bf2=bf.clone();bf2.position.x=.5;eq.add(bf2);
+  const bt=box(1.1,.1,.1,TI.mast);bt.position.set(0,y0(101)+2.45,101);eq.add(bt);
+  // miệng thông gió nấm dọc boong
+  const vt=[];[[-4,108],[4,108],[-3,122],[3,122]].forEach(([x,z])=>vt.push({p:[x,y0(z)+.5,z]}));
+  eq.add(instParts(new THREE.CylinderGeometry(.35,.35,1,10),vt,TI.white));
+  g.add(eq);
+  // vách ngăn phía sau boong mũi (tụt xuống boong giếng) + 2 cầu thang
+  const bh=new THREE.Group();bh.userData.partLabel='Vách + cầu thang xuống boong giếng';
+  const hw=tiHB(95.5);bh.add(bx(hw*2-.3,tiSheer(95.5)-TI.WELL,.4,TI.white,0,TI.WELL,95.45));
+  [-1,1].forEach(sd=>{for(let k=0;k<8;k++){const st=box(1.2,.12,.35,TI.wood);st.position.set(sd*5,TI.WELL+.3+k*.32,94.9-k*.3);bh.add(st);}});
+  bh.add(tiRail([[-hw+.2,tiSheer(95.5),95.3],[-5.7,tiSheer(95.5),95.3]],1.1));
+  bh.add(tiRail([[5.7,tiSheer(95.5),95.3],[hw-.2,tiSheer(95.5),95.3]],1.1));
+  bh.add(tiRail([[-4.3,tiSheer(95.5),95.3],[4.3,tiSheer(95.5),95.3]],1.1));
+  g.add(bh);
+  g.userData.h=17;
+  return g;
+}
+
+/* ── CỘT BUỒM trước + Ụ QUAN SÁT (crow's nest ~29 m) + cột sau + dây ăng-ten ── */
+function buildTiMasts(){
+  const g=new THREE.Group();
+  const fm=new THREE.Group();fm.userData.partLabel='Cột buồm trước + ụ quan sát';
+  const fy=tiSheer(104);
+  const m1=cyl(.35,.55,62-fy,TI.mast,10);m1.position.set(0,(62+fy)/2,104);m1.rotation.x=-.035;fm.add(m1);
+  const nest=cyl(1.05,.95,1.3,TI.white,16);nest.position.set(0,29,104.6);fm.add(nest);
+  const nr=torus3(1.05,.06,TI.black,20);nr.position.set(0,29.65,104.6);fm.add(nr);
+  const nf=cyl(.95,.95,.1,TI.wood,16);nf.position.set(0,28.4,104.6);fm.add(nf);
+  const lad=[];for(let y=fy+.5;y<28.3;y+=.45)lad.push({p:[0,y,104.25]});fm.add(instParts(new THREE.BoxGeometry(.5,.05,.05),lad,TI.black));
+  const yd=box(7,.18,.18,TI.mast);yd.position.set(0,38,103.3);fm.add(yd);
+  const nb=cone(.2,.35,TI.gold,10);nb.position.set(-.5,30.1,104.6);fm.add(nb);            // chuông ụ quan sát
+  g.add(fm);
+  const mm=new THREE.Group();mm.userData.partLabel='Cột buồm sau';
+  const my=tiSheer(-104);const m2=cyl(.35,.55,58-my,TI.mast,10);m2.position.set(0,(58+my)/2,-104);m2.rotation.x=-.035;mm.add(m2);
+  const yd2=box(6,.18,.18,TI.mast);yd2.position.set(0,34,-104.6);mm.add(yd2);
+  g.add(mm);
+  // dây: ăng-ten vô tuyến giữa 2 đỉnh cột, dây néo xuống mũi/đuôi/mạn
+  const P=[],seg=(a,b)=>P.push(...a,...b);
+  [-1.2,1.2].forEach(x=>seg([x,60,102.2],[x,56,-102.4]));
+  seg([0,61,102.5],[0,tiSheer(133)+.5,133.4]);seg([0,57,-102.5],[0,tiSheer(-132)+.5,-132]);
+  [-1,1].forEach(sd=>{seg([0,40,104],[sd*(tiHB(98)-.3),tiSheer(98),98]);seg([0,40,104],[sd*(tiHB(110)-.3),tiSheer(110),110]);
+    seg([0,36,-104],[sd*(tiHB(-98)-.3),tiSheer(-98),-98]);seg([0,36,-104],[sd*(tiHB(-110)-.3),tiSheer(-110),-110]);});
+  const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+  const ln=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:'#3a3530'}));ln.userData.partLabel='Dây ăng-ten + dây néo';g.add(ln);
+  g.userData.h=62;
+  return g;
+}
+
+/* ── BOONG GIẾNG trước/sau: sàn thấp hơn, nắp hầm hàng, 2 cần cẩu mỗi bên ── */
+function tiCrane(){
+  const c=new THREE.Group();
+  const b=cyl(.55,.7,1.6,TI.white,12);b.position.y=.8;c.add(b);
+  const cab=box(1.3,1.2,1.6,TI.white2);cab.position.y=2.2;c.add(cab);
+  const jib=box(.3,.3,7.5,TI.buff);jib.position.set(0,4.4,2.4);jib.rotation.x=-.62;c.add(jib);
+  const hk=box(.05,2.2,.05,'#333');hk.position.set(0,4.9,5.3);c.add(hk);
+  return c;
+}
+function buildTiWellDecks(){
+  const g=new THREE.Group();
+  [[83,95.5,'trước'],[-98,-85,'sau']].forEach(([z0,z1,nm])=>{
+    const w=new THREE.Group();w.userData.partLabel='Boong giếng '+nm+' + cần cẩu';
+    w.add(tiDeck(z0,z1,()=>TI.WELL,.2,TI.deck2,1.5));
+    const zc=(z0+z1)/2;
+    w.add(bx(5,.55,4,'#6a4a2c',0,TI.WELL,zc));                      // nắp hầm hàng
+    const tarp=box(5.1,.08,4.1,'#5d6a58');tarp.position.set(0,TI.WELL+.6,zc);w.add(tarp);
+    [-1,1].forEach(sd=>{const cr=tiCrane();cr.position.set(sd*4.2,TI.WELL,zc+(nm==='trước'?-3.5:3.5));cr.rotation.y=nm==='trước'?Math.PI:0;w.add(cr);});
+    const bl=[];[z0+2,z1-2].forEach(z=>[-1,1].forEach(sd=>bl.push({p:[sd*(tiHB(z)-1),TI.WELL+.35,z]})));
+    w.add(instParts(new THREE.CylinderGeometry(.2,.22,.7,10),bl,TI.black));
+    g.add(w);
+  });
+  // vách + lan can đầu boong lái (poop) nhìn xuống giếng sau
+  const pw=new THREE.Group();pw.userData.partLabel='Vách + cầu thang boong lái';
+  const hw=tiHB(-98);pw.add(bx(hw*2-.3,tiSheer(-98)-TI.WELL,.4,TI.white,0,TI.WELL,-98.05));
+  [-1,1].forEach(sd=>{for(let k=0;k<8;k++){const st=box(1.2,.12,.35,TI.wood);st.position.set(sd*5,TI.WELL+.3+k*.32,-97.5+k*.3);pw.add(st);}});
+  pw.add(tiRail([[-hw+.2,tiSheer(-98),-97.9],[-5.7,tiSheer(-98),-97.9]],1.1));
+  pw.add(tiRail([[5.7,tiSheer(-98),-97.9],[hw-.2,tiSheer(-98),-97.9]],1.1));
+  pw.add(tiRail([[-4.3,tiSheer(-98),-97.9],[4.3,tiSheer(-98),-97.9]],1.1));
+  g.add(pw);
+  g.userData.h=18;
+  return g;
+}
+
+/* ── THƯỢNG TẦNG trắng: tầng B (15→17.9) + tầng A có hành lang dạo (17.9→20.8) + sàn boong xuồng ── */
+function buildTiSuper(){
+  const g=new THREE.Group();
+  const sub=l=>{const s=new THREE.Group();s.userData.partLabel=l;g.add(s);return s;};
+  // khối thượng tầng theo đúng đường cong thân tàu (ruột đặc, mặt trên là sàn)
+  const block=(z0,z1,y0,y1,inset,col)=>{
+    const zs=tiStations(z0,z1,3),pos=[];
+    const P=(z,y,sd)=>[sd*Math.max(0,tiHB(z)-inset),y,z];
+    for(let i=0;i<zs.length-1;i++){const a=zs[i],b=zs[i+1];
+      [-1,1].forEach(sd=>{const p1=P(a,y0,sd),p2=P(b,y0,sd),p3=P(b,y1,sd),p4=P(a,y1,sd);pos.push(...p1,...p2,...p3,...p1,...p3,...p4);});
+      const t1=P(a,y1,-1),t2=P(a,y1,1),t3=P(b,y1,1),t4=P(b,y1,-1);pos.push(...t1,...t2,...t3,...t1,...t3,...t4);}
+    [z0,z1].forEach(z=>{const l0=P(z,y0,-1),r0=P(z,y0,1),r1=P(z,y1,1),l1=P(z,y1,-1);pos.push(...l0,...r0,...r1,...l0,...r1,...l1);});
+    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.computeVertexNormals();
+    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:col,roughness:.7,flatShading:true,side:THREE.DoubleSide}));
+    m.castShadow=true;m.receiveShadow=true;return m;
+  };
+  const b=sub('Tầng B (cabin hạng nhất)');
+  b.add(block(-85,83,15,TI.BDECK,.05,TI.white));
+  b.add(tiDeck(-85,-62,()=>TI.BDECK+.01,.4,TI.deck,2));                     // sàn dạo tầng B phía sau
+  const wins=[];for(let z=-82;z<82;z+=1.6)[-1,1].forEach(sd=>wins.push({p:[sd*(tiHB(z)-.02),16.3,z]}));
+  b.add(instParts(new THREE.BoxGeometry(.06,.8,.9),wins,TI.win));
+  b.add(tiRail(tiEdge(-1,-85,-62,()=>TI.BDECK,.35),1.1));b.add(tiRail(tiEdge(1,-85,-62,()=>TI.BDECK,.35),1.1));
+  b.add(tiRail([[-tiHB(-85)+.35,TI.BDECK,-84.6],[tiHB(-85)-.35,TI.BDECK,-84.6]],1.1));
+  const a=sub('Tầng A — hành lang dạo có cửa sổ');
+  a.add(block(-62,80,TI.BDECK,TI.BOAT,.25,TI.white));
+  const prom=[];for(let z=-58;z<76;z+=2.2)[-1,1].forEach(sd=>prom.push({p:[sd*(tiHB(z)-.24),19.35,z]}));
+  a.add(instParts(new THREE.BoxGeometry(.06,1.6,1.7),prom,TI.win));
+  const bd=sub('Sàn boong xuồng cứu sinh (20.8 m)');
+  bd.add(tiDeck(-62,80,()=>TI.BOAT+.01,.3,TI.deck,2));
+  const pl=[];for(let x=-12.6;x<=12.6;x+=.7)pl.push({p:[x,TI.BOAT+.025,9],s:[1,1,1]});
+  bd.add(instParts(new THREE.BoxGeometry(.03,.01,141),pl,TI.deck2));        // ron ván gỗ
+  bd.add(tiRail(tiEdge(-1,-62,79.5,()=>TI.BOAT,.35),1.1));bd.add(tiRail(tiEdge(1,-62,79.5,()=>TI.BOAT,.35),1.1));
+  bd.add(tiRail([[-tiHB(-62)+.35,TI.BOAT,-61.6],[tiHB(-62)-.35,TI.BOAT,-61.6]],1.1));
+  g.userData.h=TI.BOAT;
+  return g;
+}
+
+/* ── ĐÀI CHỈ HUY + nhà sĩ quan + các nhà trên boong xuồng + mái vòm cầu thang lớn ── */
+function buildTiBridge(){
+  const g=new THREE.Group();
+  const y=TI.BOAT;
+  const oq=new THREE.Group();oq.userData.partLabel='Nhà sĩ quan + buồng lái';
+  oq.add(bx(12,2.8,20,TI.white,0,y,68));
+  const w=[];for(let k=0;k<9;k++)w.push({p:[-4.4+k*1.1,y+1.9,78.02]});oq.add(instParts(new THREE.BoxGeometry(.8,.9,.06),w,TI.win));
+  const sw=[];for(let z=60;z<77;z+=1.8)[-1,1].forEach(sd=>sw.push({p:[sd*6.02,y+1.7,z]}));oq.add(instParts(new THREE.BoxGeometry(.06,.8,.8),sw,TI.win));
+  oq.add(bx(12.6,.25,20.6,TI.white2,0,y+2.8,68));
+  const wh=box(6,2.3,3,TI.wood);wh.position.set(0,y+1.15,79.2);oq.add(wh);                  // buồng lái gỗ phía trước
+  const whw=[];for(let k=0;k<5;k++)whw.push({p:[-2.2+k*1.1,y+1.6,80.72]});oq.add(instParts(new THREE.BoxGeometry(.8,.8,.05),whw,TI.win));
+  const wheel=torus3(.4,.05,'#6b4424',16);wheel.rotation.set(0,0,0);wheel.position.set(0,y+1.1,81.2);oq.add(wheel);
+  // cánh đài chỉ huy chạy hết bề ngang, cabin nhỏ hai đầu
+  const hw=tiHB(80);oq.add(bx(hw*2,.15,2.4,TI.deck,0,y+.01,80.3));
+  [-1,1].forEach(sd=>{oq.add(bx(1.8,2.2,2.2,TI.white,sd*(hw-1),y,80.3));});
+  oq.add(tiRail([[-hw+.2,y,81.4],[hw-.2,y,81.4]],1.2));
+  g.add(oq);
+  const houses=[[32,44,'Nhà lối vào cầu thang lớn + mái vòm kính'],[8,20,'Phòng gym + lối vào'],[-16,-4,'Nhà boong giữa'],[-52,-30,'Nhà lối vào hạng nhì + mái vòm']];
+  houses.forEach(([z0,z1,lb],i)=>{
+    const h=new THREE.Group();h.userData.partLabel=lb;
+    const wd=i===3?11:9;
+    h.add(bx(wd,2.6,z1-z0,TI.white,0,y,(z0+z1)/2));
+    const hw2=[];for(let z=z0+1;z<z1;z+=1.6)[-1,1].forEach(sd=>hw2.push({p:[sd*(wd/2+.02),y+1.5,z]}));h.add(instParts(new THREE.BoxGeometry(.06,.9,.8),hw2,TI.win));
+    if(i===0||i===3){
+      const dm=new THREE.Mesh(new THREE.SphereGeometry(i===0?3.4:2.6,20,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({color:'#cfe2ea',roughness:.15,metalness:.35,flatShading:true}));
+      dm.scale.y=.5;dm.position.set(0,y+2.6,(z0+z1)/2);dm.castShadow=true;h.add(dm);
+      const rib=[];for(let k=0;k<12;k++){const a=k/12*Math.PI*2;rib.push({p:[Math.cos(a)*(i===0?1.7:1.3),y+3.25,(z0+z1)/2+Math.sin(a)*(i===0?1.7:1.3)],r:[0,-a,0]});}
+      h.add(instParts(new THREE.BoxGeometry(.06,.9,.06),rib,TI.white));
+    }
+    g.add(h);
+  });
+  // băng ghế gỗ + miệng thông gió loa kèn (đặc trưng boong Titanic)
+  const misc=new THREE.Group();misc.userData.partLabel='Ghế băng + ống thông gió loa kèn';
+  const bn=[];[-7,-2.5,22,25,48,52].forEach(z=>[-1,1].forEach(sd=>bn.push({p:[sd*7.6,y+.25,z]})));
+  misc.add(instParts(new THREE.BoxGeometry(.6,.5,2.2),bn,TI.wood));
+  const vp=[],vh=[];
+  [[-5.5,56],[5.5,56],[-6,30],[6,30],[-6,5],[6,5],[-6,-19],[6,-19],[-4,-57],[4,-57],[0,-26],[0,-2]].forEach(([x,z],k)=>{
+    vp.push({p:[x,y+.8,z]});vh.push({p:[x,y+1.9,z+.25],r:[-.5,0,0],s:[1,1,.8]});});
+  misc.add(instParts(new THREE.CylinderGeometry(.33,.38,1.6,10),vp,TI.white));
+  misc.add(instParts(new THREE.SphereGeometry(.62,12,10),vh,TI.white));
+  g.add(misc);
+  g.userData.h=y+4;
+  return g;
+}
+
+/* ── 4 ỐNG KHÓI vàng bò chóp đen, nghiêng về đuôi (cái thứ 4 là ống giả) ── */
+function buildTiFunnels(){
+  const g=new THREE.Group();
+  [50,26,2,-22].forEach((z,i)=>{
+    const f=new THREE.Group();f.userData.partLabel='Ống khói '+(i+1)+(i===3?' (ống giả thông gió)':'');
+    f.position.set(0,TI.BOAT,z);
+    f.add(bx(7,2.4,9,TI.white,0,0,0));                                           // bệ vỏ ống
+    const tube=new THREE.Group();tube.rotation.x=-.06;tube.position.y=2.4;f.add(tube);
+    const H=16.4;
+    const body=cyl(1,1,H-3.6,TI.buff,24);body.scale.set(2.95,1,3.65);body.position.y=(H-3.6)/2;tube.add(body);
+    const top=cyl(1,1,3.6,TI.black,24);top.scale.set(3.0,1,3.7);top.position.y=H-1.8;tube.add(top);
+    const lip=torus3(1,.05,TI.black,28);lip.scale.set(3.0,3.7,1);lip.position.y=H;tube.add(lip);
+    const bands=[];[4.5,8.5].forEach(yy=>bands.push({p:[0,yy,0],s:[3.0,1,3.7]}));
+    tube.add(instParts(new THREE.CylinderGeometry(1,1,.18,24),bands,'#b98230'));
+    const whistle=cyl(.18,.18,1.4,TI.gold,8);whistle.position.set(0,H-5,3.8);tube.add(whistle);
+    const pipe=cyl(.25,.25,H-2,TI.buff,8);pipe.position.set(0,(H-2)/2,-3.9);tube.add(pipe);  // ống xả phụ sau lưng
+    g.add(f);
+  });
+  g.userData.h=TI.BOAT+19;
+  return g;
+}
+
+/* ── 16 XUỒNG CỨU SINH trên cần davit (8 mỗi mạn: 4 trước, 4 sau) ── */
+function buildTiLifeboats(){
+  const g=new THREE.Group();
+  const y=TI.BOAT;
+  [[-1,'mạn phải (starboard)'],[1,'mạn trái (port)']].forEach(([sd,nm])=>{
+    const s=new THREE.Group();s.userData.partLabel='Xuồng cứu sinh '+nm;
+    const hulls=[],gun=[],covers=[],davit=[],arms=[];
+    [74,64,54,44,-12,-24,-36,-48].forEach(z=>{
+      const x=sd*(tiHB(z)-1.7);
+      hulls.push({p:[x,y+1.55,z],s:[1.05,.55,4.3]});
+      gun.push({p:[x,y+1.85,z],s:[1,1,1]});
+      covers.push({p:[x,y+1.95,z]});
+      [-3.6,3.6].forEach(dz=>{davit.push({p:[sd*(tiHB(z)-.55),y+1.4,z+dz]});arms.push({p:[sd*(tiHB(z)-1.1),y+2.85,z+dz],r:[0,0,sd*.9]});});
+    });
+    s.add(instParts(new THREE.SphereGeometry(1,14,8),hulls,TI.white));
+    s.add(instParts(new THREE.BoxGeometry(2.1,.14,8.2),gun,TI.wood));
+    s.add(instParts(new THREE.BoxGeometry(1.8,.2,7.4),covers,'#d6cfbd'));
+    s.add(instParts(new THREE.BoxGeometry(.35,2.8,.35),davit,TI.white));
+    s.add(instParts(new THREE.BoxGeometry(.3,1.6,.3),arms,TI.white));
+    g.add(s);
+  });
+  g.userData.h=y+3.5;
+  return g;
+}
+
+/* ── BOONG LÁI (poop deck): sàn, cầu cập bến ngang tàu, cột cờ + cờ đỏ, tời ── */
+function buildTiStern(){
+  const g=new THREE.Group();
+  const d=tiDeck(-TI.L,-98,z=>tiSheer(z)+.02,.12,TI.deck,1.5);d.userData.partLabel='Sàn boong lái';g.add(d);
+  const r=new THREE.Group();r.userData.partLabel='Lan can đuôi tàu';
+  const L=tiEdge(-1,-TI.L+.3,-98,z=>tiSheer(z)),R=tiEdge(1,-TI.L+.3,-98,z=>tiSheer(z));
+  r.add(tiRail([...L.reverse(),...R],1.15));g.add(r);
+  const eq=new THREE.Group();eq.userData.partLabel='Cầu cập bến · cột cờ · tời';
+  const yb=tiSheer(-118);
+  eq.add(bx(tiHB(-118)*2-.6,.2,2,TI.deck,0,yb+2.6,-118));
+  [-1,1].forEach(sd=>{eq.add(bx(.3,2.6,.3,TI.white,sd*4,yb,-118));eq.add(bx(.3,2.6,.3,TI.white,sd*(tiHB(-118)-1),yb,-118));});
+  const cab=box(2.2,1.8,1.6,TI.white);cab.position.set(0,yb+3.6,-118);eq.add(cab);
+  eq.add(tiRail([[-tiHB(-118)+.4,yb+2.8,-117.1],[tiHB(-118)-.4,yb+2.8,-117.1]],1));
+  const fp=cyl(.08,.12,9,TI.wood,8);fp.position.set(0,tiSheer(-132)+4.5,-132.2);fp.rotation.x=.25;eq.add(fp);
+  const fl=box(.04,1.6,2.6,'#b3261e');fl.position.set(0,tiSheer(-132)+7.6,-134.4);eq.add(fl);
+  const uj=box(.05,.8,1.2,'#1f3f7a');uj.position.set(0,tiSheer(-132)+8,-133.7);eq.add(uj);
+  [-2.4,2.4].forEach(x=>{const cp=cyl(.5,.6,.8,TI.black,12);cp.position.set(x,tiSheer(-110)+.4,-110);eq.add(cp);});
+  g.add(eq);
+  g.userData.h=20;
+  return g;
+}
+
+/* ── BIỂN: mặt sóng low-poly + sóng mũi và vệt nước sau lái (tàu đang chạy) ── */
+function buildTiSea(){
+  const g=new THREE.Group();
+  const geo=new THREE.PlaneGeometry(900,900,110,110);geo.rotateX(-Math.PI/2);
+  const p=geo.attributes.position;
+  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);
+    p.setY(i,.22*Math.sin(x*.09+z*.05)+.16*Math.sin(z*.13-x*.04)+.08*Math.sin((x+z)*.31));}
+  geo.computeVertexNormals();
+  const sea=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:'#24506e',roughness:.32,metalness:.18,flatShading:true}));
+  sea.position.y=-.15;sea.receiveShadow=true;sea.userData.partLabel='Mặt biển';g.add(sea);
+  g.userData.h=0;
+  return g;
+}
+function buildTiWake(){
+  const g=new THREE.Group();
+  const foam=new THREE.MeshStandardMaterial({color:'#e8f1f4',roughness:.9,transparent:true,opacity:.8,flatShading:true});
+  [-1,1].forEach(sd=>{for(let k=0;k<6;k++){const z=128-k*7,x=sd*(tiHB(z)+.8+k*.9);
+    const f=new THREE.Mesh(new THREE.BoxGeometry(1.6+k*.3,.12,6.5),foam);f.position.set(x,.1,z);f.rotation.y=-sd*(.35-k*.03);g.add(f);}});
+  for(let k=0;k<16;k++){const w=6+k*2.2;const f=new THREE.Mesh(new THREE.BoxGeometry(w,.1,9),foam.clone());f.material.opacity=.75-k*.042;
+    f.position.set(Math.sin(k*1.7)*1.5,.08,-138-k*9);g.add(f);}
+  g.userData.h=0;
+  return g;
+}
+
+/* ── TẢNG BĂNG TRÔI: khối băng gồ ghề ~30 m trên mặt nước, mặt úp xuống ngả xanh ── */
+function buildIceberg(){
+  const g=new THREE.Group();
+  const R=rnd(4221);
+  const mk=(r,sx,sy,sz,x,y,z,det=2)=>{
+    const geo=new THREE.IcosahedronGeometry(r,det).toNonIndexed();
+    const p=geo.attributes.position;const v=new THREE.Vector3();
+    const seen=new Map();
+    for(let i=0;i<p.count;i++){v.set(p.getX(i),p.getY(i),p.getZ(i));const key=v.toArray().map(q=>q.toFixed(3)).join();
+      let k=seen.get(key);if(k===undefined){k=.72+R()*.5;seen.set(key,k);}
+      v.multiplyScalar(k);p.setXYZ(i,v.x*sx+x,v.y*sy+y,v.z*sz+z);}
+    geo.computeVertexNormals();
+    const col=[];const n=geo.attributes.normal,c=new THREE.Color();
+    for(let i=0;i<p.count;i+=3){const ny=n.getY(i);c.set(ny<-.2?'#8fc3d8':ny<.35?'#cfe6ef':'#f4fafc');for(let q=0;q<3;q++)col.push(c.r,c.g,c.b);}
+    geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.35,metalness:.05,flatShading:true}));
+    m.castShadow=true;m.receiveShadow=true;return m;
+  };
+  const main=new THREE.Group();main.userData.partLabel='Khối băng chính (đỉnh ~30 m)';
+  main.add(mk(18,1.3,1.35,1,0,6,0));
+  main.add(mk(10,.8,1.5,.9,-9,20,-4,1));
+  main.add(mk(7,.7,1.6,.8,6,24,3,1));
+  main.add(mk(12,1.5,.8,1.1,16,2,8));
+  main.add(mk(11,1.2,.7,1.3,-20,1,6));
+  g.add(main);
+  const sm=new THREE.Group();sm.userData.partLabel='Mảng băng vụn trôi quanh';
+  for(let k=0;k<9;k++){const a=R()*6.28,d=30+R()*22;sm.add(mk(1.5+R()*2.5,1.2,.6,1,Math.cos(a)*d,.2,Math.sin(a)*d,1));}
+  g.add(sm);
+  const skirt=new THREE.Mesh(new THREE.CylinderGeometry(34,40,.2,24),new THREE.MeshStandardMaterial({color:'#6fa8bf',roughness:.4,transparent:true,opacity:.55}));
+  skirt.position.y=.02;skirt.userData.partLabel='Chân băng dưới nước (xanh nhạt)';g.add(skirt);
+  g.add(tag('TẢNG BĂNG ~30 m',0,40,0,2.2,EG.mark));
+  g.userData.h=34;
+  return g;
+}
+
+/* ── ROSE & JACK ở mũi tàu — "I'm flying": Rose đứng trên thanh lan can dang 2 tay, Jack đứng sát sau dang tay theo ── */
+function buildTiRoseJack(){
+  const g=new THREE.Group();
+  const yd=tiSheer(131.2);
+  const rose=makeFigure({height:1.65,build:.9,color:'#6d3f6c',pose:{torsoLean:-8,hip:0,knee:0,shoulder:-88,shoulderF:-6,elbow:0},poseName:'stand'});
+  rose.position.set(0,yd+.55,131.6);rose.userData.partLabel='Rose — dang 2 tay';
+  const hair=sph(.19,'#a2391d',12);hair.scale.set(1.05,1,1.1);hair.position.set(0,yd+.55+1.53,131.52);   // tóc đỏ
+  g.add(rose);g.add(hair);
+  const jack=makeFigure({height:1.78,build:1,color:'#e8e2d2',pose:{torsoLean:4,hip:0,knee:0,shoulder:-80,shoulderF:-6,elbow:0},poseName:'stand'});
+  jack.position.set(0,yd,131.0);jack.userData.partLabel='Jack — đứng sau, dang tay theo Rose';
+  const hj=sph(.17,'#b08a4a',12);hj.scale.set(1.05,.7,1.05);hj.position.set(0,yd+1.72,131.0);             // tóc vàng
+  g.add(jack);g.add(hj);
+  g.add(tag('ROSE',0,yd+2.8,131.8,1.1,'#ff8fb0'));g.add(tag('JACK',-1.2,yd+2.5,130.6,1.1,EG.mark));
+  g.userData.h=yd+2.3;
+  return g;
+}
+
+/* ── chú thích khu vực trên tàu ── */
+function buildTiZones(){
+  const g=new THREE.Group();
+  [['MŨI TÀU — chỗ "I\'m flying"',0,21.5,128],['BOONG MŨI (forecastle) ~16 m',0,19.5,110],['Ụ QUAN SÁT 29 m',0,32.5,104],
+   ['BOONG GIẾNG + cần cẩu 12.6 m',0,17.5,89],['ĐÀI CHỈ HUY',0,26.5,80],['BOONG XUỒNG CỨU SINH 20.8 m',-10,24.5,-30],
+   ['4 ỐNG KHÓI (cao ~40 m)',0,43,14],['BOONG LÁI (poop) ~16 m',0,21.5,-116],['MẠN PHẢI (starboard) = -X',-22,12,40],['MẠN TRÁI (port) = +X',22,12,40]]
+    .forEach(([t,x,y,z])=>g.add(tag(t,x,y,z,2)));
+  g.userData.h=0;
+  return g;
+}
+
 function regPart(key,label,fn){
   BUILDERS[key]=function(){
     const g=fn();
@@ -5377,6 +5812,20 @@ regPart('eg_sky','Vòm trời + chân trời',buildSky);
 regPart('eg_sand','Nền sa mạc + cồn cát',buildSand);
 regPart('eg_nile','Sông Nile (phải khung)',buildNile);
 regPart('eg_scaleref','Thước tỉ lệ previz',buildScaleRef);
+regPart('ti_sea','Biển (mặt sóng low-poly)',buildTiSea);
+regPart('ti_wake','Sóng mũi + vệt nước sau lái',buildTiWake);
+regPart('ti_hull','Vỏ tàu 269 m (đen · đỏ · chỉ vàng)',buildTiHull);
+regPart('ti_bow','Boong mũi (forecastle) + lan can mũi',buildTiBow);
+regPart('ti_masts','Cột buồm + ụ quan sát + dây',buildTiMasts);
+regPart('ti_well','Boong giếng trước/sau + cần cẩu',buildTiWellDecks);
+regPart('ti_super','Thượng tầng B/A + sàn boong xuồng',buildTiSuper);
+regPart('ti_bridge','Đài chỉ huy + nhà trên boong + mái vòm',buildTiBridge);
+regPart('ti_funnels','4 ống khói',buildTiFunnels);
+regPart('ti_boats','16 xuồng cứu sinh + davit',buildTiLifeboats);
+regPart('ti_stern','Boong lái (poop) + cột cờ',buildTiStern);
+regPart('ti_rosejack','Rose & Jack ở mũi — "I’m flying"',buildTiRoseJack);
+regPart('ti_zones','Chú thích khu vực trên tàu',buildTiZones);
+regPart('ti_iceberg','Tảng băng trôi ~30 m',buildIceberg);
 regPart('c3_platform','Bục tế 8×6 cao 1.5',buildPlatform);
 regPart('c3_throne','Ngai vàng (ghế 1.2 m)',buildThrone);
 regPart('c3_basket','Giỏ chà là 1.2 m',buildBasket);
@@ -5589,6 +6038,41 @@ const SET_DEFS={
       {t:'2:35',n:'Bụi tan — từng người đứng dậy',     p:[22,4,62],     tg:[0,2,20],     f:35},
       {t:'2:37',n:'Cầu đá lăn ngang — vua dính bẹp',   p:[40,3,32],     tg:[40,2.5,12],  f:50},
       {t:'2:39',n:'Bi trắng rớt hố — Pipo SCRATCH',    p:[-14,1.4,8.5], tg:[-15.9,.3,-2],f:50}
+    ]
+  },
+  setTitanic:{
+    label:'Titanic · Boong tàu + biển + tảng băng',
+    note:'Tỉ lệ thật: dài 269 m, rộng 28 m. Mực nước y=0, mũi tàu +Z, mạn PHẢI (starboard) = -X. Độ cao sàn: boong mũi ~16 m · boong giếng 12.6 m · tầng B 17.9 m · boong xuồng cứu sinh 20.8 m · ụ quan sát 29 m. Rose & Jack đứng ở mũi (tách/ẩn được). Tảng băng ở phía trước mạn phải — kéo đi tuỳ cảnh. Phím End thả nhân vật xuống đúng mặt boong.',
+    parts:[
+      {k:'eg_sky',p:[0,0,0]},{k:'ti_sea',p:[0,0,0]},{k:'ti_wake',p:[0,0,0]},
+      {k:'ti_hull',p:[0,0,0]},{k:'ti_bow',p:[0,0,0]},{k:'ti_well',p:[0,0,0]},{k:'ti_super',p:[0,0,0]},
+      {k:'ti_bridge',p:[0,0,0]},{k:'ti_funnels',p:[0,0,0]},{k:'ti_boats',p:[0,0,0]},{k:'ti_masts',p:[0,0,0]},
+      {k:'ti_stern',p:[0,0,0]},{k:'ti_rosejack',p:[0,0,0]},{k:'ti_zones',p:[0,0,0]},
+      {k:'ti_iceberg',p:[-40,0,265]},{k:'eg_scaleref',p:[-6,16.1,112]}
+    ],
+    cams:[
+      {t:'—',n:'Tổng thể 3/4 mũi mạn phải',                p:[-165,48,225],  tg:[0,14,40],    f:28},
+      {t:'A', n:'Rose & Jack — nhìn từ trước mũi vào',     p:[0,18.6,147],   tg:[0,17.6,131],  f:35},
+      {t:'B', n:'Sau lưng Jack — nhìn ra biển + tảng băng', p:[1.3,18.4,127.5],tg:[-4,16,170],  f:28},
+      {t:'C', n:'Boong mũi — wide ngang tầm người',         p:[-6,17.6,100],  tg:[0,17,128],    f:24},
+      {t:'D', n:'Ụ quan sát POV — thấy tảng băng',          p:[0,30.1,105.2], tg:[-40,16,265],  f:35},
+      {t:'E', n:'Đài chỉ huy nhìn ra mũi',                  p:[0,22.6,81.3],    tg:[0,16.5,132],  f:35},
+      {t:'F', n:'Boong xuồng cứu sinh + ống khói',          p:[-9.5,22.5,-50],tg:[-5,25,45],    f:24},
+      {t:'G', n:'Low angle 4 ống khói',                     p:[9,21.4,-58],   tg:[0,36,18],     f:18},
+      {t:'H', n:'Boong giếng + cần cẩu (từ mép boong mũi)', p:[6,18,98],     tg:[0,13,86],   f:24},
+      {t:'I', n:'Boong lái — đuôi tàu, cột cờ',             p:[3,18.2,-99],   tg:[0,18,-134],   f:24},
+      {t:'J', n:'Mạn phải sát nước — mũi tàu lao về tảng băng',p:[-58,5,96],  tg:[-14,13,175],   f:24},
+      {t:'K', n:'Top-down toàn tàu',                        p:[0,330,1],      tg:[0,0,0],       f:35}
+    ]
+  },
+  setIceberg:{
+    label:'Tảng băng trôi · giữa biển',
+    note:'Tảng băng ~30 m trên mặt nước, mặt úp xuống ngả xanh, băng vụn trôi quanh. Mực nước y=0.',
+    parts:[{k:'eg_sky',p:[0,0,0]},{k:'ti_sea',p:[0,0,0]},{k:'ti_iceberg',p:[0,0,0]},{k:'eg_scaleref',p:[34,0,72]}],
+    cams:[
+      {t:'—',n:'Tổng thể tảng băng',          p:[70,28,95],   tg:[0,14,0],  f:28},
+      {t:'A',n:'Sát mặt nước — tảng băng sừng sững',p:[18,1.6,62],tg:[0,18,0],f:24},
+      {t:'B',n:'Từ xa — bóng băng trên đường chân trời',p:[0,8,260],tg:[0,12,0],f:50}
     ]
   },
   setC7:{
@@ -5996,6 +6480,10 @@ const ASSETS={
     ['setBida','C2b+C8 Phòng bida trong đầu',ic('<rect x="3" y="6" width="18" height="12" rx="1"/><rect x="7" y="10" width="10" height="5" rx="1"/><circle cx="6.5" cy="9.5" r="1"/><circle cx="17.5" cy="15" r="1"/>')],
     ['setC7','C7 Giàn thiêu trước đền',ic('<path d="M4 21h16M6 21l1-5h10l1 5M12 16v-6M9 11c0-3 3-4 3-7 0 3 3 4 3 7a3 3 0 0 1-6 0z"/>')],
     ['setC6','C6 Kim tự tháp (rack bida)',ic('<circle cx="12" cy="5" r="2"/><circle cx="9.5" cy="9.5" r="2"/><circle cx="14.5" cy="9.5" r="2"/><circle cx="7" cy="14" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="17" cy="14" r="2"/><circle cx="4.5" cy="18.5" r="2"/><circle cx="9.5" cy="18.5" r="2"/><circle cx="14.5" cy="18.5" r="2"/><circle cx="19.5" cy="18.5" r="2"/>')],
+  ],
+  grpSetTi:[
+    ['setTitanic','Titanic + biển + tảng băng',ic('<path d="M2 16h20l-2 4H5zM4 16l1-4h13l2 4M8 12V7h2v5M12 12V6h2v6M16 12V8h2v4M6 12V9"/>')],
+    ['setIceberg','Tảng băng trôi (riêng)',ic('<path d="M2 17h20M5 17l3-7 2 3 3-8 3 6 2-2 2 8M4 20h16"/>')],
   ],
   grpChar:[
     ['pipo','★ Pipo (gà)',ic('<circle cx="12" cy="8" r="4"/><path d="M12 12v3M8 14h8M10 19l2-4 2 4M9.5 7l1 1M14.5 7l-1 1"/><path d="M8.5 5.5q3.5-2 7 0"/>')],

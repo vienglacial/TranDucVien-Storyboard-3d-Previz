@@ -65,6 +65,7 @@ Bấm vào một model là nó **xuất hiện ngay trong cảnh**. Gõ vào ô 
 
 Các nhóm có sẵn:
 
+- **Titanic · Khối bối cảnh** — *Titanic + biển + tảng băng* (tỉ lệ thật 269 m, 12 bookmark góc máy) và *Tảng băng trôi (riêng)*. Mực nước y=0, mũi tàu hướng +Z, mạn phải = -X. Sàn đi lại được: boong mũi ~16 m (Rose & Jack đứng ở mũi, dang tay "I'm flying" — ẩn/tách được), boong giếng 12.6 m, tầng B 17.9 m, boong xuồng cứu sinh 20.8 m, ụ quan sát 29 m. Thả nhân vật lên tàu rồi bấm `End` để rơi đúng xuống mặt boong. Tảng băng là bộ phận riêng, kéo đi tuỳ cảnh
 - **Người & Động vật** — nhân vật có khung xương (gập tư thế được)
 - **Tư thế nhân vật** — đặt nhanh người ở các dáng dựng sẵn
 - **Xe cộ**, **Quân sự**, **Vũ khí (đạo cụ)**
