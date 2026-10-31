@@ -543,6 +543,47 @@
   .vp-hud{font-size:12px;border-radius:10px;padding:8px 12px;background:rgba(17,19,24,.9);color:var(--ink-dim);bottom:74px}
   .monitor{bottom:74px}
   .vp-msg{font-size:13px;line-height:1.9}
+
+  /* ── gizmo trục X/Y/Z · 4 góc nhìn · nhiều màn hình ── */
+  .vp-toolbar{width:max-content}
+  .vt-sep{width:1px;align-self:stretch;margin:7px 3px;background:var(--line)}
+  .vp-toolbar:not(.gz-on) .gz-opt{display:none}
+  .vt.gz-opt{padding:0 11px}
+  .vt.on{color:var(--accent);background:rgba(76,194,255,.14)}
+  .vp-toolbar.compact .vt{padding:0 9px;gap:6px}
+  .vp-toolbar.compact .vt small{display:none}
+  .vp-toolbar.tiny .vt{font-size:0;gap:0;padding:0 10px}
+  .vp-toolbar.measuring .vt{transition:none!important}
+  .qv-ui{position:absolute;inset:0;pointer-events:none;display:none;z-index:2}
+  #viewport.quad .qv-ui{display:block}
+  .qv-ui .qv-v{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:#05070a}
+  .qv-ui .qv-h{position:absolute;top:50%;left:0;right:0;height:2px;margin-top:-1px;background:#05070a}
+  .qv-lb{position:absolute;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:#fff;background:rgba(10,14,19,.66);border:1px solid rgba(255,255,255,.12);padding:3px 8px;border-radius:6px;white-space:nowrap}
+  .qv-lb small{color:var(--ink-faint);letter-spacing:0;margin-left:5px;font-size:10.5px}
+  .qv-lb.cam{border-color:rgba(255,180,84,.45)}
+  #viewport.quad .vp-overlay{left:50%;bottom:50%}
+  .gz-info{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:6;display:none;pointer-events:none;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);background:rgba(17,19,24,.92);border:1px solid var(--line);border-radius:8px;padding:6px 11px;white-space:nowrap}
+  .gz-info.on{display:block}
+  #viewport.quad .gz-info{left:75%;top:40px}
+  .gz-info b.x{color:#ff5a5a}.gz-info b.y{color:#7dff7a}.gz-info b.z{color:#5aa8ff}
+  .toast{bottom:86px}   /* nằm trên thanh công cụ viewport, không che nút */
+  #btnScreens.on{color:var(--accent);border-color:var(--accent)}
+  @media (max-width:1365px){#btnScreens .lbl{display:none}#btnScreens{padding:0 8px}}   /* laptop 1280: chỉ còn icon, thanh trên không tràn */
+  #btnScreens .cnt:empty{display:none}
+  #btnScreens .cnt{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;background:var(--accent);color:#06121b;border-radius:999px;padding:0 6px;line-height:16px;margin-left:1px}
+  .scr-menu{position:fixed;display:none;z-index:200;width:362px;background:#14181e;border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 14px 44px rgba(0,0,0,.6)}
+  .scr-menu.show{display:block}
+  .scr-menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:none;color:var(--ink);padding:8px 10px;border-radius:8px;cursor:pointer;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:13px}
+  .scr-menu button:hover{background:#222831}
+  .scr-menu button.on{background:rgba(76,194,255,.12)}
+  .scr-menu .ic{width:22px;text-align:center;font-size:15px;color:var(--accent);flex-shrink:0}
+  .scr-menu .tx{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+  .scr-menu .tx small{font-size:11.5px;color:var(--ink-faint)}
+  .scr-menu .key,.scr-menu .st{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);white-space:nowrap}
+  .scr-menu .st{color:var(--accent)}
+  .scr-menu .sep{height:1px;background:var(--line);margin:5px 6px}
+  .scr-menu .note{font-size:11.5px;line-height:1.55;color:var(--ink-dim);padding:8px 10px 6px;border-top:1px solid var(--line);margin-top:5px}
+  .scr-menu .note b{color:var(--ink)}
   .monitor{border-radius:10px;border:1px solid var(--line)}
   .collapse-tab{background:#1C2027;border-color:var(--line)}
 
@@ -649,6 +690,7 @@
     <div class="topgrp">
       <button class="topbtn" id="btnAnno" title="Ẩn/hiện chữ chú thích previz (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>Chữ previz <span class="key">T</span></button>
       <button class="topbtn" id="btnGrid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Lưới sàn</button>
+      <button class="topbtn" id="btnScreens" title="Nhiều góc nhìn &amp; nhiều màn hình: 4 góc nhìn (V), cửa sổ phụ, bố cục 2–3 màn hình"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="9" height="7" rx="1"/><rect x="13" y="4" width="9" height="7" rx="1"/><rect x="7.5" y="14" width="9" height="7" rx="1"/></svg><span class="lbl">Màn hình</span><span class="cnt"></span></button>
       <button class="topbtn" id="btnFull" title="Toàn màn hình (phím ~ hoặc Tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>Full</button>
       <button aria-label="Hướng dẫn" class="topbtn iconly" id="btnHelp" title="Hướng dẫn & phím tắt (?)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
       <button aria-label="API Key" class="topbtn iconly" id="btnApiKey" title="Nhập API key để dùng AI khi chạy offline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7 7 5 5 0 0 1 7-7zm0 0L15 8m0 0l3 3 3-3-3-3"/></svg></button>
@@ -756,8 +798,21 @@
       <button class="vt" data-tool="move" title="Di chuyển vật thể — phím W (giữ Alt để nâng lên/hạ xuống)"><svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>Di chuyển<small>W</small></button>
       <button class="vt" data-tool="rotate" title="Xoay vật thể — phím E"><svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>Xoay<small>E</small></button>
       <button class="vt" data-tool="scale" title="Phóng to/thu nhỏ — phím R"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Tỉ lệ<small>R</small></button>
+      <span class="vt-sep gz-opt"></span>
+      <button class="vt gz-opt" id="gzSpaceBtn" title="Trục gizmo: Thế giới ⇄ Cục bộ (theo hướng xoay của vật) — phím X"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><span>Thế giới</span><small>X</small></button>
+      <button class="vt gz-opt" id="gzSnapBtn" title="Bắt bước khi kéo trục: 0.25 m · 15° · 0.1× (giữ Ctrl khi kéo để đảo tạm)"><svg viewBox="0 0 24 24"><path d="M6 3v8a6 6 0 0 0 12 0V3"/><path d="M6 7h4M14 7h4"/></svg>Bắt bước</button>
+      <span class="vt-sep gz-opt"></span>
       <button class="vt mon-toggle active" id="monToggle" title="Bật/tắt màn hình xem trước (M)"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1"/><path d="M9 21h6M12 17v4"/></svg>Monitor<small>M</small></button>
+      <button class="vt" id="quadBtn" title="4 góc nhìn: Trên · Phối cảnh · Trước · Phải (phím V)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>4 góc<small>V</small></button>
     </div>
+    <div class="qv-ui" id="qvUI">
+      <i class="qv-v"></i><i class="qv-h"></i>
+      <span class="qv-lb" style="left:12px;top:10px">TRÊN<small>nhìn xuống · bắc ↑</small></span>
+      <span class="qv-lb cam" style="left:calc(50% + 12px);top:10px">PHỐI CẢNH<small>camera chụp · có gizmo</small></span>
+      <span class="qv-lb" style="left:12px;top:calc(50% + 10px)">TRƯỚC<small>nhìn từ +Z</small></span>
+      <span class="qv-lb" style="left:calc(50% + 12px);top:calc(50% + 10px)">PHẢI<small>nhìn từ +X</small></span>
+    </div>
+    <div class="gz-info" id="gzInfo"></div>
     <div class="vp-overlay">
       <div class="frameguide" id="frameguide">
         <div class="gl v" style="left:33.33%"></div><div class="gl v" style="left:66.66%"></div>
@@ -1160,6 +1215,9 @@
           <kbd>Chuột phải kéo</kbd><span class="kdesc">Lia (pan) camera</span>
           <kbd>Bấm vật thể</kbd><span class="kdesc">Chọn để chỉnh sửa</span>
           <kbd>Shift + bấm</kbd><span class="kdesc">Chọn thêm nhiều vật (di chuyển/xoay cả nhóm). Cần ở chế độ Orbit.</span>
+          <kbd>Kéo trục gizmo</kbd><span class="kdesc">Ở Di chuyển / Xoay / Tỉ lệ, vật đang chọn hiện trục <b style="color:#ff5a5a">X</b> <b style="color:#7dff7a">Y</b> <b style="color:#5aa8ff">Z</b>: kéo mũi tên = dời theo 1 trục · ô vuông nhỏ = trong mặt phẳng 2 trục · vòng = xoay quanh trục · hộp = tỉ lệ. Kéo thân vật vẫn dời trên sàn như cũ.</span>
+          <kbd>W/E/R + chuột phải</kbd><span class="kdesc">Đang ở Di chuyển / Xoay / Tỉ lệ vẫn lia (chuột phải/giữa kéo) và lăn zoom được.</span>
+          <kbd>Ô Trên/Trước/Phải</kbd><span class="kdesc">Chế độ 4 góc: lăn = zoom về con trỏ · chuột phải kéo = lia · bấm = chọn vật · kéo vật = dời/xoay/tỉ lệ trong mặt phẳng ô · nháy đúp = lấy tâm. Khung cam màu cam = tầm nhìn camera chụp.</span>
         </div>
       </div>
       <div class="help-section">
@@ -1174,10 +1232,22 @@
           <kbd>Ctrl Z</kbd><span class="kdesc">Hoàn tác (undo)</span>
           <kbd>Ctrl ⇧ Z</kbd><span class="kdesc">Làm lại (redo)</span>
           <kbd>M</kbd><span class="kdesc">Bật/tắt màn hình xem trước (monitor)</span>
+          <kbd>V</kbd><span class="kdesc">Bật/tắt 4 góc nhìn: Trên · Phối cảnh · Trước · Phải</span>
+          <kbd>X</kbd><span class="kdesc">Trục gizmo: Thế giới ⇄ Cục bộ (theo hướng xoay của vật)</span>
+          <kbd>Ctrl</kbd><span class="kdesc">Giữ khi kéo trục / kéo trong ô 4 góc = bắt bước 0.25 m · 15° · 0.1× (đảo tạm nếu đã bật "Bắt bước")</span>
+          <kbd>F</kbd><span class="kdesc">Khung vừa vật đang chọn (ở 4 góc: cả 3 ô Trên/Trước/Phải cùng ôm vật)</span>
           <kbd>~</kbd><span class="kdesc">Bật/tắt toàn màn hình (ẩn 2 panel)</span>
           <kbd>Tab</kbd><span class="kdesc">Bật/tắt toàn màn hình</span>
           <kbd>/</kbd><span class="kdesc">Nhảy tới ô tìm kiếm model</span>
           <kbd>?</kbd><span class="kdesc">Mở bảng hướng dẫn này</span>
+        </div>
+      </div>
+      <div class="help-section">
+        <div class="ht">Nhiều màn hình (2–3 màn)</div>
+        <div class="help-steps">
+          <div class="help-step"><span>Nút <b>Màn hình</b> trên thanh trên cùng → <b>Bố cục 2 màn hình</b> (màn 2: màn hình máy quay) hoặc <b>Bố cục 3 màn hình</b> (màn 2: 4 góc nhìn · màn 3: máy quay). Chrome/Edge hỏi quyền <b>"Quản lý cửa sổ trên tất cả màn hình"</b> lần đầu — cho phép để app tự đặt cửa sổ lên đúng màn hình.</span></div>
+          <div class="help-step"><span>Cửa sổ phụ chạy trực tiếp cùng cảnh: chọn/kéo vật ở đâu cũng cập nhật mọi màn. Phím tắt (W/E/R/Q, Del, Ctrl+Z…) gõ ở cửa sổ phụ vẫn tác dụng lên app. Nút <b>⛶</b> trong cửa sổ = toàn màn hình, <b>⇄</b> = đổi nội dung (máy quay ⇄ 4 góc).</span></div>
+          <div class="help-step"><span>Trình duyệt chỉ cho mở 1 cửa sổ mỗi lần bấm: nếu báo chặn popup, bấm biểu tượng chặn trên thanh địa chỉ → <b>Luôn cho phép</b>, rồi bấm lại nút bố cục để mở cửa sổ còn lại.</span></div>
         </div>
       </div>
     </div>
@@ -1224,17 +1294,22 @@ class Orbit{
     this.minR=0.25;this.maxR=120;
     this.onZoomPick=null;    // app gắn vào: trả về điểm 3D dưới con trỏ
     this.enabled=true;
+    this.navOnly=false;      // tắt xoay nhưng vẫn cho lia (chuột phải/giữa) + lăn zoom — khi đang ở công cụ W/E/R
+    this.navBlock=null;      // hàm → true: chặn cả lia/zoom (đang xem thử / xuất video)
+    this.grabbed=null;       // hàm → true: đang kéo trục gizmo, không xoay/lia
     this._update();this._bind();
   }
   _bind(){
     let mode=0,px=0,py=0;
+    const navOk=()=>this.navOnly&&!(this.navBlock&&this.navBlock());
     const down=e=>{
-      if(!this.enabled)return;
+      if(this.grabbed&&this.grabbed())return;
+      if(!this.enabled&&!(navOk()&&(e.button===2||e.button===1)))return;
       mode=(e.button===2||e.button===1)?2:1;px=e.clientX;py=e.clientY;
       e.preventDefault();
     };
     const move=e=>{
-      if(!mode||!this.enabled)return;
+      if(!mode||!(this.enabled||(mode===2&&navOk())))return;
       const dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;
       if(mode===1){
         this.sph.theta-=dx*0.005;this.sph.phi-=dy*0.005;
@@ -1255,7 +1330,7 @@ class Orbit{
     // TIẾN VỀ ĐIỂM DƯỚI CON TRỎ, nên ngắm chi tiết nhỏ trong set 400 m vẫn tới được.
     let lastPick=null,lastPickT=0;
     const wheel=e=>{
-      if(!this.enabled)return;e.preventDefault();
+      if(!this.enabled&&!navOk())return;e.preventDefault();
       const step=e.shiftKey?0.03:((e.ctrlKey||e.altKey)?0.30:0.12);
       const dir=e.deltaY>0?1:-1;
       const r0=this.sph.radius;
@@ -1396,7 +1471,7 @@ function initDistortion(){
 }
 initDistortion();
 // render có/không méo tuỳ lensDistortion
-function renderView(){
+function renderView(ov){
   if(lensDistortion>0.001){
     const w=renderer.domElement.width, h=renderer.domElement.height;
     if(rtTarget.width!==w||rtTarget.height!==h)rtTarget.setSize(w,h);
@@ -1408,6 +1483,7 @@ function renderView(){
     renderer.setClearColor(prevColor,prevAlpha);
     renderer.clear(true,true,true);
     renderer.render(scene,camera);
+    if(ov)renderOverlay(camera);          // gizmo méo cùng ảnh → khớp tia chọn trục
     renderer.setRenderTarget(null);
     // vẽ lại qua shader méo
     distMat.uniforms.tDiffuse.value=rtTarget.texture;
@@ -1420,6 +1496,7 @@ function renderView(){
     renderer.setClearColor(prevColor,prevAlpha);
   }else{
     renderer.render(scene,camera);
+    if(ov)renderOverlay(camera);
   }
 }
 
@@ -9733,12 +9810,14 @@ function updRange(r){const min=+r.min,max=+r.max;r.style.setProperty('--p',((r.v
 
 /* ════════════════════════ TOOLS: move/rotate/scale via drag ════════════════════════ */
 let tool='orbit';
-document.querySelectorAll('.vt').forEach(b=>{
+document.querySelectorAll('.vt[data-tool]').forEach(b=>{
   b.onclick=()=>{
-    document.querySelectorAll('.vt').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.vt[data-tool]').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');tool=b.dataset.tool;
     orbit.enabled=(tool==='orbit');
+    orbit.navOnly=(tool!=='orbit');       // W/E/R: vẫn lia + zoom
     vp.style.cursor=tool==='orbit'?'default':'move';
+    if(typeof gzToolbar==='function')gzToolbar();
   };
 });
 
@@ -9753,16 +9832,8 @@ const planeIntersect=new THREE.Vector3();
 // nên điểm thấy trên màn hình KHÁC điểm trong ảnh gốc — phải đi qua đúng công thức shader, nếu không
 // bấm trúng vật mà tia lại bắn lệch sang chỗ khác (thường rơi xuống khối nền).
 function screenToNdc(cx,cy,out){
-  const r=canvas.getBoundingClientRect();
-  let x=((cx-r.left)/r.width)*2-1, y=-((cy-r.top)/r.height)*2+1;
-  const k=lensDistortion;
-  if(k>0.001){
-    const a=r.width/r.height;
-    const u=x*.5*a, v=y*.5;                       // = (vUv-0.5), trục x nhân aspect
-    const f=1+k*(u*u+v*v), sc=1/(1+k*.25*(a*a+1));
-    x=Math.max(-1,Math.min(1,u*f*sc/a*2)); y=Math.max(-1,Math.min(1,v*f*sc*2));
-  }
-  return out.set(x,y);
+  perspNdc(cx,cy,out);                            // (4 góc: NDC của ô phối cảnh) — xem perspNdc ở cuối file
+  return out;
 }
 function ndc(e){screenToNdc(e.clientX,e.clientY,mouse);}
 
@@ -9797,7 +9868,7 @@ const PICK_RINGS=[5,10,15], PICK_SMALL=70*70;
 const _pb=new THREE.Box3(),_pv=new THREE.Vector3(),_pn=new THREE.Vector2();
 function screenArea(o){
   _pb.setFromObject(o);if(_pb.isEmpty())return 0;
-  const r=canvas.getBoundingClientRect();
+  const r0=canvas.getBoundingClientRect(),r=quadOn?{width:r0.width/2,height:r0.height/2}:r0;
   let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   for(let k=0;k<8;k++){
     _pv.set(k&1?_pb.max.x:_pb.min.x,k&2?_pb.max.y:_pb.min.y,k&4?_pb.max.z:_pb.min.z);
@@ -9834,6 +9905,7 @@ function pickRoot(e){
 
 vp.addEventListener('mousedown',e=>{
   if(e.button!==0)return;
+  if(gz&&gz.dragging)return;                      // đang nắm trục gizmo
   const root=pickRoot(e);
   if(root){
       if(e.shiftKey&&tool==='orbit'){
@@ -11049,7 +11121,7 @@ function loop(){
   updHud();
   updateDecalBillboards();
   updateSetAnnotations();
-  renderView();
+  renderMain();
   renderMonitor();
 }
 
@@ -11210,7 +11282,7 @@ function camPreview(){
     const b=document.getElementById('cmPreview');if(b)b.textContent='▶ '+(t*camMove.dur).toFixed(1)+' / '+camMove.dur+' s';
     if(t<1)requestAnimationFrame(step);
     else{
-      camPreviewing=false;orbit.enabled=true;
+      camPreviewing=false;orbit.enabled=(tool==='orbit');
       camSyncOrbit(camLerp(camMove.A,camMove.B,1,camMove.path));
       if(b)b.textContent='▶ Xem thử';
       updateCamGizmoVis();camMoveUI();
@@ -11335,7 +11407,7 @@ async function camExport(){
   // trả lại y nguyên
   renderer.setPixelRatio(keep.pr);resize();
   if(keep.anno!==annoOn){annoOn=keep.anno;applyAnno();}
-  camExporting=false;orbit.enabled=true;
+  camExporting=false;orbit.enabled=(tool==='orbit');
   camSyncOrbit(keep.st);
   ov.classList.remove('on');updateCamGizmoVis();camMoveUI();
   toast(ok?('Đã xuất '+(kind==='mp4'?'MP4':'WebM')+' '+W+'×'+H+' · '+camMove.dur+' s — xem thư mục Tải về')
@@ -11602,6 +11674,570 @@ document.getElementById('newProjName').onkeydown=e=>{if(e.key==='Enter')newProje
 window.addEventListener('mouseup',()=>{autosave();pushHistory();});
 // lưu trước khi đóng tab
 window.addEventListener('beforeunload',()=>{if(storageOK&&currentProjName)saveCurrentToStorage();});
+
+/* ════════════════════════ GIZMO TRỤC X/Y/Z · 4 GÓC NHÌN · NHIỀU MÀN HÌNH ════════════════════════
+   • Gizmo: TransformControls của three r160 (nạp từ jsDelivr, đúng phiên bản three của app → dùng chung một THREE).
+     Hiện khi chọn Di chuyển (W) / Xoay (E) / Tỉ lệ (R): kéo mũi tên · vòng · hộp theo trục X (đỏ), Y (xanh lá),
+     Z (xanh dương). Gizmo nằm ở cảnh riêng, vẽ đè lên view chính → KHÔNG lọt vào ảnh chụp shot, monitor, video.
+     X = đổi trục Thế giới ⇄ Cục bộ · Bắt bước 0.25 m / 15° / 0.1× (giữ Ctrl khi kéo để đảo tạm).
+     Chọn nhiều vật: dời/xoay/tỉ lệ cả nhóm quanh vật chính. Tỉ lệ luôn đều (app lưu một hệ số tỉ lệ).
+   • 4 góc nhìn (V): TRÊN · PHỐI CẢNH (camera chính, có gizmo) · TRƯỚC · PHẢI — chia viewport bằng scissor,
+     bóng đổ tính 1 lần/khung. Ô trực giao: lăn = zoom về con trỏ, chuột phải/giữa = lia, bấm = chọn,
+     kéo vật = dời/xoay/tỉ lệ trong mặt phẳng ô (theo công cụ đang chọn), nháy đúp = lấy tâm. Khung nhìn của
+     camera chính vẽ màu cam trong các ô trực giao.
+   • Cửa sổ phụ: "Màn hình máy quay" (khung chụp sạch, đúng tỉ lệ) và "4 góc nhìn" (ô phối cảnh xoay tự do,
+     không đụng camera chụp). Render trực tiếp cùng cảnh bằng renderer riêng (như monitor). Bố cục 2/3 màn hình
+     tự đặt cửa sổ lên các màn hình còn lại nhờ Window Management API (Chrome/Edge — hỏi quyền lần đầu).    */
+
+/* ---------- GIZMO ---------- */
+const gzScene=new THREE.Scene();
+let gz=null,gzStart=null,gzHold=0,gzSpace='world',gzSnap=false,gzCtrl=false,gzFailed=false;
+const GZ_URL='https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/TransformControls.js';
+function gzMode(){return tool==='move'?'translate':tool==='rotate'?'rotate':tool==='scale'?'scale':null;}
+(async function gzInit(){
+  try{
+    const mod=await import(GZ_URL);
+    gz=new mod.TransformControls(camera,renderer.domElement);
+    gz.setSize(1.05);
+    // NDC đúng ô phối cảnh (4 góc) + đúng méo ống kính rộng — giống tia chọn vật của app
+    gz._getPointer=e=>{const o=new THREE.Vector2(),inside=perspNdc(e.clientX,e.clientY,o);return {x:inside?o.x:9,y:inside?o.y:9,button:e.button};};
+    gz.enabled=false;
+    gzScene.add(gz);
+    gz.addEventListener('mouseDown',gzDown);
+    gz.addEventListener('objectChange',gzChange);
+    gz.addEventListener('mouseUp',gzUp);
+    gzApplySnap();
+  }catch(err){gzFailed=true;console.warn('[gizmo] không nạp được TransformControls — vẫn kéo vật như cũ',err);}
+})();
+// gắn/gỡ gizmo theo công cụ + vật đang chọn (gọi mỗi khung, rẻ)
+function gzSync(){
+  if(!gz)return;
+  const m=gzMode(),o=selected;
+  const ok=!!(m&&o&&o.parent===scene&&o.visible&&!camExporting&&!camPreviewing);
+  if(!ok){if(!gz.dragging){if(gz.object)gz.detach();gz.enabled=false;}return;}
+  if(gz.object!==o&&!gz.dragging)gz.attach(o);
+  if(gz.mode!==m)gz.setMode(m);
+  const sp=m==='scale'?'local':gzSpace;if(gz.space!==sp)gz.setSpace(sp);
+  gz.enabled=true;
+}
+function gzApplySnap(){
+  if(!gz)return;
+  const on=gzSnap!==gzCtrl;
+  gz.setTranslationSnap(on?.25:null);gz.setRotationSnap(on?THREE.MathUtils.degToRad(15):null);gz.setScaleSnap(on?.1:null);
+}
+function gzDown(){
+  const p=gz.object;if(!p)return;
+  gzStart={p:p.position.clone(),q:p.quaternion.clone(),s:p.scale.clone(),
+    others:selection.filter(o=>o!==p).map(o=>({o,p:o.position.clone(),q:o.quaternion.clone(),s:o.scale.clone()}))};
+}
+function gzChange(){
+  const p=gz.object;if(!p||!gzStart)return;
+  const m=gz.mode;
+  if(m==='scale'){                                   // tỉ lệ luôn đều: lấy trục đổi nhiều nhất
+    const r=[p.scale.x/gzStart.s.x,p.scale.y/gzStart.s.y,p.scale.z/gzStart.s.z];
+    let k=r[0];for(const v of r)if(Math.abs(Math.log(v))>Math.abs(Math.log(k)))k=v;
+    k=Math.max(.05/gzStart.s.x,Math.min(60/gzStart.s.x,k));
+    p.scale.copy(gzStart.s).multiplyScalar(k);
+    gzStart.others.forEach(t=>t.o.scale.copy(t.s).multiplyScalar(k));
+  }else if(m==='translate'){
+    const d=p.position.clone().sub(gzStart.p);
+    gzStart.others.forEach(t=>t.o.position.copy(t.p).add(d));
+  }else{                                             // xoay cả nhóm quanh tâm vật chính
+    const dq=p.quaternion.clone().multiply(gzStart.q.clone().invert());
+    gzStart.others.forEach(t=>{t.o.quaternion.copy(dq).multiply(t.q);t.o.position.copy(gzStart.p).add(t.p.clone().sub(gzStart.p).applyQuaternion(dq));});
+  }
+  gzUI();gzReadout();
+}
+function gzUp(){gzStart=null;gzReadout(true);renderInspector();}
+// cập nhật nhanh các ô của inspector khi đang kéo (không dựng lại cả panel)
+function gzUI(){
+  const s=selected;if(!s)return;
+  const deg=a=>Math.round(a*180/Math.PI);
+  const set=(id,v)=>{const r=document.getElementById(id);if(r){r.value=v;updRange(r);}};
+  set('objRot',((deg(s.rotation.y))%360+360)%360);refreshRot();
+  set('objRotX',deg(s.rotation.x));const vx=document.getElementById('vObjRotX');if(vx)vx.textContent=deg(s.rotation.x)+'°';
+  set('objRotZ',deg(s.rotation.z));const vz=document.getElementById('vObjRotZ');if(vz)vz.textContent=deg(s.rotation.z)+'°';
+  set('objY',s.position.y);const ny=document.getElementById('objYNum');if(ny)ny.value=s.position.y.toFixed(2);
+  set('objScale',s.scale.x);refreshSc();
+}
+// số đo nổi khi đang kéo trục
+function gzReadout(hide){
+  const el=document.getElementById('gzInfo');if(!el)return;
+  if(hide||!gz||!gz.object||!gzStart){el.classList.remove('on');return;}
+  const p=gz.object,ax=(gz.axis||''),c=a=>'<b class="'+a.toLowerCase()+'">'+a+'</b>';
+  let html='';
+  if(gz.mode==='translate'){
+    const d=p.position.clone().sub(gzStart.p);
+    if(gz.space==='local')d.applyQuaternion(gzStart.q.clone().invert());
+    const parts=['X','Y','Z'].filter(a=>ax.indexOf(a)>=0).map(a=>c(a)+' '+(d[a.toLowerCase()]>=0?'+':'')+d[a.toLowerCase()].toFixed(2)+' m');
+    html='Dời '+(gz.space==='local'?'(cục bộ) ':'')+parts.join(' · ');
+  }else if(gz.mode==='rotate'){
+    const dq=p.quaternion.clone().multiply(gzStart.q.clone().invert()),ang=2*Math.acos(Math.min(1,Math.abs(dq.w)))*180/Math.PI;
+    html='Xoay '+(/^[XYZ]$/.test(ax)?'quanh '+c(ax)+' ':'')+ang.toFixed(1)+'°';
+  }else{
+    html='Tỉ lệ ×'+(p.scale.x/gzStart.s.x).toFixed(2)+' → '+p.scale.x.toFixed(2)+'×';
+  }
+  if(gzSnap!==gzCtrl)html+=' <span style="opacity:.7">· bắt bước</span>';
+  el.innerHTML=html;el.classList.add('on');
+}
+// thanh công cụ dưới viewport: hẹp quá thì bỏ chữ phím tắt, hẹp nữa thì chỉ còn icon (tooltip vẫn có)
+function vtFit(){
+  const tb=document.querySelector('.vp-toolbar');if(!tb)return;
+  tb.classList.add('measuring');                   // đo khi tắt transition, không thì số đo là cỡ cũ
+  tb.classList.remove('compact','tiny');
+  const room=vp.clientWidth-24;
+  if(tb.offsetWidth>room){tb.classList.add('compact');if(tb.offsetWidth>room)tb.classList.add('tiny');}
+  void tb.offsetWidth;tb.classList.remove('measuring');
+}
+function gzToolbar(){
+  const tb=document.querySelector('.vp-toolbar');if(tb)tb.classList.toggle('gz-on',!!gzMode());
+  const sb=document.getElementById('gzSpaceBtn');if(sb)sb.querySelector('span').textContent=gzSpace==='world'?'Thế giới':'Cục bộ';
+  const nb=document.getElementById('gzSnapBtn');if(nb)nb.classList.toggle('on',gzSnap);
+  vtFit();gzSync();                                  // đổi công cụ → gizmo đổi ngay, không chờ khung sau
+}
+function gzToggleSpace(){gzSpace=gzSpace==='world'?'local':'world';gzToolbar();gzSync();toast('Trục gizmo: '+(gzSpace==='world'?'THẾ GIỚI — X đỏ · Y xanh lá (lên) · Z xanh dương, cố định':'CỤC BỘ — xoay theo hướng của vật')+' · phím X');}
+function gzToggleSnap(){gzSnap=!gzSnap;gzApplySnap();gzToolbar();toast(gzSnap?'Bắt bước: 0.25 m · 15° · 0.1× (giữ Ctrl để tắt tạm)':'Tắt bắt bước (giữ Ctrl khi kéo để bật tạm)');}
+// gizmo + khung cam chỉ vẽ ở view làm việc; ảnh chụp / monitor / video không có
+function renderOverlay(cam){
+  if(!gz||!gz.object||gzHold)return;
+  const ac=renderer.autoClear;renderer.autoClear=false;
+  renderer.render(gzScene,cam);
+  renderer.autoClear=ac;
+}
+
+/* ---------- 4 GÓC NHÌN ---------- */
+let quadOn=false,qvDrag=null;
+const QV_AX={top:[[1,0,0],[0,0,-1]],front:[[1,0,0],[0,1,0]],right:[[0,0,-1],[0,1,0]]};   // trục phải / trục lên của ô
+const QV_SPIN={top:[0,1,0],front:[0,0,1],right:[1,0,0]};                                // trục hướng về người xem
+function qvHost(freePersp){
+  const P=(kind,title)=>({kind,title,cam:new THREE.OrthographicCamera(),c:new THREE.Vector3(),h:20,rect:[0,0,1,1]});
+  const host={panes:[P('top','TRÊN'),{kind:'persp',title:freePersp?'PHỐI CẢNH TỰ DO':'PHỐI CẢNH · CAMERA CHỤP',rect:[0,0,1,1]},P('front','TRƯỚC'),P('right','PHẢI')]};
+  if(freePersp)host.free={cam:new THREE.PerspectiveCamera(40,1,.1,3000),target:new THREE.Vector3(),sph:new THREE.Spherical(20,1.1,.8)};
+  return host;
+}
+const QV={main:qvHost(false)};
+function qvReset(host){
+  const c=orbit.target.clone(),h=Math.max(2,Math.min(700,orbit.sph.radius*.62));
+  host.panes.forEach(p=>{if(p.cam){p.c.copy(c);p.h=h;}});host.full=true;
+  if(host.free){host.free.target.copy(c);host.free.sph.copy(orbit.sph);host.free.sph.theta+=.85;host.free.sph.phi=Math.min(1.25,Math.max(.5,host.free.sph.phi));qvFreeUpdate(host.free);}
+}
+function qvFreeUpdate(f){f.cam.position.setFromSpherical(f.sph).add(f.target);f.cam.lookAt(f.target);}
+function qvOrtho(p,w,h){
+  const a=w/Math.max(1,h),cam=p.cam,D=3200;
+  cam.left=-p.h*a;cam.right=p.h*a;cam.top=p.h;cam.bottom=-p.h;cam.near=1;cam.far=9000;
+  if(p.kind==='top'){cam.up.set(0,0,-1);cam.position.set(p.c.x,p.c.y+D,p.c.z);}
+  else if(p.kind==='front'){cam.up.set(0,1,0);cam.position.set(p.c.x,p.c.y,p.c.z+D);}
+  else{cam.up.set(0,1,0);cam.position.set(p.c.x+D,p.c.y,p.c.z);}
+  cam.lookAt(p.c);cam.updateProjectionMatrix();cam.updateMatrixWorld();
+}
+// khung nhìn camera chụp (cam) + tâm xoay, chỉ vẽ trong ô trực giao
+const qvHelp=new THREE.Scene();
+const qvLinePos=new Float32Array(30*3),qvLineGeo=new THREE.BufferGeometry();
+qvLineGeo.setAttribute('position',new THREE.BufferAttribute(qvLinePos,3));
+const qvLines=new THREE.LineSegments(qvLineGeo,new THREE.LineBasicMaterial({color:'#ffb454',depthTest:false,depthWrite:false,transparent:true,fog:false}));
+qvLines.frustumCulled=false;qvLines.renderOrder=999;qvHelp.add(qvLines);
+function qvHelpUpdate(){
+  camera.updateMatrixWorld();
+  const L=Math.max(3,Math.min(80,orbit.sph.radius*.9)),hh=L*Math.tan(THREE.MathUtils.degToRad(camera.fov/2)),hw=hh*aspect;
+  const P=(x,y,z)=>new THREE.Vector3(x,y,z).applyMatrix4(camera.matrixWorld);
+  const o=P(0,0,0),a=P(-hw,hh,-L),b=P(hw,hh,-L),c=P(hw,-hh,-L),d=P(-hw,-hh,-L),u1=P(-hw*.35,hh*1.06,-L),u2=P(hw*.35,hh*1.06,-L),u3=P(0,hh*1.4,-L);
+  const t=orbit.target,s=Math.max(.3,L*.04),X=[t.x-s,t.y,t.z],X2=[t.x+s,t.y,t.z],Z=[t.x,t.y,t.z-s],Z2=[t.x,t.y,t.z+s],Y=[t.x,t.y-s,t.z],Y2=[t.x,t.y+s,t.z];
+  const seg=[o,a,o,b,o,c,o,d,a,b,b,c,c,d,d,a,u1,u3,u3,u2,u2,u1].map(v=>[v.x,v.y,v.z]).concat([X,X2,Z,Z2,Y,Y2]);
+  seg.forEach((v,i)=>{qvLinePos[i*3]=v[0];qvLinePos[i*3+1]=v[1];qvLinePos[i*3+2]=v[2];});
+  qvLineGeo.attributes.position.needsUpdate=true;qvLineGeo.setDrawRange(0,seg.length);
+}
+// bầu trời của các khối set (vòm cầu, sao, trăng: không sương, không ghi depth, nằm xa ≥ 300 m quanh gốc khối):
+// ô trực giao nhìn từ NGOÀI vòm → che kín cảnh, nên ẩn đi khi vẽ ô trực giao
+let qvSky=[],qvSkyKey='';
+function qvSkyList(){
+  const key=objects.length+':'+(objects.length?objects[objects.length-1].id:0);
+  if(key===qvSkyKey)return qvSky;
+  qvSkyKey=key;qvSky=[];
+  const v=new THREE.Vector3();
+  objects.forEach(root=>{
+    root.updateMatrixWorld(true);
+    const rs=root.matrixWorld.getMaxScaleOnAxis()||1;
+    root.traverse(m=>{
+      if(!(m.isMesh||m.isPoints||m.isSprite)||!m.material||Array.isArray(m.material))return;
+      const mt=m.material;if(mt.depthWrite!==false||mt.fog!==false)return;
+      let r=0;
+      if(m.isSprite)v.setFromMatrixPosition(m.matrixWorld);
+      else{const g=m.geometry;if(!g.boundingSphere)g.computeBoundingSphere();v.copy(g.boundingSphere.center).applyMatrix4(m.matrixWorld);r=g.boundingSphere.radius*m.matrixWorld.getMaxScaleOnAxis()/rs;}
+      root.worldToLocal(v);
+      if(v.length()+r>=300)qvSky.push(m);
+    });
+  });
+  return qvSky;
+}
+// vẽ 2×2: [TRÊN | PHỐI CẢNH] / [TRƯỚC | PHẢI] — w,h theo px CSS
+// Nhẹ máy: ô phối cảnh vẽ mỗi khung; 3 ô trực giao (thấy TOÀN cảnh, không lọc bớt được) vẽ luân phiên
+// 1 ô/khung — riêng ô đang thao tác (kéo / lăn) thì vẽ mỗi khung. Canvas giữ ảnh cũ (preserveDrawingBuffer)
+// nên ô chưa tới lượt vẫn hiện đúng. host.full = vẽ lại đủ 4 ô (sau chụp shot, đổi cỡ, bật 4 góc…).
+const QV_RR=[0,2,3];
+function qvRender(rd,host,W,H,perspCam,main){
+  const hw=Math.floor(W/2),hh=Math.floor(H/2);
+  const rects=[[0,0,hw,hh],[hw,0,W-hw,hh],[0,hh,hw,H-hh],[hw,hh,W-hw,H-hh]];
+  const bw=rd.domElement.width,bh=rd.domElement.height,full=host.full||host.bw!==bw||host.bh!==bh;
+  host.full=false;host.bw=bw;host.bh=bh;host.rr=((host.rr|0)+1)%3;
+  const now=performance.now(),turn=host.panes[QV_RR[host.rr]];
+  qvHelpUpdate();
+  const au=rd.shadowMap.autoUpdate;rd.shadowMap.autoUpdate=false;rd.shadowMap.needsUpdate=true;   // bóng đổ tính 1 lần cho cả 4 ô
+  rd.setScissorTest(true);
+  const gv=!main&&camGizmo&&camGizmo.visible;if(gv)camGizmo.visible=false;
+  host.panes.forEach((p,i)=>{
+    const [x,y,w,h]=rects[i];p.rect=rects[i];
+    if(!full&&p.kind!=='persp'&&p!==turn&&!(qvDrag&&qvDrag.p===p)&&now-(p.hotT||0)>450)return;
+    rd.setViewport(x,H-y-h,w,h);rd.setScissor(x,H-y-h,w,h);
+    if(p.kind==='persp'){
+      if(host.free){const f=host.free.cam;f.aspect=w/Math.max(1,h);f.updateProjectionMatrix();rd.render(scene,f);}
+      else{rd.render(scene,perspCam);if(main)renderOverlay(perspCam);}
+    }else{
+      qvOrtho(p,w,h);
+      // nhìn trực giao từ xa 3.2 km: tắt sương mù (chỉ đổi near/far → không biên dịch lại shader), ẩn vòm trời
+      const fg=scene.fog,fn=fg&&fg.isFog?[fg.near,fg.far]:null;if(fn){fg.near=1e7;fg.far=2e7;}
+      const sky=qvSkyList().filter(m=>m.visible);sky.forEach(m=>m.visible=false);
+      rd.render(scene,p.cam);
+      sky.forEach(m=>m.visible=true);if(fn){fg.near=fn[0];fg.far=fn[1];}
+      const ac=rd.autoClear;rd.autoClear=false;rd.render(qvHelp,p.cam);rd.autoClear=ac;
+    }
+  });
+  if(gv)camGizmo.visible=true;
+  rd.setScissorTest(false);rd.setViewport(0,0,W,H);
+  rd.shadowMap.autoUpdate=au;
+}
+// ô dưới con trỏ (el: canvas của host)
+function qvPaneAt(host,el,cx,cy){
+  const r=el.getBoundingClientRect();if(cx<r.left||cy<r.top||cx>r.right||cy>r.bottom)return null;
+  const col=(cx-r.left)<r.width/2?0:1,row=(cy-r.top)<r.height/2?0:1,p=host.panes[row*2+col];
+  const x0=r.left+col*r.width/2,y0=r.top+row*r.height/2,w=r.width/2,h=r.height/2;
+  return {pane:p,ndc:new THREE.Vector2((cx-x0)/w*2-1,-(cy-y0)/h*2+1),w,h};
+}
+function qvPick(cam,ndc){
+  ray.setFromCamera(ndc,cam);
+  const sky=cam.isOrthographicCamera?qvSkyList():[];
+  const meshes=[];objects.forEach(o=>{if(o.visible)o.traverseVisible(m=>{if(m.isMesh&&!m.userData.__anno&&!sky.includes(m))meshes.push(m);});});
+  const hit=ray.intersectObjects(meshes,false)[0];if(!hit)return null;
+  let o=hit.object;while(o.parent&&!objects.includes(o))o=o.parent;
+  return objects.includes(o)?{root:o,point:hit.point}:null;
+}
+function qvWorldAt(p,ndc,w,h){                       // điểm trên mặt phẳng ô (qua tâm ô) dưới con trỏ
+  const [R,U]=QV_AX[p.kind].map(a=>new THREE.Vector3(...a)),a=w/Math.max(1,h);
+  return p.c.clone().addScaledVector(R,ndc.x*p.h*a).addScaledVector(U,ndc.y*p.h);
+}
+function qvZoom(hit,dy,fine){
+  const p=hit.pane,k=dy>0?(fine?1.04:1.15):1/(fine?1.04:1.15);
+  const before=qvWorldAt(p,hit.ndc,hit.w,hit.h);
+  p.h=Math.max(.4,Math.min(1500,p.h*k));p.hotT=performance.now();
+  const after=qvWorldAt(p,hit.ndc,hit.w,hit.h);p.c.add(before.sub(after));
+}
+function qvFrame(host){                               // F: các ô trực giao ôm vật đang chọn
+  let c,h;
+  if(selected&&!selected.userData.isSet){const b=new THREE.Box3().setFromObject(selected);c=b.getCenter(new THREE.Vector3());h=Math.max(1.2,b.getSize(new THREE.Vector3()).length()*.62);}
+  else{c=orbit.target.clone();h=Math.max(2,Math.min(700,orbit.sph.radius*.62));}
+  host.panes.forEach(p=>{if(p.cam){p.c.copy(c);p.h=h;}});
+  host.full=true;
+}
+function qvDown(host,hit,e,win){
+  const p=hit.pane,st={host,p,btn:e.button,x0:e.clientX,y0:e.clientY,moved:false,c0:p.c.clone(),hpx:hit.h,mode:'pan',win:win||window};
+  if(e.button===0){
+    const pk=qvPick(p.cam,hit.ndc);
+    if(pk){
+      if(e.shiftKey)toggleSelect(pk.root);
+      else{if(!selection.includes(pk.root))select(pk.root);else selected=pk.root;}
+      if(tool!=='orbit'&&!e.shiftKey){
+        st.mode='obj';st.pivot=selected.position.clone();
+        st.starts=selection.map(o=>({o,p:o.position.clone(),q:o.quaternion.clone(),s:o.scale.clone()}));
+      }
+    }else st.empty=true;
+  }
+  qvDrag=st;
+}
+function qvMove(e){
+  const d=qvDrag;if(!d)return;
+  const dx=e.clientX-d.x0,dy=e.clientY-d.y0;if(Math.abs(dx)+Math.abs(dy)>3)d.moved=true;
+  const upp=2*d.p.h/Math.max(1,d.hpx),[R,U]=QV_AX[d.p.kind].map(a=>new THREE.Vector3(...a));
+  const snap=gzSnap!==(e.ctrlKey||gzCtrl);
+  if(d.mode==='pan'){d.p.c.copy(d.c0).addScaledVector(R,-dx*upp).addScaledVector(U,dy*upp);return;}
+  // bắt bước giống gizmo: vị trí / tỉ lệ của vật chính rơi đúng lưới 0.25 m / 0.1×, góc xoay theo bước 15°
+  const p0=d.starts.find(t=>t.o===selected)||d.starts[0];
+  if(tool==='move'){
+    const mv=new THREE.Vector3().addScaledVector(R,dx*upp).addScaledVector(U,-dy*upp);
+    if(snap&&p0){
+      const g=p0.p.clone().add(mv);
+      ['x','y','z'].forEach(k=>{if(Math.abs(R[k])+Math.abs(U[k])>.5)g[k]=Math.round(g[k]/.25)*.25;});
+      mv.copy(g).sub(p0.p);
+    }
+    d.starts.forEach(t=>t.o.position.copy(t.p).add(mv));
+  }else if(tool==='rotate'){
+    let ang=-dx*.012;if(snap)ang=Math.round(ang/(Math.PI/12))*(Math.PI/12);
+    const q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...QV_SPIN[d.p.kind]),ang);
+    d.starts.forEach(t=>{t.o.quaternion.copy(q).multiply(t.q);t.o.position.copy(d.pivot).add(t.p.clone().sub(d.pivot).applyQuaternion(q));});
+  }else if(tool==='scale'){
+    let k=Math.exp(-dy*.008);
+    if(snap&&p0){const s=Math.max(.1,Math.round(p0.s.x*k*10)/10);k=s/p0.s.x;}
+    k=Math.max(.05/p0.s.x,Math.min(60/p0.s.x,k));
+    d.starts.forEach(t=>t.o.scale.copy(t.s).multiplyScalar(k));
+  }
+  gzUI();
+}
+function qvUp(e){
+  const d=qvDrag;if(!d)return;qvDrag=null;
+  if(!d.moved&&d.empty&&d.btn===0&&!e.shiftKey)select(null);
+  if(d.mode==='obj'&&d.moved){renderInspector();if(d.win!==window){autosave();pushHistory();}}
+}
+function qvDbl(hit){
+  const pk=qvPick(hit.pane.cam,hit.ndc);
+  hit.pane.c.copy(pk?pk.point:qvWorldAt(hit.pane,hit.ndc,hit.w,hit.h));hit.pane.hotT=performance.now();
+}
+function setQuad(on){
+  quadOn=!!on;vp.classList.toggle('quad',quadOn);
+  const b=document.getElementById('quadBtn');if(b)b.classList.toggle('active',quadOn);
+  if(quadOn)qvReset(QV.main);
+  scrMenuSync();
+  toast(quadOn?'4 góc nhìn: Trên · Phối cảnh · Trước · Phải — V để tắt':'Về 1 khung nhìn');
+}
+// sự kiện ô trực giao trong viewport chính: chặn trước orbit / kéo vật / gizmo của ô phối cảnh
+vp.addEventListener('mousedown',e=>{
+  if(!quadOn||e.target!==canvas)return;const hit=qvPaneAt(QV.main,canvas,e.clientX,e.clientY);
+  if(!hit||hit.pane.kind==='persp')return;
+  e.stopPropagation();e.preventDefault();qvDown(QV.main,hit,e);
+},true);
+vp.addEventListener('wheel',e=>{
+  if(!quadOn||e.target!==canvas)return;const hit=qvPaneAt(QV.main,canvas,e.clientX,e.clientY);
+  if(!hit||hit.pane.kind==='persp')return;
+  e.stopPropagation();e.preventDefault();qvZoom(hit,e.deltaY,e.shiftKey);
+},{capture:true,passive:false});
+vp.addEventListener('dblclick',e=>{
+  if(!quadOn||e.target!==canvas)return;const hit=qvPaneAt(QV.main,canvas,e.clientX,e.clientY);
+  if(!hit||hit.pane.kind==='persp')return;
+  e.stopPropagation();e.preventDefault();qvDbl(hit);
+},true);
+vp.addEventListener('contextmenu',e=>{if(quadOn&&e.target===canvas)e.preventDefault();},true);
+window.addEventListener('mousemove',qvMove);
+window.addEventListener('mouseup',qvUp);
+// NDC của ô phối cảnh (4 góc) hoặc cả khung (có méo ống kính rộng) → dùng cho chọn vật, zoom, gizmo
+function perspNdc(cx,cy,out){
+  const r=canvas.getBoundingClientRect();
+  if(quadOn){
+    const w=r.width/2,h=r.height/2,x0=r.left+w,y0=r.top;
+    out.set((cx-x0)/w*2-1,-(cy-y0)/h*2+1);
+    return cx>=x0&&cy<=y0+h;
+  }
+  let x=((cx-r.left)/r.width)*2-1, y=-((cy-r.top)/r.height)*2+1;
+  const k=lensDistortion;
+  if(k>0.001){
+    const a=r.width/r.height,u=x*.5*a,v=y*.5,f=1+k*(u*u+v*v),sc=1/(1+k*.25*(a*a+1));
+    x=Math.max(-1,Math.min(1,u*f*sc/a*2));y=Math.max(-1,Math.min(1,v*f*sc*2));
+  }
+  out.set(x,y);return true;
+}
+
+/* ---------- CỬA SỔ PHỤ (màn hình 2–3) ---------- */
+const vwins=[];
+const VW_TITLE={shot:'Màn hình máy quay',quad:'4 góc nhìn'};
+function vwOpen(kind,scr){
+  let v=vwins.find(x=>x.kind===kind&&!x.win.closed);
+  if(v){try{if(scr){v.win.moveTo(scr.availLeft,scr.availTop);v.win.resizeTo(scr.availWidth,scr.availHeight);}v.win.focus();}catch(_){}return v;}
+  const feat='popup=yes,'+(scr?`left=${scr.availLeft},top=${scr.availTop},width=${scr.availWidth},height=${scr.availHeight}`:'width=1280,height=760');
+  const w=window.open('','jps_'+kind,feat);
+  if(!w)return null;
+  const d=w.document;
+  d.open();d.write(`<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>Jenny Pixel Studio — ${VW_TITLE[kind]}</title><style>
+html,body{margin:0;height:100%;background:#05070a;overflow:hidden;font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;color:#cfd8e3;user-select:none}
+canvas{display:block;width:100%;height:100%;outline:none}
+.bar{position:fixed;top:10px;right:10px;display:flex;gap:6px;z-index:9;opacity:.35;transition:opacity .2s}
+.bar:hover{opacity:1}
+.bar button{font:inherit;font-size:12px;background:rgba(17,19,24,.92);color:#e6edf3;border:1px solid #2b3440;border-radius:7px;padding:6px 10px;cursor:pointer}
+.bar button:hover{border-color:#4cc2ff}
+.lb{position:fixed;font-size:11px;letter-spacing:1px;color:#fff;background:rgba(10,14,19,.62);border:1px solid rgba(255,255,255,.12);padding:3px 8px;border-radius:6px;pointer-events:none;z-index:5}
+.sv,.sh{position:fixed;background:#05070a;z-index:4;pointer-events:none}
+.sv{left:50%;top:0;bottom:0;width:2px;margin-left:-1px}.sh{top:50%;left:0;right:0;height:2px;margin-top:-1px}
+.hint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);font-size:11px;color:#8b98a8;background:rgba(10,14,19,.7);padding:4px 10px;border-radius:6px;pointer-events:none;z-index:5;white-space:nowrap}
+</style></head><body><canvas id="cv" tabindex="0"></canvas><div id="ui"></div>
+<div class="bar"><button id="bSwap" title="Đổi nội dung cửa sổ">⇄ Đổi</button><button id="bFull" title="Toàn màn hình (F11 cũng được)">⛶ Toàn màn hình</button><button id="bClose">✕</button></div></body></html>`);
+  d.close();
+  const cv=d.getElementById('cv');
+  const rd=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
+  rd.setPixelRatio(Math.min(w.devicePixelRatio||1,2));
+  rd.shadowMap.enabled=true;rd.shadowMap.type=THREE.PCFSoftShadowMap;
+  v={kind,win:w,doc:d,cv,rd,W:0,H:0,cam:new THREE.PerspectiveCamera(40,16/9,.1,1000),host:qvHost(true),fr:0,drag:null};
+  qvReset(v.host);
+  vwins.push(v);vwUI(v);vwBind(v);
+  const tick=()=>{if(w.closed){vwDispose(v);return;}v.raf=w.requestAnimationFrame(tick);if(!camExporting)vwRender(v);};
+  v.raf=w.requestAnimationFrame(tick);
+  scrMenuSync();
+  return v;
+}
+function vwUI(v){
+  const ui=v.doc.getElementById('ui');
+  v.doc.title='Jenny Pixel Studio — '+VW_TITLE[v.kind];
+  if(v.kind==='shot')ui.innerHTML='<span class="lb" id="lbShot" style="left:12px;top:10px">MÁY QUAY</span>';
+  else ui.innerHTML='<i class="sv"></i><i class="sh"></i>'+
+    '<span class="lb" style="left:12px;top:10px">TRÊN · nhìn xuống</span><span class="lb" style="left:calc(50% + 12px);top:10px">PHỐI CẢNH TỰ DO · kéo để xoay</span>'+
+    '<span class="lb" style="left:12px;top:calc(50% + 10px)">TRƯỚC · từ +Z</span><span class="lb" style="left:calc(50% + 12px);top:calc(50% + 10px)">PHẢI · từ +X</span>'+
+    '<span class="hint">lăn = zoom · chuột phải = lia · bấm = chọn vật · kéo vật = dời/xoay/tỉ lệ theo công cụ · nháy đúp = lấy tâm · F = ôm vật chọn</span>';
+}
+function vwBind(v){
+  const w=v.win,d=v.doc,cv=v.cv;
+  d.getElementById('bClose').onclick=()=>w.close();
+  d.getElementById('bFull').onclick=()=>{if(d.fullscreenElement)d.exitFullscreen();else d.documentElement.requestFullscreen().catch(()=>{});};
+  d.getElementById('bSwap').onclick=()=>{v.kind=v.kind==='shot'?'quad':'shot';v.host.full=true;vwUI(v);scrMenuSync();};
+  cv.addEventListener('contextmenu',e=>e.preventDefault());
+  cv.addEventListener('mousedown',e=>{
+    cv.focus();
+    if(v.kind!=='quad')return;
+    const hit=qvPaneAt(v.host,cv,e.clientX,e.clientY);if(!hit)return;e.preventDefault();
+    if(hit.pane.kind!=='persp'){qvDown(v.host,hit,e,w);return;}
+    v.drag={btn:e.button,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,hit};
+  });
+  w.addEventListener('mousemove',e=>{
+    if(qvDrag&&qvDrag.host===v.host){qvMove(e);return;}
+    const g=v.drag;if(!g)return;
+    const dx=e.clientX-g.x,dy=e.clientY-g.y;g.x=e.clientX;g.y=e.clientY;
+    const f=v.host.free;
+    if(g.btn===0){f.sph.theta-=dx*.005;f.sph.phi=Math.max(.05,Math.min(Math.PI-.05,f.sph.phi-dy*.005));}
+    else{const k=.0016*f.sph.radius,right=new THREE.Vector3().setFromMatrixColumn(f.cam.matrix,0);f.target.addScaledVector(right,-dx*k);f.target.y+=dy*k;}
+    qvFreeUpdate(f);
+  });
+  w.addEventListener('mouseup',e=>{
+    if(qvDrag&&qvDrag.host===v.host){qvUp(e);return;}
+    const g=v.drag;v.drag=null;if(!g)return;
+    if(g.btn===0&&Math.abs(e.clientX-g.x0)+Math.abs(e.clientY-g.y0)<4){       // bấm nhẹ = chọn vật
+      const pk=qvPick(v.host.free.cam,g.hit.ndc);
+      if(pk){if(e.shiftKey)toggleSelect(pk.root);else select(pk.root);}else if(!e.shiftKey)select(null);
+    }
+  });
+  cv.addEventListener('wheel',e=>{
+    if(v.kind!=='quad')return;e.preventDefault();
+    const hit=qvPaneAt(v.host,cv,e.clientX,e.clientY);if(!hit)return;
+    if(hit.pane.kind==='persp'){const f=v.host.free;f.sph.radius=Math.max(.3,Math.min(orbit.maxR,f.sph.radius*(e.deltaY>0?1.12:1/1.12)));qvFreeUpdate(f);}
+    else qvZoom(hit,e.deltaY,e.shiftKey);
+  },{passive:false});
+  cv.addEventListener('dblclick',e=>{
+    if(v.kind!=='quad')return;const hit=qvPaneAt(v.host,cv,e.clientX,e.clientY);if(!hit)return;
+    if(hit.pane.kind==='persp'){const pk=qvPick(v.host.free.cam,hit.ndc);if(pk){v.host.free.target.copy(pk.point);qvFreeUpdate(v.host.free);}}
+    else qvDbl(hit);
+  });
+  // phím tắt trong cửa sổ phụ → chuyển về app chính (xoá, W/E/R/Q, Ctrl+Z, T, X…)
+  w.addEventListener('keydown',e=>{
+    if(e.key==='Tab'||e.key==='`'||e.key==='~'||e.key==='F11')return;
+    if(v.kind==='quad'&&(e.key==='f'||e.key==='F')&&!e.ctrlKey){qvFrame(v.host);if(selected){const b=new THREE.Box3().setFromObject(selected);v.host.free.target.copy(b.getCenter(new THREE.Vector3()));qvFreeUpdate(v.host.free);}e.preventDefault();return;}
+    const ev=new KeyboardEvent('keydown',{key:e.key,code:e.code,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,bubbles:true,cancelable:true});
+    document.dispatchEvent(ev);if(ev.defaultPrevented)e.preventDefault();
+  });
+  w.addEventListener('keyup',e=>{if(e.key==='Control'){gzCtrl=false;gzApplySnap();}});
+  w.addEventListener('beforeunload',()=>vwDispose(v));
+}
+function vwRender(v){
+  const w=v.win,W=w.innerWidth,H=w.innerHeight;if(!W||!H)return;
+  if(v.W!==W||v.H!==H){v.rd.setSize(W,H,false);v.W=W;v.H=H;}
+  if(v.kind==='quad'){qvRender(v.rd,v.host,W,H,null,false);return;}
+  // MÀN HÌNH MÁY QUAY: đúng camera chụp, đúng tỉ lệ khung, viền đen
+  let fw=W,fh=W/aspect;if(fh>H){fh=H;fw=H*aspect;}
+  const x=Math.round((W-fw)/2),y=Math.round((H-fh)/2),rd=v.rd;
+  rd.setScissorTest(true);
+  rd.setViewport(0,0,W,H);rd.setScissor(0,0,W,H);rd.setClearColor('#000000',1);rd.clear();
+  rd.setViewport(x,H-y-fh,fw,fh);rd.setScissor(x,H-y-fh,fw,fh);
+  const c=v.cam;c.position.copy(camera.position);c.quaternion.copy(camera.quaternion);c.fov=camera.fov;c.near=camera.near;c.far=camera.far;c.aspect=fw/fh;c.updateProjectionMatrix();
+  const gv=camGizmo&&camGizmo.visible;if(gv)camGizmo.visible=false;
+  rd.render(scene,c);
+  if(gv)camGizmo.visible=true;
+  rd.setScissorTest(false);rd.setViewport(0,0,W,H);
+  if((v.fr++)%15===0){const lb=v.doc.getElementById('lbShot');if(lb)lb.textContent='MÁY QUAY · '+document.getElementById('vFocal').textContent+' · khung '+document.querySelector('#aspectSeg .active').textContent;}
+}
+function vwDispose(v){
+  const i=vwins.indexOf(v);if(i<0)return;vwins.splice(i,1);
+  try{v.win.cancelAnimationFrame(v.raf);}catch(_){}
+  try{v.rd.dispose();v.rd.forceContextLoss();}catch(_){}
+  scrMenuSync();
+}
+function vwCloseAll(){vwins.slice().forEach(v=>{try{v.win.close();}catch(_){}vwDispose(v);});}
+window.addEventListener('beforeunload',()=>vwins.forEach(v=>{try{v.win.close();}catch(_){}}));
+// BỐ CỤC 2 / 3 MÀN HÌNH: hỏi vị trí các màn hình (Chrome/Edge), đặt cửa sổ phụ lên màn hình còn lại
+async function vwLayout(n){
+  let screens=null,cur=null;
+  if('getScreenDetails' in window){
+    try{const sd=await window.getScreenDetails();screens=sd.screens.slice();cur=sd.currentScreen;}catch(err){screens=null;}
+  }
+  const others=screens?screens.filter(s=>s!==cur).sort((a,b)=>(a.availLeft-b.availLeft)||(a.availTop-b.availTop)):[];
+  const kinds=n===2?['shot']:['quad','shot'];
+  let opened=0,blocked=0;
+  kinds.forEach((k,i)=>{const v=vwOpen(k,others[i]||null);if(v)opened++;else blocked++;});
+  if(blocked)toast(opened?'Đã mở '+opened+' cửa sổ — bấm lại "Bố cục '+n+' màn hình" để mở cửa sổ còn lại (trình duyệt chỉ cho mở từng cái)':'⚠ Trình duyệt chặn cửa sổ bật lên: bấm biểu tượng chặn popup trên thanh địa chỉ → "Luôn cho phép" rồi bấm lại');
+  else if(!screens)toast('Đã mở cửa sổ phụ — kéo sang màn hình còn lại (Chrome/Edge: cho phép quyền "Quản lý cửa sổ" để app tự đặt)');
+  else if(others.length<kinds.length)toast('Máy đang có '+screens.length+' màn hình — cửa sổ chưa có chỗ thì kéo tay sang');
+  else toast('Bố cục '+n+' màn hình: '+(n===2?'màn hình máy quay':'4 góc nhìn + màn hình máy quay')+' đã đặt sang màn hình bên cạnh');
+}
+
+/* ---------- MENU "MÀN HÌNH" ---------- */
+let scrMenu=null;
+function scrMenuBuild(){
+  scrMenu=document.createElement('div');scrMenu.className='scr-menu';scrMenu.id='scrMenu';
+  scrMenu.innerHTML=`
+    <button data-a="quad"><span class="ic">▦</span><span class="tx">4 góc nhìn trong khung chính<small>Trên · Phối cảnh · Trước · Phải</small></span><span class="key">V</span></button>
+    <div class="sep"></div>
+    <button data-a="win-shot"><span class="ic">⧉</span><span class="tx">Cửa sổ: Màn hình máy quay<small>khung chụp sạch, đúng tỉ lệ — kéo sang màn hình khác</small></span><span class="st" data-s="shot"></span></button>
+    <button data-a="win-quad"><span class="ic">⧉</span><span class="tx">Cửa sổ: 4 góc nhìn<small>ô phối cảnh xoay tự do, không đụng camera chụp</small></span><span class="st" data-s="quad"></span></button>
+    <div class="sep"></div>
+    <button data-a="lay2"><span class="ic">⊟</span><span class="tx">Bố cục 2 màn hình<small>màn 1: app · màn 2: màn hình máy quay</small></span></button>
+    <button data-a="lay3"><span class="ic">⊞</span><span class="tx">Bố cục 3 màn hình<small>màn 1: app · màn 2: 4 góc nhìn · màn 3: máy quay</small></span></button>
+    <button data-a="close"><span class="ic">✕</span><span class="tx">Đóng các cửa sổ phụ</span></button>
+    <div class="note">Chrome / Edge: lần đầu bấm bố cục sẽ hỏi quyền <b>"Quản lý cửa sổ trên tất cả màn hình"</b> — cho phép để app tự đặt cửa sổ đúng màn hình. Trình duyệt khác: cửa sổ mở ra, bạn kéo sang màn hình kia. Mỗi cửa sổ có nút ⛶ toàn màn hình.</div>`;
+  document.body.appendChild(scrMenu);
+  scrMenu.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+    if(a==='quad')setQuad(!quadOn);
+    else if(a==='win-shot'||a==='win-quad'){const v=vwOpen(a==='win-shot'?'shot':'quad',null);if(!v)toast('⚠ Trình duyệt chặn cửa sổ bật lên — cho phép popup cho trang này rồi bấm lại');}
+    else if(a==='lay2')vwLayout(2);
+    else if(a==='lay3')vwLayout(3);
+    else if(a==='close'){vwCloseAll();toast('Đã đóng các cửa sổ phụ');}
+    scrMenuShow(false);
+  });
+  document.addEventListener('mousedown',e=>{if(scrMenu.classList.contains('show')&&!scrMenu.contains(e.target)&&!e.target.closest('#btnScreens'))scrMenuShow(false);});
+}
+function scrMenuShow(on){
+  if(!scrMenu)scrMenuBuild();
+  if(on){const b=document.getElementById('btnScreens').getBoundingClientRect();scrMenu.style.top=(b.bottom+6)+'px';scrMenu.style.left=Math.max(8,Math.min(window.innerWidth-370,b.left-120))+'px';scrMenuSync();}
+  scrMenu.classList.toggle('show',!!on);
+}
+function scrMenuSync(){
+  const n=vwins.filter(v=>!v.win.closed).length;
+  const bs=document.getElementById('btnScreens');if(bs){bs.classList.toggle('on',quadOn||n>0);const c=bs.querySelector('.cnt');if(c)c.textContent=n?n:'';}
+  if(!scrMenu)return;
+  const q=scrMenu.querySelector('[data-a=quad]');if(q)q.classList.toggle('on',quadOn);
+  scrMenu.querySelectorAll('.st').forEach(s=>{s.textContent=vwins.some(v=>v.kind===s.dataset.s&&!v.win.closed)?'đang mở':'';});
+}
+document.getElementById('btnScreens').onclick=()=>scrMenuShow(!(scrMenu&&scrMenu.classList.contains('show')));
+document.getElementById('quadBtn').onclick=()=>setQuad(!quadOn);
+document.getElementById('gzSpaceBtn').onclick=gzToggleSpace;
+document.getElementById('gzSnapBtn').onclick=gzToggleSnap;
+document.addEventListener('keydown',e=>{
+  if(e.key==='Control'){gzCtrl=true;gzApplySnap();return;}
+  const typing=(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'));
+  if(typing||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='v'||e.key==='V'){e.preventDefault();setQuad(!quadOn);}
+  else if(e.key==='x'||e.key==='X'){e.preventDefault();gzToggleSpace();}
+  else if((e.key==='f'||e.key==='F')&&quadOn)qvFrame(QV.main);
+});
+document.addEventListener('keyup',e=>{if(e.key==='Control'){gzCtrl=false;gzApplySnap();}});
+window.addEventListener('blur',()=>{if(gzCtrl){gzCtrl=false;gzApplySnap();}});
+// ảnh chụp shot / storyboard: không gizmo, không chia 4 ô
+const _compositeShotGz=compositeShot;
+compositeShot=function(){gzHold++;return _compositeShotGz().finally(()=>{gzHold=Math.max(0,gzHold-1);});};
+orbit.navBlock=()=>camPreviewing||camExporting;
+orbit.grabbed=()=>!!(gz&&gz.dragging);              // đang kéo trục gizmo → orbit đứng yên
+if(window.ResizeObserver)new ResizeObserver(()=>vtFit()).observe(vp);else window.addEventListener('resize',vtFit);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(vtFit);
+gzToolbar();
+// vẽ khung chính: 4 góc hoặc 1 khung (+ gizmo)
+const _renderViewQ=renderView;
+renderView=function(ov){QV.main.full=true;return _renderViewQ(ov);};
+function renderMain(){
+  gzSync();
+  if(quadOn&&!gzHold)qvRender(renderer,QV.main,vp.clientWidth,vp.clientHeight,camera,true);
+  else renderView(!gzHold);
+  for(let i=vwins.length-1;i>=0;i--)if(vwins[i].win.closed)vwDispose(vwins[i]);   // cửa sổ phụ đã bị đóng → dọn renderer
+}
 
 resize();applyLensLook();sizeMonitor();loop();
 

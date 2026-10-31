@@ -46,6 +46,7 @@ Hai cột bên có thể **thu gọn** bằng nút mũi tên ở mép, hoặc �
 | Nút | Chức năng |
 |---|---|
 | **Hoàn tác / Làm lại** | Undo (`Ctrl+Z`) / Redo (`Ctrl+Shift+Z`) |
+| **Màn hình** | Nhiều góc nhìn & nhiều màn hình: bật **4 góc nhìn** (`V`), mở **cửa sổ phụ** (Màn hình máy quay / 4 góc nhìn), **Bố cục 2 / 3 màn hình** — xem [Nhiều màn hình](#nhiều-màn-hình-2--3-màn) |
 | **Full** | Ẩn hai panel, xem cảnh toàn màn hình (`~` hoặc `Tab`) |
 | **Hướng dẫn** | Mở bảng hướng dẫn nhanh + phím tắt (phím `?`) |
 | **API Key** | Nhập key để dùng tính năng AI — xem [mục 8](#8-api--các-tính-năng-ai-chi-tiết) |
@@ -85,10 +86,58 @@ Các nhóm có sẵn:
 | Công cụ | Phím | Tác dụng |
 |---|---|---|
 | **Orbit** | `Q` | Xoay camera quanh cảnh (chuột trái kéo) |
-| **Di chuyển** | `W` | Kéo vật thể trên mặt đất; **giữ `Alt`** khi kéo để nâng lên / hạ xuống |
-| **Xoay** | `E` | Xoay vật thể đang chọn |
-| **Tỉ lệ** | `R` | Phóng to / thu nhỏ vật thể |
+| **Di chuyển** | `W` | Hiện **gizmo trục X/Y/Z**: kéo mũi tên để dời theo đúng 1 trục. Kéo thân vật vẫn trượt trên mặt đất như cũ; **giữ `Alt`** khi kéo thân vật để nâng lên / hạ xuống |
+| **Xoay** | `E` | Gizmo **3 vòng xoay** X/Y/Z (+ vòng ngoài xoay theo hướng nhìn). Kéo thân vật vẫn xoay ngang như cũ |
+| **Tỉ lệ** | `R` | Gizmo **hộp tỉ lệ**: kéo hộp nào vật cũng phóng **đều** (app lưu một hệ số tỉ lệ) |
+| **Thế giới / Cục bộ** | `X` | (hiện khi đang W/E/R) trục gizmo cố định theo thế giới hay xoay theo hướng của vật |
+| **Bắt bước** | giữ `Ctrl` | (hiện khi đang W/E/R) kéo trục nhảy theo lưới **0.25 m · 15° · 0.1×**. Bật nút này = luôn bắt bước; giữ `Ctrl` khi kéo = đảo tạm |
 | **Monitor** | `M` | Bật/tắt màn hình xem trước (khung hình thật của "máy quay") |
+| **4 góc** | `V` | Chia viewport thành 4 ô: **Trên · Phối cảnh · Trước · Phải** |
+
+> Viewport hẹp (laptop, hai panel đang mở) thì thanh công cụ tự bỏ chữ phím tắt, hẹp nữa thì chỉ còn icon — rê chuột lên nút vẫn thấy tên.
+
+### Gizmo trục X / Y / Z (như các app 3D)
+
+Chọn một vật rồi bấm **W / E / R**: ngay tại vật hiện tay cầm 3 trục — **X đỏ**, **Y xanh lá** (lên–xuống), **Z xanh dương** — cùng màu với 2 đường trục đỏ/xanh trên lưới sàn.
+
+- **Di chuyển (W):** kéo **mũi tên** = dời theo 1 trục; kéo **ô vuông nhỏ** giữa 2 trục = dời trong mặt phẳng đó (ô vuông xanh lá = trượt trên mặt sàn XZ).
+- **Xoay (E):** kéo **vòng** đỏ / xanh lá / xanh dương = xoay quanh trục đó; vòng ngoài cùng = xoay theo hướng nhìn của camera. Đây là cách nhanh nhất để nghiêng / lật vật (trước đây chỉ có thanh trượt trục X/Z).
+- **Tỉ lệ (R):** kéo hộp bất kỳ = phóng to / thu nhỏ đều cả vật.
+- Khi đang kéo, góc trên viewport hiện **số đo** (dời bao nhiêu mét theo trục nào, xoay bao nhiêu độ, tỉ lệ bao nhiêu lần); panel phải cập nhật theo.
+- **Chọn nhiều vật** (Shift+bấm ở Orbit) rồi kéo gizmo: cả nhóm dời / xoay quanh vật chính / phóng cùng nhau.
+- Gizmo chỉ là **công cụ làm việc**: không lọt vào ảnh **Chụp shot**, **Storyboard**, **monitor** hay **video cú máy**.
+- Đang ở W / E / R vẫn **lia bằng chuột phải** và **lăn để zoom** được; muốn xoay camera thì về **Q**.
+- Mỗi lần thả chuột là một bước **Ctrl+Z** hoàn tác.
+
+### 4 góc nhìn (phím V)
+
+Như các app 3D: viewport chia 4 ô — **TRÊN** (nhìn thẳng xuống, bắc ở trên), **PHỐI CẢNH** (chính là **camera chụp**, có gizmo, chọn/kéo vật như thường), **TRƯỚC** (nhìn từ +Z) và **PHẢI** (nhìn từ +X). Ba ô Trên/Trước/Phải là hình chiếu **trực giao** (không phối cảnh) nên canh khoảng cách, thẳng hàng, độ cao rất dễ.
+
+- Trong ô Trên / Trước / Phải: **lăn** = zoom về chỗ con trỏ (Shift = bước tinh) · **chuột phải / giữa kéo** = lia · **bấm** = chọn vật (Shift = chọn thêm) · **kéo vật** = dời / xoay / tỉ lệ ngay trong mặt phẳng ô đó (theo công cụ W / E / R đang chọn; giữ `Ctrl` = bắt bước) · **nháy đúp** = lấy chỗ đó làm tâm ô.
+- **Phím F** = khung vừa vật đang chọn ở cả camera chính lẫn 3 ô trực giao.
+- **Đường màu cam** trong các ô trực giao = tầm nhìn của camera chụp (hình chóp ống kính + tam giác chỉ đỉnh khung + dấu + là tâm xoay) → nhìn từ trên xuống thấy ngay máy đang đặt ở đâu, chĩa đi đâu.
+- Ô trực giao **bỏ sương mù** và **ẩn vòm trời / sao / trăng** của các khối bối cảnh lớn (nhìn từ ngoài vòm sẽ che hết cảnh).
+- Chụp shot / Storyboard / monitor vẫn ra **một khung camera chụp** như bình thường.
+- Để nhẹ máy: ô phối cảnh vẽ mỗi khung hình, 3 ô trực giao vẽ luân phiên (ô đang thao tác thì vẽ liên tục).
+
+### Nhiều màn hình (2 – 3 màn)
+
+Bấm nút **Màn hình** trên thanh trên cùng:
+
+| Mục | Tác dụng |
+|---|---|
+| **4 góc nhìn trong khung chính** | Như phím `V` |
+| **Cửa sổ: Màn hình máy quay** | Cửa sổ riêng chỉ hiện **khung chụp sạch** (đúng tỉ lệ khung, viền đen, không gizmo) + tiêu cự — kéo sang màn hình khác làm "màn hình đạo diễn" |
+| **Cửa sổ: 4 góc nhìn** | Cửa sổ riêng 4 ô Trên / **Phối cảnh tự do** / Trước / Phải. Ô phối cảnh ở đây xoay tự do (chuột trái xoay, phải lia, lăn zoom, nháy đúp lấy tâm) và **không đụng camera chụp** |
+| **Bố cục 2 màn hình** | Màn 1: app · Màn 2: Màn hình máy quay |
+| **Bố cục 3 màn hình** | Màn 1: app · Màn 2: 4 góc nhìn · Màn 3: Màn hình máy quay |
+| **Đóng các cửa sổ phụ** | Đóng hết cửa sổ phụ |
+
+- **Chrome / Edge:** lần đầu bấm *Bố cục 2/3 màn hình*, trình duyệt hỏi quyền **"Quản lý cửa sổ trên tất cả màn hình"** → **Cho phép** để app tự đặt mỗi cửa sổ lên đúng màn hình (sắp theo thứ tự trái → phải). Trình duyệt khác: cửa sổ vẫn mở, bạn kéo tay sang màn kia.
+- Trình duyệt chỉ cho **mở 1 cửa sổ mỗi lần bấm**: nếu app báo, bấm lại *Bố cục 3 màn hình* để mở cửa sổ còn lại. Nếu bị chặn popup: bấm biểu tượng chặn trên thanh địa chỉ → **Luôn cho phép**.
+- Mỗi cửa sổ phụ có nút **⛶ Toàn màn hình** (hoặc F11) và **⇄ Đổi** (máy quay ⇄ 4 góc).
+- Cửa sổ phụ chạy **trực tiếp cùng cảnh**: chọn / kéo vật ở màn nào cũng cập nhật mọi màn. Các phím tắt (W/E/R/Q, Del, Ctrl+Z, G, T, End…) gõ ở cửa sổ phụ vẫn tác dụng lên app. Nút **Màn hình** hiện số cửa sổ phụ đang mở.
+- Đóng / tải lại app chính thì các cửa sổ phụ cũng đóng theo.
 
 ### Điều khiển chuột
 
@@ -270,8 +319,12 @@ Mở app bằng cách nhấp đúp trên **Chrome** sẽ bị chặn lưu lâu d
 
 | Phím | Tác dụng |
 |---|---|
-| `Q` / `W` / `E` / `R` | Orbit / Di chuyển / Xoay / Tỉ lệ |
+| `Q` / `W` / `E` / `R` | Orbit / Di chuyển / Xoay / Tỉ lệ (W/E/R hiện gizmo trục X/Y/Z) |
 | `Alt` (khi kéo `W`) | Nâng lên / hạ xuống |
+| `X` | Trục gizmo: Thế giới ⇄ Cục bộ |
+| `Ctrl` (khi kéo trục) | Bắt bước 0.25 m · 15° · 0.1× |
+| `V` | Bật/tắt 4 góc nhìn |
+| `F` | Khung vừa vật chọn (4 góc: cả 3 ô trực giao) |
 | `M` | Bật/tắt monitor |
 | `~` / `Tab` | Toàn màn hình (ẩn 2 panel) |
 | `/` | Nhảy tới ô tìm kiếm model |
@@ -285,7 +338,7 @@ Mở app bằng cách nhấp đúp trên **Chrome** sẽ bị chặn lưu lâu d
 ## 11. Quy trình gợi ý
 
 1. **Thêm chủ thể** — bấm model cột trái, hoặc dùng AI dàn cảnh / dựng từ ảnh.
-2. **Sắp đặt** — dùng Di chuyển / Xoay / Tỉ lệ, chỉnh tư thế nhân vật trong Inspector.
+2. **Sắp đặt** — dùng Di chuyển / Xoay / Tỉ lệ (kéo trục gizmo X/Y/Z cho chính xác), bật **4 góc nhìn** (`V`) để canh từ trên xuống / chính diện / bên hông; chỉnh tư thế nhân vật trong Inspector.
 3. **Đặt máy quay** — xoay camera, chọn tiêu cự / khẩu độ / cao độ / góc máy nhanh; canh bố cục bằng monitor + khung 1/3.
 4. **Chụp shot** — lưu các khung ưng ý.
 5. **Storyboard** — xuất ảnh có nhãn + depth/edge map + prompt, đưa cho AI tạo ảnh ra hình điện ảnh đúng góc.
