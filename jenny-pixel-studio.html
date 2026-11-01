@@ -584,6 +584,47 @@
   .scr-menu .sep{height:1px;background:var(--line);margin:5px 6px}
   .scr-menu .note{font-size:11.5px;line-height:1.55;color:var(--ink-dim);padding:8px 10px 6px;border-top:1px solid var(--line);margin-top:5px}
   .scr-menu .note b{color:var(--ink)}
+  /* ── phím tắt tùy chỉnh ── */
+  .vt small:empty,.topbtn .key:empty,.scr-menu .key:empty{display:none}
+  .keytable .kbs{display:flex;gap:4px;flex-wrap:wrap}
+  .help-section .ht .ht-btn{margin-left:auto;font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--accent);background:rgba(76,194,255,.1);border:1px solid rgba(76,194,255,.35);border-radius:7px;padding:4px 10px;cursor:pointer}
+  .help-section .ht .ht-btn:hover{background:rgba(76,194,255,.2)}
+  .kb-modal{width:640px}
+  .kb-top{display:flex;gap:8px;margin-bottom:8px}
+  .kb-top input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:13px;padding:8px 11px;outline:none}
+  .kb-top input:focus{border-color:var(--accent)}
+  .kb-btn{font-size:12px;background:var(--panel-2);color:var(--ink-dim);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+  .kb-btn:hover{color:var(--ink);border-color:var(--accent)}
+  .kb-btn.primary{background:var(--accent);border-color:var(--accent);color:#06121b;font-weight:700}
+  .kb-note{font-size:12px;line-height:1.55;color:var(--ink-faint);margin-bottom:6px}
+  .kb-note b{color:var(--ink-dim)}
+  .kb-msg{min-height:19px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--good);margin-bottom:2px}
+  .kb-msg.warn{color:var(--accent-warm)}
+  .kb-g{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin:14px 2px 5px}
+  .kb-row{display:flex;align-items:center;gap:12px;padding:5px 8px;border-radius:8px;min-height:38px}
+  .kb-row:hover{background:var(--panel-2)}
+  .kb-row.cap{background:rgba(76,194,255,.09);box-shadow:inset 0 0 0 1px var(--accent)}
+  .kb-row.flash{animation:kbflash 1.6s ease}
+  @keyframes kbflash{0%,45%{background:rgba(255,180,84,.24)}100%{background:transparent}}
+  .kb-row.fixed .kb-lb{color:var(--ink-dim)}
+  .kb-lb{flex:1;font-size:13px;color:var(--ink);min-width:0;line-height:1.4}
+  .kb-keys{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .kb-chip{position:relative;cursor:pointer}
+  .kb-chip kbd{cursor:pointer;transition:.12s}
+  .kb-chip:hover kbd{border-color:var(--accent);color:var(--accent)}
+  .kb-rm{position:absolute;top:-7px;right:-7px;width:16px;height:16px;border-radius:50%;background:#2a3038;border:1px solid var(--line);color:var(--ink-dim);font-style:normal;font-size:9px;line-height:14px;text-align:center;display:none}
+  .kb-chip:hover .kb-rm{display:block}
+  .kb-rm:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+  .kb-wait{color:var(--accent)!important;border-color:var(--accent)!important;animation:kbblink 1s steps(2) infinite}
+  @keyframes kbblink{50%{opacity:.4}}
+  .kb-add,.kb-def{width:26px;height:26px;border-radius:7px;border:1px dashed var(--line);background:transparent;color:var(--ink-faint);cursor:pointer;font-size:15px;line-height:1;padding:0}
+  .kb-add:hover{border-color:var(--accent);color:var(--accent)}
+  .kb-def{border-style:solid;font-size:13px}
+  .kb-def:hover{border-color:var(--accent-warm);color:var(--accent-warm)}
+  .kb-none{font-size:12px;color:var(--ink-faint);font-style:italic}
+  .kb-empty{font-size:13px;color:var(--ink-faint);text-align:center;padding:18px}
+  .kb-foot{display:flex;gap:8px;align-items:center;padding:12px 18px;border-top:1px solid var(--line-soft)}
+  .kb-foot .sp{flex:1}
   .monitor{border-radius:10px;border:1px solid var(--line)}
   .collapse-tab{background:#1C2027;border-color:var(--line)}
 
@@ -679,25 +720,25 @@
     <div class="topgrp">
       <button class="topbtn" id="btnProjects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Project</button>
       <button class="topbtn" id="btnLoad" title="Nhập file .json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Nhập</button>
-      <button class="topbtn" id="btnSave" title="Xuất file .json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Xuất</button>
+      <button class="topbtn" id="btnSave" title="Xuất file .json" data-kbt="file.save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Xuất</button>
     </div>
     <div class="topspacer"></div>
     <div class="topgrp">
-      <button aria-label="Hoàn tác" class="topbtn iconly" id="btnUndo" title="Hoàn tác (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H9"/></svg></button>
-      <button aria-label="Làm lại" class="topbtn iconly" id="btnRedo" title="Làm lại (Ctrl+Shift+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0-5 5v0a5 5 0 0 0 5 5h6"/></svg></button>
+      <button aria-label="Hoàn tác" class="topbtn iconly" id="btnUndo" title="Hoàn tác" data-kbt="edit.undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H9"/></svg></button>
+      <button aria-label="Làm lại" class="topbtn iconly" id="btnRedo" title="Làm lại" data-kbt="edit.redo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0-5 5v0a5 5 0 0 0 5 5h6"/></svg></button>
     </div>
     <div class="topspacer"></div>
     <div class="topgrp">
-      <button class="topbtn" id="btnAnno" title="Ẩn/hiện chữ chú thích previz (T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>Chữ previz <span class="key">T</span></button>
-      <button class="topbtn" id="btnGrid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Lưới sàn</button>
-      <button class="topbtn" id="btnScreens" title="Nhiều góc nhìn &amp; nhiều màn hình: 4 góc nhìn (V), cửa sổ phụ, bố cục 2–3 màn hình"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="9" height="7" rx="1"/><rect x="13" y="4" width="9" height="7" rx="1"/><rect x="7.5" y="14" width="9" height="7" rx="1"/></svg><span class="lbl">Màn hình</span><span class="cnt"></span></button>
-      <button class="topbtn" id="btnFull" title="Toàn màn hình (phím ~ hoặc Tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>Full</button>
-      <button aria-label="Hướng dẫn" class="topbtn iconly" id="btnHelp" title="Hướng dẫn & phím tắt (?)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+      <button class="topbtn" id="btnAnno" title="Ẩn/hiện chữ chú thích previz" data-kbt="view.anno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>Chữ previz <span class="key" data-kb="view.anno">T</span></button>
+      <button class="topbtn" id="btnGrid" title="Ẩn/hiện lưới sàn" data-kbt="view.grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Lưới sàn</button>
+      <button class="topbtn" id="btnScreens" title="Nhiều góc nhìn &amp; nhiều màn hình: 4 góc nhìn, cửa sổ phụ, bố cục 2–3 màn hình"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="9" height="7" rx="1"/><rect x="13" y="4" width="9" height="7" rx="1"/><rect x="7.5" y="14" width="9" height="7" rx="1"/></svg><span class="lbl">Màn hình</span><span class="cnt"></span></button>
+      <button class="topbtn" id="btnFull" title="Toàn màn hình (ẩn 2 panel)" data-kbt="view.full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>Full</button>
+      <button aria-label="Hướng dẫn" class="topbtn iconly" id="btnHelp" title="Hướng dẫn &amp; phím tắt" data-kbt="ui.help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
       <button aria-label="API Key" class="topbtn iconly" id="btnApiKey" title="Nhập API key để dùng AI khi chạy offline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7 7 5 5 0 0 1 7-7zm0 0L15 8m0 0l3 3 3-3-3-3"/></svg></button>
       <button aria-label="Xóa cảnh" class="topbtn iconly" id="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
       <span class="topdiv"></span>
-      <button class="topbtn primary" id="btnShot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Chụp shot</button>
-      <button class="topbtn primary" id="btnStory" title="Xuất ảnh previz có nhãn + prompt cho AI image" style="background:linear-gradient(135deg,#ffb454,#ff8a4c);border-color:#ffb454"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>Storyboard</button>
+      <button class="topbtn primary" id="btnShot" title="Chụp khung hình hiện tại vào danh sách shot" data-kbt="shot.take"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Chụp shot</button>
+      <button class="topbtn primary" id="btnStory" title="Xuất ảnh previz có nhãn + prompt cho AI image" data-kbt="shot.story" style="background:linear-gradient(135deg,#ffb454,#ff8a4c);border-color:#ffb454"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.6L5.7 21l2.3-7.2-6-4.4h7.6z"/></svg>Storyboard</button>
     </div>
     <input type="file" id="fileInput" accept=".json" style="display:none">
   </header>
@@ -794,16 +835,16 @@
   <main id="viewport">
     <canvas id="c"></canvas>
     <div class="vp-toolbar">
-      <button class="vt active" data-tool="orbit" title="Xoay camera — phím Q (chuột trái kéo)"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 12a10 10 0 0 0-10-10"/><path d="M12 6v6l4 2"/></svg>Orbit<small>Q</small></button>
-      <button class="vt" data-tool="move" title="Di chuyển vật thể — phím W (giữ Alt để nâng lên/hạ xuống)"><svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>Di chuyển<small>W</small></button>
-      <button class="vt" data-tool="rotate" title="Xoay vật thể — phím E"><svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>Xoay<small>E</small></button>
-      <button class="vt" data-tool="scale" title="Phóng to/thu nhỏ — phím R"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Tỉ lệ<small>R</small></button>
+      <button class="vt active" data-tool="orbit" title="Xoay camera (chuột trái kéo)" data-kbt="tool.orbit"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 12a10 10 0 0 0-10-10"/><path d="M12 6v6l4 2"/></svg>Orbit<small data-kb="tool.orbit">Q</small></button>
+      <button class="vt" data-tool="move" title="Di chuyển vật thể: kéo trục gizmo X/Y/Z, hoặc kéo thân vật trên sàn (giữ Alt = nâng lên/hạ xuống)" data-kbt="tool.move"><svg viewBox="0 0 24 24"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>Di chuyển<small data-kb="tool.move">W</small></button>
+      <button class="vt" data-tool="rotate" title="Xoay vật thể" data-kbt="tool.rotate"><svg viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>Xoay<small data-kb="tool.rotate">E</small></button>
+      <button class="vt" data-tool="scale" title="Phóng to/thu nhỏ" data-kbt="tool.scale"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Tỉ lệ<small data-kb="tool.scale">R</small></button>
       <span class="vt-sep gz-opt"></span>
-      <button class="vt gz-opt" id="gzSpaceBtn" title="Trục gizmo: Thế giới ⇄ Cục bộ (theo hướng xoay của vật) — phím X"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><span>Thế giới</span><small>X</small></button>
-      <button class="vt gz-opt" id="gzSnapBtn" title="Bắt bước khi kéo trục: 0.25 m · 15° · 0.1× (giữ Ctrl khi kéo để đảo tạm)"><svg viewBox="0 0 24 24"><path d="M6 3v8a6 6 0 0 0 12 0V3"/><path d="M6 7h4M14 7h4"/></svg>Bắt bước</button>
+      <button class="vt gz-opt" id="gzSpaceBtn" title="Trục gizmo: Thế giới ⇄ Cục bộ (theo hướng xoay của vật)" data-kbt="gz.space"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><span>Thế giới</span><small data-kb="gz.space">X</small></button>
+      <button class="vt gz-opt" id="gzSnapBtn" title="Bắt bước khi kéo trục: 0.25 m · 15° · 0.1× (giữ Ctrl khi kéo để đảo tạm)" data-kbt="gz.snap"><svg viewBox="0 0 24 24"><path d="M6 3v8a6 6 0 0 0 12 0V3"/><path d="M6 7h4M14 7h4"/></svg>Bắt bước<small data-kb="gz.snap"></small></button>
       <span class="vt-sep gz-opt"></span>
-      <button class="vt mon-toggle active" id="monToggle" title="Bật/tắt màn hình xem trước (M)"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1"/><path d="M9 21h6M12 17v4"/></svg>Monitor<small>M</small></button>
-      <button class="vt" id="quadBtn" title="4 góc nhìn: Trên · Phối cảnh · Trước · Phải (phím V)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>4 góc<small>V</small></button>
+      <button class="vt mon-toggle active" id="monToggle" title="Bật/tắt màn hình xem trước" data-kbt="view.monitor"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1"/><path d="M9 21h6M12 17v4"/></svg>Monitor<small data-kb="view.monitor">M</small></button>
+      <button class="vt" id="quadBtn" title="4 góc nhìn: Trên · Phối cảnh · Trước · Phải" data-kbt="view.quad"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>4 góc<small data-kb="view.quad">V</small></button>
     </div>
     <div class="qv-ui" id="qvUI">
       <i class="qv-v"></i><i class="qv-h"></i>
@@ -1221,26 +1262,8 @@
         </div>
       </div>
       <div class="help-section">
-        <div class="ht">Phím tắt</div>
-        <div class="keytable">
-          <kbd>Q</kbd><span class="kdesc">Công cụ Orbit (xoay camera)</span>
-          <kbd>W</kbd><span class="kdesc">Công cụ Di chuyển (giữ Alt khi kéo = nâng lên/hạ xuống)</span>
-          <kbd>E</kbd><span class="kdesc">Công cụ Xoay vật thể</span>
-          <kbd>R</kbd><span class="kdesc">Công cụ Tỉ lệ vật thể (phóng to/thu nhỏ)</span>
-          <kbd>Nháy đúp</kbd><span class="kdesc">Nháy đúp vào BẤT KỲ thanh trượt nào → đưa về mặc định</span>
-          <kbd>Del</kbd><span class="kdesc">Xóa vật thể đang chọn</span>
-          <kbd>Ctrl Z</kbd><span class="kdesc">Hoàn tác (undo)</span>
-          <kbd>Ctrl ⇧ Z</kbd><span class="kdesc">Làm lại (redo)</span>
-          <kbd>M</kbd><span class="kdesc">Bật/tắt màn hình xem trước (monitor)</span>
-          <kbd>V</kbd><span class="kdesc">Bật/tắt 4 góc nhìn: Trên · Phối cảnh · Trước · Phải</span>
-          <kbd>X</kbd><span class="kdesc">Trục gizmo: Thế giới ⇄ Cục bộ (theo hướng xoay của vật)</span>
-          <kbd>Ctrl</kbd><span class="kdesc">Giữ khi kéo trục / kéo trong ô 4 góc = bắt bước 0.25 m · 15° · 0.1× (đảo tạm nếu đã bật "Bắt bước")</span>
-          <kbd>F</kbd><span class="kdesc">Khung vừa vật đang chọn (ở 4 góc: cả 3 ô Trên/Trước/Phải cùng ôm vật)</span>
-          <kbd>~</kbd><span class="kdesc">Bật/tắt toàn màn hình (ẩn 2 panel)</span>
-          <kbd>Tab</kbd><span class="kdesc">Bật/tắt toàn màn hình</span>
-          <kbd>/</kbd><span class="kdesc">Nhảy tới ô tìm kiếm model</span>
-          <kbd>?</kbd><span class="kdesc">Mở bảng hướng dẫn này</span>
-        </div>
+        <div class="ht">Phím tắt <button class="ht-btn" id="helpKbBtn" title="Đổi / thêm / gỡ phím tắt theo ý bạn">⌨ Tùy chỉnh phím tắt</button></div>
+        <div class="keytable" id="helpKeys"></div>
       </div>
       <div class="help-section">
         <div class="ht">Nhiều màn hình (2–3 màn)</div>
@@ -1253,6 +1276,35 @@
     </div>
     <div class="help-foot" style="justify-content:center">
       <span><b style="color:var(--accent)">Jenny Pixel Studio</b> · 3D Storyboard Studio · by Tran Duc Vien</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TÙY CHỈNH PHÍM TẮT -->
+<div class="modal-bg" id="kbModal">
+  <div class="modal kb-modal">
+    <div class="modal-head">
+      <h2>⌨ Tùy chỉnh phím tắt</h2>
+      <span class="x" id="kbClose">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="kb-top"><input type="text" id="kbSearch" placeholder="Tìm thao tác hoặc phím… (vd: xoay, chụp, Ctrl)" autocomplete="off"></div>
+      <div class="kb-note">Bấm vào <b>phím đang gán</b> để đổi · <b>+</b> để thêm phím (tối đa 3) · rê chuột lên phím rồi bấm <b>✕</b> để gỡ · <b>↺</b> về mặc định. Khi đang chờ: bấm tổ hợp mới (giữ Ctrl / Alt / Shift nếu muốn), <b>Esc</b> để huỷ. Phím đang thuộc thao tác khác sẽ tự chuyển sang. Lưu ngay trong trình duyệt này.</div>
+      <div class="kb-msg" id="kbMsg"></div>
+      <div id="kbList"></div>
+      <div class="kb-g">Cố định — không đổi được</div>
+      <div class="kb-row fixed"><div class="kb-lb">Lùi một bước: đóng bảng → thoát ô nhập → bỏ chọn (và huỷ khi đang chờ bấm phím)</div><div class="kb-keys"><kbd>Esc</kbd></div></div>
+      <div class="kb-row fixed"><div class="kb-lb">Giữ khi kéo trục gizmo / kéo trong ô 4 góc = bắt bước 0.25 m · 15° · 0.1×</div><div class="kb-keys"><kbd>Ctrl</kbd></div></div>
+      <div class="kb-row fixed"><div class="kb-lb">Giữ khi kéo thân vật (Di chuyển) = nâng lên / hạ xuống</div><div class="kb-keys"><kbd>Alt</kbd></div></div>
+      <div class="kb-row fixed"><div class="kb-lb">Giữ khi bấm vật (Orbit) = chọn thêm nhiều vật · giữ khi lăn chuột = zoom bước tinh</div><div class="kb-keys"><kbd>⇧</kbd></div></div>
+    </div>
+    <div class="kb-foot">
+      <button class="kb-btn" id="kbExport" title="Lưu bộ phím ra file .json để mang sang máy khác">⤓ Xuất file</button>
+      <button class="kb-btn" id="kbImport" title="Nạp bộ phím từ file .json đã xuất">⤒ Nhập file</button>
+      <input type="file" id="kbFile" accept=".json,application/json" style="display:none">
+      <span class="sp"></span>
+      <button class="kb-btn" id="kbResetAll">↺ Tất cả về mặc định</button>
+      <button class="kb-btn primary" id="kbDone">Xong</button>
     </div>
   </div>
 </div>
@@ -3020,7 +3072,7 @@ function applyAnno(){
 function toggleAnno(){
   annoOn=!annoOn;applyAnno();
   const b=document.getElementById('btnAnno');if(b)b.classList.toggle('off',!annoOn);
-  toast(annoOn?'Hiện chữ previz':'Ẩn chữ previz (T)');
+  toast(annoOn?'Hiện chữ previz':'Ẩn chữ previz'+(kbLabel('view.anno')?' ('+kbLabel('view.anno')+')':''));
   if(typeof autosave==='function')autosave();
   if(selected&&selected.userData.isSet)renderInspector();
 }
@@ -3036,7 +3088,7 @@ function deleteAnno(){
   });
   annoOn=false;
   const b=document.getElementById('btnAnno');if(b)b.classList.add('off');
-  toast('Đã xóa '+kill.length+' chú thích previz (Ctrl+Z để lấy lại)');
+  toast('Đã xóa '+kill.length+' chú thích previz'+(kbLabel('edit.undo')?' ('+kbLabel('edit.undo')+' để lấy lại)':''));
   if(selected&&selected.userData.isSet)renderInspector();
   if(typeof autosave==='function')autosave();
   if(typeof pushHistory==='function')pushHistory();
@@ -9042,8 +9094,8 @@ function setBlockHTML(g){
     <div class="setbar">
       <button id="setSplit" class="prim" title="Tách khối thành các vật thể rời, giữ nguyên vị trí">✂ Tách rời toàn bộ</button>
       <button id="setSun" title="Đặt đèn mặt trời của app theo hướng nắng khóa trong set">☀ Khớp nắng</button>
-      <button id="setAnno" title="Ẩn/hiện toàn bộ chữ + vòng zone previz (phím T)">◎ ${annoOn?'Ẩn chữ':'Hiện chữ'}</button>
-      <button id="setAnnoDel" class="wide danger" title="Xoá hẳn chữ + vòng zone khỏi cảnh (Ctrl+Z lấy lại được)">🗑 Xoá hẳn chữ chú thích</button>
+      <button id="setAnno" title="Ẩn/hiện toàn bộ chữ + vòng zone previz${kbLabel('view.anno')?' (phím '+kbLabel('view.anno')+')':''}">◎ ${annoOn?'Ẩn chữ':'Hiện chữ'}</button>
+      <button id="setAnnoDel" class="wide danger" title="Xoá hẳn chữ + vòng zone khỏi cảnh (hoàn tác lấy lại được)">🗑 Xoá hẳn chữ chú thích</button>
     </div>
     <div class="partlist">${rows}</div>
     ${cams?`<div class="jlabel" style="margin-top:12px">Camera bookmark (timecode)</div><div class="camlist">${cams}</div>`:''}
@@ -9403,7 +9455,7 @@ function renderInspector(){
         <span class="val"><input type="number" id="objYNum" step="0.1" value="${selected.position.y.toFixed(2)}"> m</span>
       </label>
       <input type="range" id="objY" min="${Math.min(-10,Math.floor(selected.position.y)-12)}" max="${Math.max(14,Math.ceil(selected.position.y)+12)}" step="0.05" value="${selected.position.y}">
-      <button id="dropBtn" class="dropbtn" title="Đặt vật xuống đúng mặt nền ngay bên dưới — đáy hố, mặt dốc, mặt bục… (phím End)">⤓ Thả xuống bề mặt</button>
+      <button id="dropBtn" class="dropbtn" title="Đặt vật xuống đúng mặt nền ngay bên dưới — đáy hố, mặt dốc, mặt bục…${kbLabel('edit.drop')?' (phím '+kbLabel('edit.drop')+')':''}">⤓ Thả xuống bề mặt</button>
     </div>
     <div class="ctrl">
       <label>Tỉ lệ <span class="val" id="vObjScale">${selected.scale.x.toFixed(2)}×</span></label>
@@ -9525,7 +9577,7 @@ function renderInspector(){
     </div>
     ${paxSel?`<button class="delbtn" id="splitPaxBtn" style="color:var(--accent-warm);background:rgba(255,180,84,.1);border-color:rgba(255,180,84,.4);margin-top:12px"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8 8l12 10M8 16L20 6"/></svg>Tách ${paxSel} hành khách khỏi ghế</button>`:''}
     ${paxAll>paxSel?`<div style="text-align:center;margin-top:8px"><span id="splitPaxAll" style="font-family:'JetBrains Mono';font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline">Tách toàn bộ ${paxAll} hành khách trong cảnh</span></div>`:''}
-    <button class="delbtn" id="delBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Xóa vật thể (Del)</button>
+    <button class="delbtn" id="delBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Xóa vật thể${kbLabel('edit.delete')?' ('+kbLabel('edit.delete')+')':''}</button>
   `;
   // color swatches — tô theo phần đang chọn (nếu là figure) hoặc cả người
   function paintPart(c){
@@ -9963,55 +10015,7 @@ window.addEventListener('mousemove',e=>{
 });
 window.addEventListener('mouseup',()=>dragging=false);
 
-document.addEventListener('keydown',e=>{
-  // Undo/Redo: bắt trước (kể cả khi không ở input). Nếu đang gõ text thì để trình duyệt tự xử lý.
-  const typing=(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA');
-  if((e.ctrlKey||e.metaKey)&&(e.key==='z'||e.key==='Z')&&!typing){
-    e.preventDefault();
-    if(e.shiftKey)redo();else undo();
-    return;
-  }
-  if((e.ctrlKey||e.metaKey)&&(e.key==='y'||e.key==='Y')&&!typing){e.preventDefault();redo();return;}
-  if((e.ctrlKey||e.metaKey)&&(e.key==='g'||e.key==='G')&&!typing){e.preventDefault();groupSelection();return;}
-  if(!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key==='g'||e.key==='G')){
-    e.preventDefault();
-    if(e.shiftKey){                                    // Shift+G: tách khối đang chọn
-      const sets=selection.filter(o=>o.userData.isSet);
-      if(!sets.length){toast('Chọn một khối rồi Shift+G để tách');return;}
-      sets.forEach(k=>splitSet(k));
-    }else groupSelection();                            // G: gộp nhóm đang chọn
-    return;
-  }
-  if(typing)return;
-  if(e.key==='Delete'||e.key==='Backspace'){if(selected){e.preventDefault();deleteSelected();}}
-  if(e.key==='w')document.querySelector('[data-tool=move]').click();
-  if(e.key==='e')document.querySelector('[data-tool=rotate]').click();
-  if(e.key==='r')document.querySelector('[data-tool=scale]').click();
-  if(e.key==='q')document.querySelector('[data-tool=orbit]').click();
-  if(e.key==='m'||e.key==='M')document.getElementById('monToggle').click();
-  if(e.key==='t'||e.key==='T')toggleAnno();
-  if(e.key==='End'){e.preventDefault();dropToSurface();return;}
-  // F = lấp đầy khung bằng vật đang chọn (hoặc cả cảnh nếu không chọn gì)
-  if(e.key.startsWith('Arrow')){
-    e.preventDefault();
-    const st=e.shiftKey?Math.max(.15,orbit.sph.radius*.08):Math.max(.5,orbit.sph.radius*.2);
-    if(e.key==='ArrowUp')orbit.dolly(st);
-    if(e.key==='ArrowDown')orbit.dolly(-st);
-    if(e.key==='ArrowLeft')orbit.strafe(-st,0);
-    if(e.key==='ArrowRight')orbit.strafe(st,0);
-    return;
-  }
-  if(e.key==='PageUp'){e.preventDefault();orbit.strafe(0,Math.max(.15,orbit.sph.radius*.2));return;}
-  if(e.key==='PageDown'){e.preventDefault();orbit.strafe(0,-Math.max(.15,orbit.sph.radius*.2));return;}
-  if(e.key==='f'||e.key==='F'){
-    if(selected){orbit.frame(getCenter(selected),getRadius(selected)*0.85);toast('Khung vừa: '+selected.userData.label);}
-    else if(objects.length){
-      const b=new THREE.Box3();objects.forEach(o=>b.expandByObject(o));
-      orbit.frame(b.getCenter(new THREE.Vector3()),b.getSize(new THREE.Vector3()).length()/2*0.6);
-      toast('Khung vừa toàn cảnh');
-    }
-  }
-});
+// Phím tắt (Q/W/E/R, Ctrl+Z, Del, G, mũi tên, F…): xem khối PHÍM TẮT — NGƯỜI DÙNG TỰ GÁN (KB_ACTS) ở cuối file
 
 // ── Nháy đúp thanh trượt → về mặc định (như Photoshop) ──
 document.addEventListener('dblclick',e=>{
@@ -11544,17 +11548,13 @@ new MutationObserver(updTabs).observe(app,{attributes:true,attributeFilter:['cla
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     // mỗi lần Esc chỉ lùi MỘT bước: đóng bảng → thoát ô nhập → bỏ chọn
-    if(document.querySelector('.modal-bg.show')){closeHelp();closeProjModal();closeApi();document.getElementById('storyModal').classList.remove('show');return;}
+    if(document.querySelector('.modal-bg.show')){closeHelp();closeProjModal();closeApi();kbClose();document.getElementById('storyModal').classList.remove('show');return;}
     const t=e.target;
     if(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'){t.blur();return;}
     if(selection.length)select(null);
     return;
   }
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
-  if(e.key==='~'||e.key==='`'){e.preventDefault();toggleFull();}
-  if(e.key==='Tab'){e.preventDefault();toggleFull();}
-  if(e.key==='/'){e.preventDefault();searchInput.focus();}
-  if(e.key==='?'||e.key==='h'||e.key==='H'){e.preventDefault();openHelp();}
+  // Full (~ / Tab), tìm model (/), hướng dẫn (? / H): nay nằm trong KB_ACTS — người dùng tự gán được
 });
 
 /* ════════════════════════ UI: HƯỚNG DẪN ════════════════════════ */
@@ -11795,7 +11795,7 @@ function gzToolbar(){
   const nb=document.getElementById('gzSnapBtn');if(nb)nb.classList.toggle('on',gzSnap);
   vtFit();gzSync();                                  // đổi công cụ → gizmo đổi ngay, không chờ khung sau
 }
-function gzToggleSpace(){gzSpace=gzSpace==='world'?'local':'world';gzToolbar();gzSync();toast('Trục gizmo: '+(gzSpace==='world'?'THẾ GIỚI — X đỏ · Y xanh lá (lên) · Z xanh dương, cố định':'CỤC BỘ — xoay theo hướng của vật')+' · phím X');}
+function gzToggleSpace(){gzSpace=gzSpace==='world'?'local':'world';gzToolbar();gzSync();toast('Trục gizmo: '+(gzSpace==='world'?'THẾ GIỚI — X đỏ · Y xanh lá (lên) · Z xanh dương, cố định':'CỤC BỘ — xoay theo hướng của vật')+(kbLabel('gz.space')?' · phím '+kbLabel('gz.space'):''));}
 function gzToggleSnap(){gzSnap=!gzSnap;gzApplySnap();gzToolbar();toast(gzSnap?'Bắt bước: 0.25 m · 15° · 0.1× (giữ Ctrl để tắt tạm)':'Tắt bắt bước (giữ Ctrl khi kéo để bật tạm)');}
 // gizmo + khung cam chỉ vẽ ở view làm việc; ảnh chụp / monitor / video không có
 function renderOverlay(cam){
@@ -11994,7 +11994,7 @@ function setQuad(on){
   const b=document.getElementById('quadBtn');if(b)b.classList.toggle('active',quadOn);
   if(quadOn)qvReset(QV.main);
   scrMenuSync();
-  toast(quadOn?'4 góc nhìn: Trên · Phối cảnh · Trước · Phải — V để tắt':'Về 1 khung nhìn');
+  toast(quadOn?'4 góc nhìn: Trên · Phối cảnh · Trước · Phải'+(kbLabel('view.quad')?' — '+kbLabel('view.quad')+' để tắt':''):'Về 1 khung nhìn');
 }
 // sự kiện ô trực giao trong viewport chính: chặn trước orbit / kéo vật / gizmo của ô phối cảnh
 vp.addEventListener('mousedown',e=>{
@@ -12120,9 +12120,11 @@ function vwBind(v){
   });
   // phím tắt trong cửa sổ phụ → chuyển về app chính (xoá, W/E/R/Q, Ctrl+Z, T, X…)
   w.addEventListener('keydown',e=>{
-    if(e.key==='Tab'||e.key==='`'||e.key==='~'||e.key==='F11')return;
-    if(v.kind==='quad'&&(e.key==='f'||e.key==='F')&&!e.ctrlKey){qvFrame(v.host);if(selected){const b=new THREE.Box3().setFromObject(selected);v.host.free.target.copy(b.getCenter(new THREE.Vector3()));qvFreeUpdate(v.host.free);}e.preventDefault();return;}
-    const ev=new KeyboardEvent('keydown',{key:e.key,code:e.code,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,bubbles:true,cancelable:true});
+    if(e.key==='F11')return;
+    const km=kbMatch(e);
+    if(km&&km.id==='view.full')return;                         // ẩn panel là việc của cửa sổ chính
+    if(v.kind==='quad'&&km&&km.id==='view.frame'){qvFrame(v.host);if(selected){const b=new THREE.Box3().setFromObject(selected);v.host.free.target.copy(b.getCenter(new THREE.Vector3()));qvFreeUpdate(v.host.free);}e.preventDefault();return;}
+    const ev=new KeyboardEvent('keydown',{key:e.key,code:e.code,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,repeat:e.repeat,bubbles:true,cancelable:true});
     document.dispatchEvent(ev);if(ev.defaultPrevented)e.preventDefault();
   });
   w.addEventListener('keyup',e=>{if(e.key==='Control'){gzCtrl=false;gzApplySnap();}});
@@ -12174,7 +12176,7 @@ let scrMenu=null;
 function scrMenuBuild(){
   scrMenu=document.createElement('div');scrMenu.className='scr-menu';scrMenu.id='scrMenu';
   scrMenu.innerHTML=`
-    <button data-a="quad"><span class="ic">▦</span><span class="tx">4 góc nhìn trong khung chính<small>Trên · Phối cảnh · Trước · Phải</small></span><span class="key">V</span></button>
+    <button data-a="quad"><span class="ic">▦</span><span class="tx">4 góc nhìn trong khung chính<small>Trên · Phối cảnh · Trước · Phải</small></span><span class="key" data-kb="view.quad"></span></button>
     <div class="sep"></div>
     <button data-a="win-shot"><span class="ic">⧉</span><span class="tx">Cửa sổ: Màn hình máy quay<small>khung chụp sạch, đúng tỉ lệ — kéo sang màn hình khác</small></span><span class="st" data-s="shot"></span></button>
     <button data-a="win-quad"><span class="ic">⧉</span><span class="tx">Cửa sổ: 4 góc nhìn<small>ô phối cảnh xoay tự do, không đụng camera chụp</small></span><span class="st" data-s="quad"></span></button>
@@ -12183,7 +12185,7 @@ function scrMenuBuild(){
     <button data-a="lay3"><span class="ic">⊞</span><span class="tx">Bố cục 3 màn hình<small>màn 1: app · màn 2: 4 góc nhìn · màn 3: máy quay</small></span></button>
     <button data-a="close"><span class="ic">✕</span><span class="tx">Đóng các cửa sổ phụ</span></button>
     <div class="note">Chrome / Edge: lần đầu bấm bố cục sẽ hỏi quyền <b>"Quản lý cửa sổ trên tất cả màn hình"</b> — cho phép để app tự đặt cửa sổ đúng màn hình. Trình duyệt khác: cửa sổ mở ra, bạn kéo sang màn hình kia. Mỗi cửa sổ có nút ⛶ toàn màn hình.</div>`;
-  document.body.appendChild(scrMenu);
+  document.body.appendChild(scrMenu);kbApplyHints();
   scrMenu.addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
     if(a==='quad')setQuad(!quadOn);
@@ -12211,14 +12213,7 @@ document.getElementById('btnScreens').onclick=()=>scrMenuShow(!(scrMenu&&scrMenu
 document.getElementById('quadBtn').onclick=()=>setQuad(!quadOn);
 document.getElementById('gzSpaceBtn').onclick=gzToggleSpace;
 document.getElementById('gzSnapBtn').onclick=gzToggleSnap;
-document.addEventListener('keydown',e=>{
-  if(e.key==='Control'){gzCtrl=true;gzApplySnap();return;}
-  const typing=(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'));
-  if(typing||e.ctrlKey||e.metaKey||e.altKey)return;
-  if(e.key==='v'||e.key==='V'){e.preventDefault();setQuad(!quadOn);}
-  else if(e.key==='x'||e.key==='X'){e.preventDefault();gzToggleSpace();}
-  else if((e.key==='f'||e.key==='F')&&quadOn)qvFrame(QV.main);
-});
+document.addEventListener('keydown',e=>{if(e.key==='Control'){gzCtrl=true;gzApplySnap();}});   // V / X / F: xem KB_ACTS
 document.addEventListener('keyup',e=>{if(e.key==='Control'){gzCtrl=false;gzApplySnap();}});
 window.addEventListener('blur',()=>{if(gzCtrl){gzCtrl=false;gzApplySnap();}});
 // ảnh chụp shot / storyboard: không gizmo, không chia 4 ô
@@ -12238,6 +12233,298 @@ function renderMain(){
   else renderView(!gzHold);
   for(let i=vwins.length-1;i>=0;i--)if(vwins[i].win.closed)vwDispose(vwins[i]);   // cửa sổ phụ đã bị đóng → dọn renderer
 }
+
+/* ════════════════════════ PHÍM TẮT — NGƯỜI DÙNG TỰ GÁN ════════════════════════
+   Mọi phím tắt của app nằm ở KB_ACTS (một chỗ duy nhất); một bộ phát lệnh keydown dùng chung.
+   Bảng "Tùy chỉnh phím tắt" (phím K, hoặc Hướng dẫn → Tùy chỉnh): bấm phím đang gán để đổi, + để thêm
+   (tối đa 3 phím/thao tác), ✕ để gỡ, ↺ về mặc định. Phím đang thuộc thao tác khác thì tự chuyển sang.
+   Lưu trong trình duyệt (localStorage) — chỉ lưu thao tác KHÁC mặc định, nên bản app sau thêm phím mới vẫn nhận.
+   Tổ hợp viết dạng "Ctrl+Shift+Z" (Ctrl = Ctrl hoặc ⌘ trên Mac). Phím ký hiệu (? / ~ …) đã gồm Shift trong
+   chính ký tự nên không ghi Shift. any:1 = giữ Shift vẫn chạy (Shift = bước nhỏ với phím đi camera).
+   Cố định, không gán: Esc (lùi một bước / huỷ) và phím giữ khi kéo chuột (Ctrl bắt bước, Alt nâng hạ, Shift chọn thêm). */
+const KB_LS='jps_keymap_v1';
+var kbMap=null,kbIdx=null;           // var: hàm kbLabel() dùng được cả trước khi khối này chạy (không vướng TDZ)
+const kbTool=t=>()=>{document.querySelector('[data-tool='+t+']').click();};
+const kbStep=(shift,min)=>shift?Math.max(.15,orbit.sph.radius*.08):Math.max(min,orbit.sph.radius*.2);
+const kbPopupBlocked=()=>toast('⚠ Trình duyệt chặn cửa sổ bật lên — cho phép popup cho trang này rồi bấm lại');
+function kbFrame(){
+  if(selected){orbit.frame(getCenter(selected),getRadius(selected)*0.85);toast('Khung vừa: '+selected.userData.label);}
+  else if(objects.length){
+    const b=new THREE.Box3();objects.forEach(o=>b.expandByObject(o));
+    orbit.frame(b.getCenter(new THREE.Vector3()),b.getSize(new THREE.Vector3()).length()/2*0.6);
+    toast('Khung vừa toàn cảnh');
+  }
+  if(quadOn)qvFrame(QV.main);
+}
+function kbSplit(){
+  const sets=selection.filter(o=>o.userData.isSet);
+  if(!sets.length){toast('Chọn một khối rồi bấm '+(kbLabel('edit.split')||'nút Tách')+' để tách');return;}
+  sets.forEach(k=>splitSet(k));
+}
+const KB_ACTS=[
+  {g:'Công cụ',id:'tool.orbit',lb:'Orbit — xoay camera',def:['Q'],run:kbTool('orbit')},
+  {g:'Công cụ',id:'tool.move',lb:'Di chuyển vật (gizmo trục X/Y/Z)',def:['W'],run:kbTool('move')},
+  {g:'Công cụ',id:'tool.rotate',lb:'Xoay vật',def:['E'],run:kbTool('rotate')},
+  {g:'Công cụ',id:'tool.scale',lb:'Tỉ lệ vật',def:['R'],run:kbTool('scale')},
+  {g:'Công cụ',id:'gz.space',lb:'Trục gizmo: Thế giới ⇄ Cục bộ',def:['X'],any:1,run:()=>gzToggleSpace()},
+  {g:'Công cụ',id:'gz.snap',lb:'Bật/tắt Bắt bước (0.25 m · 15° · 0.1×)',def:[],any:1,run:()=>gzToggleSnap()},
+  {g:'Xem',id:'view.frame',lb:'Khung vừa vật đang chọn (không chọn = toàn cảnh)',def:['F'],any:1,run:kbFrame},
+  {g:'Xem',id:'view.quad',lb:'4 góc nhìn: Trên · Phối cảnh · Trước · Phải',def:['V'],any:1,run:()=>setQuad(!quadOn)},
+  {g:'Xem',id:'view.monitor',lb:'Monitor (màn hình xem trước)',def:['M'],any:1,run:()=>document.getElementById('monToggle').click()},
+  {g:'Xem',id:'view.anno',lb:'Ẩn/hiện chữ previz',def:['T'],any:1,run:()=>toggleAnno()},
+  {g:'Xem',id:'view.grid',lb:'Ẩn/hiện lưới sàn',def:[],any:1,run:()=>document.getElementById('btnGrid').click()},
+  {g:'Xem',id:'view.full',lb:'Toàn màn hình (ẩn 2 panel)',def:['`','~','Tab'],run:()=>toggleFull()},
+  {g:'Đi camera',id:'cam.fwd',lb:'Đi tới (giữ Shift = bước nhỏ)',def:['ArrowUp'],any:1,rep:1,run:(e,s)=>orbit.dolly(kbStep(s,.5))},
+  {g:'Đi camera',id:'cam.back',lb:'Lùi lại',def:['ArrowDown'],any:1,rep:1,run:(e,s)=>orbit.dolly(-kbStep(s,.5))},
+  {g:'Đi camera',id:'cam.left',lb:'Sang trái',def:['ArrowLeft'],any:1,rep:1,run:(e,s)=>orbit.strafe(-kbStep(s,.5),0)},
+  {g:'Đi camera',id:'cam.right',lb:'Sang phải',def:['ArrowRight'],any:1,rep:1,run:(e,s)=>orbit.strafe(kbStep(s,.5),0)},
+  {g:'Đi camera',id:'cam.up',lb:'Lên cao',def:['PageUp'],any:1,rep:1,run:(e,s)=>orbit.strafe(0,kbStep(s,.15))},
+  {g:'Đi camera',id:'cam.down',lb:'Xuống thấp',def:['PageDown'],any:1,rep:1,run:(e,s)=>orbit.strafe(0,-kbStep(s,.15))},
+  {g:'Chỉnh sửa',id:'edit.undo',lb:'Hoàn tác',def:['Ctrl+Z'],rep:1,run:()=>undo()},
+  {g:'Chỉnh sửa',id:'edit.redo',lb:'Làm lại',def:['Ctrl+Shift+Z','Ctrl+Y'],rep:1,run:()=>redo()},
+  {g:'Chỉnh sửa',id:'edit.delete',lb:'Xóa vật đang chọn',def:['Delete','Backspace'],run:()=>{if(!selected)return false;deleteSelected();}},
+  {g:'Chỉnh sửa',id:'edit.group',lb:'Gộp các vật đang chọn thành một khối',def:['G','Ctrl+G'],run:()=>groupSelection()},
+  {g:'Chỉnh sửa',id:'edit.split',lb:'Tách khối đang chọn ra bộ phận',def:['Shift+G'],run:kbSplit},
+  {g:'Chỉnh sửa',id:'edit.drop',lb:'Thả vật xuống bề mặt bên dưới',def:['End'],run:()=>dropToSurface()},
+  {g:'Chụp & lưu',id:'shot.take',lb:'Chụp shot',def:[],run:()=>document.getElementById('btnShot').click()},
+  {g:'Chụp & lưu',id:'shot.story',lb:'Storyboard (ảnh có nhãn + prompt)',def:[],run:()=>document.getElementById('btnStory').click()},
+  {g:'Chụp & lưu',id:'file.save',lb:'Xuất cảnh ra file .json',def:[],run:()=>document.getElementById('btnSave').click()},
+  {g:'Chụp & lưu',id:'file.proj',lb:'Mở bảng Project',def:[],run:()=>document.getElementById('btnProjects').click()},
+  {g:'Nhiều màn hình',id:'scr.shot',lb:'Cửa sổ phụ: Màn hình máy quay',def:[],run:()=>{if(!vwOpen('shot',null))kbPopupBlocked();}},
+  {g:'Nhiều màn hình',id:'scr.quad',lb:'Cửa sổ phụ: 4 góc nhìn',def:[],run:()=>{if(!vwOpen('quad',null))kbPopupBlocked();}},
+  {g:'Nhiều màn hình',id:'scr.lay2',lb:'Bố cục 2 màn hình',def:[],run:()=>{vwLayout(2);}},
+  {g:'Nhiều màn hình',id:'scr.lay3',lb:'Bố cục 3 màn hình',def:[],run:()=>{vwLayout(3);}},
+  {g:'Nhiều màn hình',id:'scr.close',lb:'Đóng các cửa sổ phụ',def:[],run:()=>{vwCloseAll();toast('Đã đóng các cửa sổ phụ');}},
+  {g:'Khác',id:'ui.search',lb:'Tìm model (ô tìm kiếm cột trái)',def:['/'],run:()=>searchInput.focus()},
+  {g:'Khác',id:'ui.help',lb:'Bảng hướng dẫn',def:['?','H'],any:1,run:()=>openHelp()},
+  {g:'Khác',id:'ui.keys',lb:'Bảng tùy chỉnh phím tắt (bảng này)',def:['K'],any:1,run:()=>kbOpen()},
+];
+const KB_BY=Object.fromEntries(KB_ACTS.map(a=>[a.id,a]));
+// phím trình duyệt giữ (đóng/mở tab, tải lại, toàn màn hình, devtools…) — không cho gán
+const KB_RESERVED=['Ctrl+W','Ctrl+Shift+W','Ctrl+T','Ctrl+Shift+T','Ctrl+N','Ctrl+Shift+N','Ctrl+Tab','Ctrl+Shift+Tab','Ctrl+Q','Ctrl+Shift+Q',
+  'Ctrl+R','Ctrl+Shift+R','F5','Ctrl+F5','Shift+F5','F11','F12','Ctrl+Shift+I','Ctrl+Shift+J','Ctrl+Shift+C','Ctrl+L','Alt+F4','Ctrl+Shift+Delete',
+  'Ctrl+Plus','Ctrl+=','Ctrl+-','Ctrl+0'];
+const KB_MODKEYS=['Control','Shift','Alt','Meta','AltGraph','CapsLock','OS','Fn','FnLock','Hyper','Super','NumLock','ScrollLock'];
+
+// sự kiện phím → "Ctrl+Shift+G" (null: phím bổ trợ đứng một mình / IME đang gõ dấu)
+function kbCombo(e){
+  let k=e.key;
+  if(!k||k==='Dead'||k==='Unidentified'||k==='Process'||KB_MODKEYS.includes(k)||e.isComposing)return null;
+  if(k===' '||k==='Spacebar')k='Space';
+  else if(k==='+')k='Plus';
+  else if(k.length===1)k=k.toUpperCase();
+  else if(k==='Esc')k='Escape';
+  else if(k==='Del')k='Delete';
+  else if(k==='Up'||k==='Down'||k==='Left'||k==='Right')k='Arrow'+k;
+  const sym=(k.length===1&&!/\p{L}/u.test(k))||k==='Plus';      // số / ký hiệu: Shift đã nằm trong ký tự
+  const p=[];
+  if(e.ctrlKey||e.metaKey)p.push('Ctrl');
+  if(e.altKey)p.push('Alt');
+  if(e.shiftKey&&!sym)p.push('Shift');
+  p.push(k);return p.join('+');
+}
+const KB_NAME={ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',PageUp:'PgUp',PageDown:'PgDn',Delete:'Del',Escape:'Esc',Insert:'Ins',Plus:'+',ContextMenu:'Menu'};
+function kbText(c){return c.split('+').map(x=>KB_NAME[x]||x).join('+');}
+function kbHtmlEsc(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function kbKbd(c){return c.split('+').map(x=>kbHtmlEsc(x==='Shift'?'⇧':(KB_NAME[x]||x))).join(' ');}
+// nhãn phím đầu tiên của thao tác ('' nếu chưa gán) — dùng trong tooltip, toast, nút…
+function kbLabel(id){return kbMap&&kbMap[id]&&kbMap[id].length?kbText(kbMap[id][0]):'';}
+function kbAll(id){return kbMap&&kbMap[id]?kbMap[id].map(kbText).join(' / '):'';}
+
+function kbReindex(){
+  kbIdx=new Map();
+  KB_ACTS.forEach(a=>{kbMap[a.id]=kbMap[a.id].filter(c=>{if(kbIdx.has(c))return false;kbIdx.set(c,a.id);return true;});});
+}
+function kbClean(v){return Array.isArray(v)?[...new Set(v.filter(c=>typeof c==='string'&&c&&c.length<40&&c!=='Escape'))].slice(0,3):null;}
+function kbLoad(){
+  let st={};
+  try{st=JSON.parse(localStorage.getItem(KB_LS)||'{}')||{};}catch(_){st={};}
+  kbMap={};
+  KB_ACTS.forEach(a=>{const v=kbClean(st[a.id]);kbMap[a.id]=v||a.def.slice();});
+  kbReindex();
+}
+function kbDiff(){const o={};KB_ACTS.forEach(a=>{const v=kbMap[a.id];if(v.join('\n')!==a.def.join('\n'))o[a.id]=v.slice();});return o;}
+function kbSave(){
+  const o=kbDiff();
+  try{if(Object.keys(o).length)localStorage.setItem(KB_LS,JSON.stringify(o));else localStorage.removeItem(KB_LS);}catch(_){}
+}
+// tổ hợp của sự kiện → thao tác. Không khớp đúng mà đang giữ Shift: thử bỏ Shift cho thao tác any:1
+function kbMatch(e){
+  if(!kbIdx)return null;
+  const c=kbCombo(e);if(!c)return null;
+  let id=kbIdx.get(c);if(id)return {id,c,shift:e.shiftKey};
+  if(e.shiftKey&&c.indexOf('Shift+')>=0){
+    const c2=c.replace('Shift+','');id=kbIdx.get(c2);
+    if(id&&KB_BY[id].any)return {id,c:c2,shift:true};
+  }
+  return null;
+}
+// đang gõ chữ → không bắt phím tắt. Thanh trượt: chỉ nhường phím điều hướng (mũi tên, PgUp/PgDn, Home/End)
+function kbTyping(e,c){
+  const t=e.target;if(!t||!t.tagName)return false;
+  if(t.isContentEditable)return true;
+  const tg=t.tagName;
+  if(tg==='TEXTAREA'||tg==='SELECT')return true;
+  if(tg==='INPUT'){
+    const ty=(t.type||'text').toLowerCase();
+    if(['checkbox','radio','button','submit','reset','color','file','image'].includes(ty))return false;
+    if(ty==='range')return /^(Shift\+)?(Arrow|Page|Home|End)/.test(c||'');
+    return true;
+  }
+  return false;
+}
+// bộ phát lệnh chung
+document.addEventListener('keydown',e=>{
+  if(kbCapId||kbIsOpen())return;
+  const m=kbMatch(e);if(!m||kbTyping(e,m.c))return;
+  const a=KB_BY[m.id];
+  if(e.repeat&&!a.rep){e.preventDefault();return;}             // giữ phím: chỉ phím đi camera / hoàn tác lặp lại
+  const t=e.target;if((m.c==='Space'||m.c==='Enter')&&t&&t.tagName==='BUTTON')t.blur();   // khỏi "bấm" luôn nút đang focus
+  if(a.run(e,m.shift)!==false)e.preventDefault();
+});
+
+/* ---------- gắn nhãn phím lên giao diện: [data-kb]=chữ phím · [data-kbt]=tooltip (gốc ở data-tb) ---------- */
+function kbApplyHints(){
+  document.querySelectorAll('[data-kb]').forEach(el=>{el.textContent=kbLabel(el.dataset.kb);});
+  document.querySelectorAll('[data-kbt]').forEach(el=>{
+    if(el.dataset.tb===undefined)el.dataset.tb=el.title||'';
+    const k=kbAll(el.dataset.kbt);el.title=el.dataset.tb+(k?' — phím '+k:'');
+  });
+}
+function kbRenderHelp(){
+  const box=document.getElementById('helpKeys');if(!box)return;
+  let h='';
+  KB_ACTS.forEach(a=>{const ks=kbMap[a.id];if(!ks.length)return;
+    h+='<span class="kbs">'+ks.map(c=>'<kbd>'+kbKbd(c)+'</kbd>').join('')+'</span><span class="kdesc">'+kbHtmlEsc(a.lb)+'</span>';});
+  h+='<span class="kbs"><kbd>Esc</kbd></span><span class="kdesc">Lùi một bước: đóng bảng → thoát ô nhập → bỏ chọn</span>'+
+     '<span class="kbs"><kbd>Nháy đúp</kbd></span><span class="kdesc">Nháy đúp vào BẤT KỲ thanh trượt nào → đưa về mặc định</span>';
+  box.innerHTML=h;
+}
+
+/* ---------- bảng "Tùy chỉnh phím tắt" ---------- */
+let kbCapId=null,kbCapOld=null,kbFlash=null;
+function kbIsOpen(){const m=document.getElementById('kbModal');return !!(m&&m.classList.contains('show'));}
+function kbOpen(){
+  closeHelp();
+  const m=document.getElementById('kbModal');m.classList.add('show');
+  document.getElementById('kbSearch').value='';kbFlash=null;kbMsg('');kbRenderList();
+}
+function kbClose(){kbCapId=null;kbCapOld=null;const m=document.getElementById('kbModal');if(m)m.classList.remove('show');}
+function kbMsg(t,warn){const el=document.getElementById('kbMsg');if(!el)return;el.textContent=t||'';el.classList.toggle('warn',!!warn);}
+function kbRenderList(){
+  const list=document.getElementById('kbList');if(!list)return;
+  const q=(document.getElementById('kbSearch').value||'').trim().toLowerCase();
+  let h='',g0='';
+  KB_ACTS.forEach(a=>{
+    const ks=kbMap[a.id],cap=kbCapId===a.id;
+    if(q&&(a.lb+' '+a.g+' '+ks.map(kbText).join(' ')).toLowerCase().indexOf(q)<0)return;
+    if(a.g!==g0){h+='<div class="kb-g">'+kbHtmlEsc(a.g)+'</div>';g0=a.g;}
+    const changed=ks.join('\n')!==a.def.join('\n');
+    h+='<div class="kb-row'+(cap?' cap':'')+(kbFlash===a.id?' flash':'')+'" data-id="'+a.id+'"><div class="kb-lb">'+kbHtmlEsc(a.lb)+'</div><div class="kb-keys">';
+    ks.forEach(c=>{
+      h+=(cap&&kbCapOld===c)?'<span class="kb-chip cap" data-c="'+kbHtmlEsc(c)+'"><kbd class="kb-wait" id="kbWait">bấm phím…</kbd></span>'
+        :'<span class="kb-chip" data-c="'+kbHtmlEsc(c)+'" title="Bấm để đổi phím này"><kbd>'+kbKbd(c)+'</kbd><i class="kb-rm" title="Gỡ phím này">✕</i></span>';
+    });
+    if(cap&&!kbCapOld)h+='<kbd class="kb-wait" id="kbWait">bấm phím…</kbd>';
+    else if(!ks.length)h+='<span class="kb-none">chưa gán</span>';
+    if(ks.length<3&&!(cap&&!kbCapOld))h+='<button class="kb-add" title="Thêm phím cho thao tác này">+</button>';
+    if(changed)h+='<button class="kb-def" title="Về mặc định: '+kbHtmlEsc(a.def.length?a.def.map(kbText).join(' / '):'không gán phím')+'">↺</button>';
+    h+='</div></div>';
+  });
+  list.innerHTML=h||'<div class="kb-empty">Không thấy thao tác nào khớp “'+kbHtmlEsc(q)+'”.</div>';
+}
+function kbCommit(){
+  kbReindex();kbSave();kbApplyHints();kbRenderHelp();kbRenderList();
+  if(selected&&typeof renderInspector==='function')renderInspector();     // nút "Xóa vật thể (Del)"… theo phím mới
+}
+function kbCapStart(id,old){
+  kbCapId=id;kbCapOld=old;kbFlash=null;kbRenderList();
+  kbMsg((old?'Đổi phím '+kbText(old):'Thêm phím')+' cho “'+KB_BY[id].lb+'”: bấm tổ hợp phím mới (giữ Ctrl / Alt / Shift nếu muốn) · Esc để huỷ');
+}
+function kbCapEnd(){kbCapId=null;kbCapOld=null;kbRenderList();}
+function kbAssign(id,c){
+  if(KB_RESERVED.includes(c)){kbMsg('⚠ '+kbText(c)+' là phím của trình duyệt (đóng/mở tab, tải lại, toàn màn hình…) — không gán được. Bấm phím khác hoặc Esc để huỷ.',1);return;}
+  const ks=kbMap[id],old=kbCapOld;
+  if(ks.includes(c)&&c!==old){kbMsg(kbText(c)+' đã là phím của “'+KB_BY[id].lb+'”.');kbCapEnd();return;}
+  const other=kbIdx.get(c);let note='';
+  if(other&&other!==id){kbMap[other]=kbMap[other].filter(x=>x!==c);note=' (đã gỡ khỏi “'+KB_BY[other].lb+'”)';kbFlash=other;}
+  if(old){const i=ks.indexOf(old);if(i>=0)ks[i]=c;else ks.push(c);}
+  else{if(ks.length>=3)ks.shift();ks.push(c);}
+  kbCapId=null;kbCapOld=null;
+  kbCommit();
+  kbMsg('✓ '+kbText(c)+' → “'+KB_BY[id].lb+'”'+note,!!note);
+}
+// đang bắt phím: nuốt mọi phím trước khi app xử lý
+window.addEventListener('keydown',e=>{
+  if(!kbCapId)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  if(e.key==='Escape'||e.key==='Esc'){kbCapEnd();kbMsg('Đã huỷ');return;}
+  const c=kbCombo(e);
+  if(!c){kbCapMods(e);return;}
+  kbAssign(kbCapId,c);
+},true);
+window.addEventListener('keyup',e=>{if(kbCapId){e.preventDefault();e.stopImmediatePropagation();kbCapMods(e);}},true);
+function kbCapMods(e){                                         // đang giữ Ctrl/Alt/Shift: hiện "Ctrl+Shift+…"
+  const w=document.getElementById('kbWait');if(!w)return;
+  const p=[];if(e.ctrlKey||e.metaKey)p.push('Ctrl');if(e.altKey)p.push('Alt');if(e.shiftKey)p.push('Shift');
+  w.textContent=p.length?p.join('+')+'+…':'bấm phím…';
+}
+
+function kbResetOne(id){
+  const a=KB_BY[id];
+  a.def.forEach(c=>{const o=kbIdx.get(c);if(o&&o!==id)kbMap[o]=kbMap[o].filter(x=>x!==c);});
+  kbMap[id]=a.def.slice();kbCommit();
+  kbMsg('↺ “'+a.lb+'” về mặc định'+(a.def.length?': '+a.def.map(kbText).join(' / '):''));
+}
+function kbResetAll(){
+  if(!confirm('Đưa TẤT CẢ phím tắt về mặc định?'))return;
+  KB_ACTS.forEach(a=>{kbMap[a.id]=a.def.slice();});kbCommit();kbMsg('↺ Đã đưa tất cả phím tắt về mặc định');
+}
+function kbExport(){
+  const blob=new Blob([JSON.stringify({app:'jenny-pixel-studio',type:'keymap',v:1,keymap:kbDiff()},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='phim-tat-jenny-pixel-studio.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  kbMsg('Đã xuất file phím tắt — mang sang máy khác rồi bấm "Nhập file"');
+}
+function kbImportData(o){
+  const km=o&&typeof o==='object'?(o.keymap&&typeof o.keymap==='object'?o.keymap:o):null;
+  if(!km){kbMsg('⚠ File không đúng dạng phím tắt',1);return false;}
+  let n=0;
+  KB_ACTS.forEach(a=>{kbMap[a.id]=a.def.slice();});
+  KB_ACTS.forEach(a=>{const v=kbClean(km[a.id]);if(v){kbMap[a.id]=v.filter(c=>!KB_RESERVED.includes(c));n++;}});
+  // thao tác nhập vào thắng phím mặc định của thao tác khác
+  const own=new Map();KB_ACTS.forEach(a=>{if(kbClean(km[a.id]))kbMap[a.id].forEach(c=>own.set(c,a.id));});
+  KB_ACTS.forEach(a=>{if(!kbClean(km[a.id]))kbMap[a.id]=kbMap[a.id].filter(c=>!own.has(c));});
+  kbCommit();kbMsg('✓ Đã nhập phím tắt ('+n+' thao tác khác mặc định)');return true;
+}
+
+/* gắn sự kiện cho bảng */
+(function kbBind(){
+  const list=document.getElementById('kbList');
+  list.addEventListener('click',e=>{
+    const row=e.target.closest('.kb-row');if(!row)return;const id=row.dataset.id;
+    const rm=e.target.closest('.kb-rm');
+    if(rm){const c=rm.closest('.kb-chip').dataset.c;kbMap[id]=kbMap[id].filter(x=>x!==c);kbCapId=null;kbCapOld=null;kbCommit();kbMsg('Đã gỡ '+kbText(c)+' khỏi “'+KB_BY[id].lb+'”');return;}
+    if(e.target.closest('.kb-def')){kbCapId=null;kbCapOld=null;kbResetOne(id);return;}
+    if(e.target.closest('.kb-add')){kbCapStart(id,null);return;}
+    const chip=e.target.closest('.kb-chip');if(chip&&!chip.classList.contains('cap')){kbCapStart(id,chip.dataset.c);return;}
+  });
+  document.getElementById('kbModal').addEventListener('mousedown',e=>{
+    if(kbCapId&&!e.target.closest('.kb-add,.kb-chip'))kbCapEnd();
+    if(e.target.id==='kbModal')kbClose();                       // bấm nền tối = đóng
+  });
+  document.getElementById('kbClose').onclick=kbClose;
+  document.getElementById('kbDone').onclick=kbClose;
+  document.getElementById('kbSearch').addEventListener('input',()=>{kbCapId=null;kbCapOld=null;kbRenderList();});
+  document.getElementById('kbResetAll').onclick=kbResetAll;
+  document.getElementById('kbExport').onclick=kbExport;
+  const fi=document.getElementById('kbFile');
+  document.getElementById('kbImport').onclick=()=>fi.click();
+  fi.onchange=()=>{const f=fi.files&&fi.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{kbImportData(JSON.parse(r.result));}catch(_){kbMsg('⚠ Không đọc được file (cần file .json đã xuất từ bảng này)',1);}fi.value='';};r.readAsText(f);};
+  document.getElementById('helpKbBtn').onclick=kbOpen;
+})();
+kbLoad();kbApplyHints();kbRenderHelp();
 
 resize();applyLensLook();sizeMonitor();loop();
 

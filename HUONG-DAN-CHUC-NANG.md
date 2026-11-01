@@ -48,7 +48,7 @@ Hai cột bên có thể **thu gọn** bằng nút mũi tên ở mép, hoặc �
 | **Hoàn tác / Làm lại** | Undo (`Ctrl+Z`) / Redo (`Ctrl+Shift+Z`) |
 | **Màn hình** | Nhiều góc nhìn & nhiều màn hình: bật **4 góc nhìn** (`V`), mở **cửa sổ phụ** (Màn hình máy quay / 4 góc nhìn), **Bố cục 2 / 3 màn hình** — xem [Nhiều màn hình](#nhiều-màn-hình-2--3-màn) |
 | **Full** | Ẩn hai panel, xem cảnh toàn màn hình (`~` hoặc `Tab`) |
-| **Hướng dẫn** | Mở bảng hướng dẫn nhanh + phím tắt (phím `?`) |
+| **Hướng dẫn** | Mở bảng hướng dẫn nhanh + phím tắt (phím `?` / `H`); nút **⌨ Tùy chỉnh phím tắt** trong bảng để tự gán phím — xem [mục 10](#10-phím-tắt) |
 | **API Key** | Nhập key để dùng tính năng AI — xem [mục 8](#8-api--các-tính-năng-ai-chi-tiết) |
 | **Lưới sàn** | Bật/tắt lưới mặt đất |
 | **Xóa cảnh** | Xóa toàn bộ vật thể trong cảnh hiện tại |
@@ -95,6 +95,8 @@ Các nhóm có sẵn:
 | **4 góc** | `V` | Chia viewport thành 4 ô: **Trên · Phối cảnh · Trước · Phải** |
 
 > Viewport hẹp (laptop, hai panel đang mở) thì thanh công cụ tự bỏ chữ phím tắt, hẹp nữa thì chỉ còn icon — rê chuột lên nút vẫn thấy tên.
+>
+> Phím trong bảng là **phím mặc định** — đổi được hết (phím `K`), xem [Tùy chỉnh phím tắt](#tùy-chỉnh-phím-tắt-tự-gán-phím). Nhãn phím trên nút và tooltip tự đổi theo.
 
 ### Gizmo trục X / Y / Z (như các app 3D)
 
@@ -317,21 +319,49 @@ Mở app bằng cách nhấp đúp trên **Chrome** sẽ bị chặn lưu lâu d
 
 ## 10. Phím tắt
 
-| Phím | Tác dụng |
+Đây là **phím mặc định**. Mọi phím đều đổi được theo ý bạn — xem [Tùy chỉnh phím tắt](#tùy-chỉnh-phím-tắt-tự-gán-phím) ngay bên dưới.
+
+| Phím (mặc định) | Tác dụng |
 |---|---|
 | `Q` / `W` / `E` / `R` | Orbit / Di chuyển / Xoay / Tỉ lệ (W/E/R hiện gizmo trục X/Y/Z) |
-| `Alt` (khi kéo `W`) | Nâng lên / hạ xuống |
 | `X` | Trục gizmo: Thế giới ⇄ Cục bộ |
-| `Ctrl` (khi kéo trục) | Bắt bước 0.25 m · 15° · 0.1× |
+| `F` | Khung vừa vật đang chọn (không chọn = toàn cảnh; ở 4 góc: cả 3 ô trực giao cùng ôm vật) |
 | `V` | Bật/tắt 4 góc nhìn |
-| `F` | Khung vừa vật chọn (4 góc: cả 3 ô trực giao) |
 | `M` | Bật/tắt monitor |
-| `~` / `Tab` | Toàn màn hình (ẩn 2 panel) |
+| `T` | Ẩn/hiện chữ previz |
+| `` ` `` / `~` / `Tab` | Toàn màn hình (ẩn 2 panel) |
+| `↑` `↓` `←` `→` | Đi tới / lùi / sang trái / sang phải (giữ `Shift` = bước nhỏ) |
+| `PgUp` / `PgDn` | Lên cao / xuống thấp (giữ `Shift` = bước nhỏ) |
+| `Ctrl+Z` | Hoàn tác |
+| `Ctrl+Shift+Z` / `Ctrl+Y` | Làm lại |
+| `Del` / `Backspace` | Xóa vật đang chọn |
+| `G` / `Ctrl+G` | Gộp các vật đang chọn thành một khối |
+| `Shift+G` | Tách khối đang chọn ra bộ phận |
+| `End` | Thả vật xuống bề mặt bên dưới |
 | `/` | Nhảy tới ô tìm kiếm model |
-| `?` | Mở bảng hướng dẫn |
-| `Del` | Xóa vật đang chọn |
-| `Ctrl+Z` / `Ctrl+Shift+Z` | Hoàn tác / Làm lại |
+| `?` / `H` | Mở bảng hướng dẫn |
+| `K` | Mở bảng **Tùy chỉnh phím tắt** |
+| `Esc` *(cố định)* | Lùi một bước: đóng bảng → thoát ô nhập → bỏ chọn |
+| giữ `Ctrl` khi kéo trục *(cố định)* | Bắt bước 0.25 m · 15° · 0.1× |
+| giữ `Alt` khi kéo `W` *(cố định)* | Nâng lên / hạ xuống |
 | **Nháy đúp thanh trượt** | Đưa về mặc định |
+
+### Tùy chỉnh phím tắt (tự gán phím)
+
+Mở bảng bằng phím **`K`**, hoặc nút **Hướng dẫn (?)** → **⌨ Tùy chỉnh phím tắt**.
+
+- **Đổi phím:** bấm vào phím đang gán (ví dụ `W`) → bảng chờ "bấm phím…" → bấm phím / tổ hợp mới (giữ `Ctrl`, `Alt`, `Shift` nếu muốn; trên Mac `Ctrl` = `⌘`). `Esc` để huỷ.
+- **Thêm phím:** bấm **+** ở cuối dòng — mỗi thao tác có tối đa 3 phím.
+- **Gỡ phím:** rê chuột lên phím rồi bấm **✕**. Thao tác không còn phím hiện "chưa gán".
+- **↺** ở cuối dòng = đưa thao tác đó về phím mặc định; **↺ Tất cả về mặc định** ở chân bảng = đưa toàn bộ về như cũ.
+- **Phím trùng:** gán một phím đang thuộc thao tác khác thì phím đó **tự chuyển** sang thao tác mới, bảng báo đã gỡ khỏi thao tác nào (dòng đó nháy màu cam).
+- **Không gán được:** `Esc` và các phím trình duyệt giữ (`Ctrl+W/T/N`, `Ctrl+Tab`, `F5` / `Ctrl+R`, `F11`, `F12`, `Ctrl+L`, `Alt+F4`, phóng to/thu nhỏ trang `Ctrl` `+` / `−` / `0`).
+- **Thao tác chưa có phím sẵn** để bạn tự gán: Chụp shot, Storyboard, Xuất `.json`, Mở bảng Project, Lưới sàn, Bật/tắt Bắt bước, Cửa sổ phụ (máy quay / 4 góc), Bố cục 2 / 3 màn hình, Đóng các cửa sổ phụ.
+- Ô **Tìm** ở đầu bảng lọc theo tên thao tác hoặc tên phím (vd `xoay`, `chụp`, `Ctrl`).
+- Phím đi camera (mặc định mũi tên, PgUp/PgDn) đổi sang phím khác vẫn giữ **Shift = bước nhỏ**. Giữ phím lâu thì chỉ đi camera và hoàn tác/làm lại lặp lại; các phím bật/tắt (4 góc, monitor, toàn màn hình…) không nhấp nháy.
+- Đang gõ chữ trong ô nhập thì phím tắt không chạy. Vừa kéo thanh trượt xong thì phím chữ vẫn chạy ngay; mũi tên / PgUp / PgDn / Home / End lúc đó là của thanh trượt.
+- Bộ phím **lưu trong trình duyệt** (mỗi trình duyệt / máy một bộ). Muốn mang sang máy khác: **⤓ Xuất file** → sang máy kia mở bảng → **⤒ Nhập file**.
+- Nhãn phím trên các nút, tooltip, thông báo, nút trong Inspector và bảng Hướng dẫn **tự đổi theo** phím bạn gán. Phím gõ ở **cửa sổ phụ** (màn hình 2–3) cũng dùng đúng bộ phím đã đổi.
 
 ---
 
