@@ -11873,7 +11873,7 @@ function qvHost(freePersp){
 const QV={main:qvHost(false)};
 function qvReset(host){
   const c=orbit.target.clone(),h=Math.max(2,Math.min(700,orbit.sph.radius*.62));
-  host.panes.forEach(p=>{if(p.cam){p.c.copy(c);p.h=h;}});host.full=true;
+  host.panes.forEach(p=>{if(p.cam){p.c.copy(c);p.h=h;qvSync(p);}});host.full=true;
   if(host.free){host.free.target.copy(c);host.free.sph.copy(orbit.sph);host.free.sph.theta+=.85;host.free.sph.phi=Math.min(1.25,Math.max(.5,host.free.sph.phi));qvFreeUpdate(host.free);}
 }
 function qvFreeUpdate(f){f.cam.position.setFromSpherical(f.sph).add(f.target);f.cam.lookAt(f.target);}
@@ -11979,20 +11979,25 @@ function qvWorldAt(p,ndc,w,h){                       // điểm trên mặt ph�
   const [R,U]=QV_AX[p.kind].map(a=>new THREE.Vector3(...a)),a=w/Math.max(1,h);
   return p.c.clone().addScaledVector(R,ndc.x*p.h*a).addScaledVector(U,ndc.y*p.h);
 }
+// camera ô trực giao luôn khớp tâm / zoom mới nhất, không chờ tới lượt vẽ luân phiên → tia chọn vật / kéo vật đúng chỗ;
+// đánh dấu "nóng" để ô đó vẽ lại ngay các khung kế tiếp
+function qvSync(p){if(p&&p.cam&&p.rect){qvOrtho(p,p.rect[2],p.rect[3]);p.hotT=performance.now();}}
 function qvZoom(hit,dy,fine){
   const p=hit.pane,k=dy>0?(fine?1.04:1.15):1/(fine?1.04:1.15);
   const before=qvWorldAt(p,hit.ndc,hit.w,hit.h);
-  p.h=Math.max(.4,Math.min(1500,p.h*k));p.hotT=performance.now();
+  p.h=Math.max(.4,Math.min(1500,p.h*k));
   const after=qvWorldAt(p,hit.ndc,hit.w,hit.h);p.c.add(before.sub(after));
+  qvSync(p);
 }
 function qvFrame(host){                               // F: các ô trực giao ôm vật đang chọn
   let c,h;
   if(selected&&!selected.userData.isSet){const b=new THREE.Box3().setFromObject(selected);c=b.getCenter(new THREE.Vector3());h=Math.max(1.2,b.getSize(new THREE.Vector3()).length()*.62);}
   else{c=orbit.target.clone();h=Math.max(2,Math.min(700,orbit.sph.radius*.62));}
-  host.panes.forEach(p=>{if(p.cam){p.c.copy(c);p.h=h;}});
+  host.panes.forEach(p=>{if(p.cam){p.c.copy(c);p.h=h;qvSync(p);}});
   host.full=true;
 }
 function qvDown(host,hit,e,win){
+  if(hit.pane.cam)qvOrtho(hit.pane,hit.w,hit.h);
   const p=hit.pane,st={host,p,btn:e.button,x0:e.clientX,y0:e.clientY,moved:false,c0:p.c.clone(),hpx:hit.h,mode:'pan',win:win||window};
   if(e.button===0){
     const pk=qvPick(p.cam,hit.ndc);
@@ -12012,7 +12017,7 @@ function qvMove(e){
   const dx=e.clientX-d.x0,dy=e.clientY-d.y0;if(Math.abs(dx)+Math.abs(dy)>3)d.moved=true;
   const upp=2*d.p.h/Math.max(1,d.hpx),[R,U]=QV_AX[d.p.kind].map(a=>new THREE.Vector3(...a));
   const snap=gzSnap!==(e.ctrlKey||gzCtrl);
-  if(d.mode==='pan'){d.p.c.copy(d.c0).addScaledVector(R,-dx*upp).addScaledVector(U,dy*upp);return;}
+  if(d.mode==='pan'){d.p.c.copy(d.c0).addScaledVector(R,-dx*upp).addScaledVector(U,dy*upp);qvSync(d.p);return;}
   // bắt bước giống gizmo: vị trí / tỉ lệ của vật chính rơi đúng lưới 0.25 m / 0.1×, góc xoay theo bước 15°
   const p0=d.starts.find(t=>t.o===selected)||d.starts[0];
   if(tool==='move'){
@@ -12036,13 +12041,13 @@ function qvMove(e){
   gzUI();
 }
 function qvUp(e){
-  const d=qvDrag;if(!d)return;qvDrag=null;
+  const d=qvDrag;if(!d)return;qvDrag=null;qvSync(d.p);
   if(!d.moved&&d.empty&&d.btn===0&&!e.shiftKey)select(null);
   if(d.mode==='obj'&&d.moved){renderInspector();if(d.win!==window){autosave();pushHistory();}}
 }
 function qvDbl(hit){
   const pk=qvPick(hit.pane.cam,hit.ndc);
-  hit.pane.c.copy(pk?pk.point:qvWorldAt(hit.pane,hit.ndc,hit.w,hit.h));hit.pane.hotT=performance.now();
+  hit.pane.c.copy(pk?pk.point:qvWorldAt(hit.pane,hit.ndc,hit.w,hit.h));qvSync(hit.pane);
 }
 function setQuad(on){
   quadOn=!!on;vp.classList.toggle('quad',quadOn);
