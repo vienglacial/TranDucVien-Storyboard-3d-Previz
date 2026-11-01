@@ -260,6 +260,8 @@
 
   /* ── Khối bối cảnh (set block) trong inspector ── */
   .set-blk{border-top:1px solid var(--line-soft);padding-top:11px;margin-top:11px}
+  .hid-blk .partrow .nm{color:var(--ink-faint)}
+  .hid-blk .partrow:hover .eye{color:var(--good)}
   .set-blk .jlabel{font-family:'JetBrains Mono';font-size:9px;letter-spacing:1px;color:var(--ink-faint);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
   .set-blk .jlabel .gear{font-size:9px;color:var(--accent);cursor:pointer;text-transform:none;letter-spacing:.4px}
   .set-note{font-family:'JetBrains Mono';font-size:9.5px;line-height:1.55;color:var(--ink-dim);background:var(--panel-2);border:1px solid var(--line-soft);border-radius:7px;padding:7px 9px;margin-bottom:9px}
@@ -8850,15 +8852,16 @@ function fragFromBuilder(src,path){
 }
 // Tách một con BẤT KỲ ra thành vật thể riêng, giữ nguyên vị trí thế giới.
 // Con là bộ phận có builder riêng → tách như cũ; không thì thành "mảnh" nhớ đường về nguồn.
-function detachChild(parent,child){
+function detachChild(parent,child,keepVis){
   ensureFragIdx(parent);
-  const idx=child.userData.fragIdx;
+  const idx=child.userData.fragIdx,wasVis=child.visible;
   child.updateWorldMatrix(true,false);
   const p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
   child.matrixWorld.decompose(p,q,sc);
   parent.remove(child);
   let obj=child;
   if(!child.isGroup){                                  // mảnh là mesh trần → bọc lại cho đồng nhất
+    child.visible=true;                                // cờ ẩn/hiện nằm ở group bọc ngoài
     obj=new THREE.Group();
     child.position.set(0,0,0);child.rotation.set(0,0,0);child.scale.setScalar(1);
     obj.add(child);
@@ -8875,7 +8878,9 @@ function detachChild(parent,child){
     obj.userData.fragPath=(parent.userData.fragPath||[]).concat([idx]);
     obj.userData.label=child.userData.partLabel||((parent.userData.label||'Mảnh')+' · mảnh '+(idx+1));
   }
-  obj.userData.id=++idCounter;obj.userData.noTint=true;obj.visible=true;
+  // tách rời toàn bộ: bộ phận đang TẮT (vd TRẦN SƯƠNG của thung lũng) vẫn tắt — hiện lại ở mục "Đang ẩn" cuối Inspector.
+  // tách lẻ một dòng (✂): người dùng chọn đúng phần đó nên cho hiện ra
+  obj.userData.id=++idCounter;obj.userData.noTint=true;obj.visible=keepVis?wasVis:true;
   scene.add(obj);objects.push(obj);
   return obj;
 }
@@ -8899,14 +8904,15 @@ function splitSet(setObj){
   const kids=setObj.children.slice();
   if(!kids.length)return[];
   ensureFragIdx(setObj);
-  const out=kids.map(k=>detachChild(setObj,k));
+  const out=kids.map(k=>detachChild(setObj,k,true));
   scene.remove(setObj);
   const i=objects.indexOf(setObj);if(i>=0)objects.splice(i,1);
   selection.forEach(o=>setOutline(o,false));
-  selection=out.slice();selected=out[0];
+  selection=out.slice();selected=out.find(o=>o.visible)||out[0];
   selection.forEach(o=>setOutline(o,true));
   renderInspector();
-  toast('Đã tách '+out.length+' phần — chọn một phần rồi tách tiếp được nữa');
+  const hid=out.filter(o=>!o.visible);
+  toast('Đã tách '+out.length+' phần'+(hid.length?' · '+hid.length+' phần đang tắt vẫn tắt ('+hid.map(o=>(o.userData.label||'').split(/[:(·]/)[0].trim()).join(', ')+') — bật lại ở mục “Đang ẩn” cuối bảng Vật thể':' — chọn một phần rồi tách tiếp được nữa'));
   if(typeof autosave==='function')autosave();
   if(typeof pushHistory==='function')pushHistory();
   return out;
@@ -8921,6 +8927,43 @@ function detachOne(setObj,child){
   if(typeof autosave==='function')autosave();
   if(typeof pushHistory==='function')pushHistory();
 }
+
+// ── Ẩn vật / hiện lại: vật ẩn vẫn lưu trong project (rec.hidden), liệt kê ở mục "Đang ẩn" cuối Inspector ──
+function hideSelected(){
+  const list=selection.slice();if(!list.length){toast('Chọn vật thể trước đã');return;}
+  list.forEach(o=>{o.visible=false;});
+  select(null);
+  toast('Đã ẩn '+(list.length>1?list.length+' vật':'“'+list[0].userData.label+'”')+' — hiện lại ở mục “Đang ẩn” (tab Vật thể)');
+  if(typeof autosave==='function')autosave();
+  if(typeof pushHistory==='function')pushHistory();
+}
+function showHidden(list,sel){
+  if(!list.length)return;
+  list.forEach(o=>{o.visible=true;});
+  if(sel&&list.length===1)select(list[0]);else renderInspector();
+  toast('Đã hiện lại '+(list.length>1?list.length+' vật':'“'+list[0].userData.label+'”'));
+  if(typeof autosave==='function')autosave();
+  if(typeof pushHistory==='function')pushHistory();
+}
+function hiddenListHTML(){
+  const hid=objects.filter(o=>!o.visible);if(!hid.length)return '';
+  return `<div class="set-blk hid-blk"><div class="jlabel"><span>Đang ẩn · ${hid.length} vật</span><span class="gear" id="hidShowAll">Hiện tất cả</span></div>
+    <div class="partlist">${hid.map(o=>`<div class="partrow" data-hid="${o.userData.id}"><span class="eye" title="Hiện lại vật này">○</span><span class="nm" title="Hiện lại + chọn vật này">${kbHtmlEsc(o.userData.label||'Vật')}</span></div>`).join('')}</div></div>`;
+}
+function bindHiddenList(el){
+  const all=el.querySelector('#hidShowAll');if(all)all.onclick=()=>showHidden(objects.filter(o=>!o.visible),false);
+  el.querySelectorAll('[data-hid]').forEach(row=>{
+    const o=objects.find(x=>String(x.userData.id)===row.dataset.hid);if(!o)return;
+    row.querySelector('.eye').onclick=e=>{e.stopPropagation();showHidden([o],false);};
+    row.querySelector('.nm').onclick=()=>showHidden([o],true);
+  });
+}
+const _renderInspectorBase=renderInspector;
+renderInspector=function(){
+  _renderInspectorBase();
+  const el=document.getElementById('inspector'),h=hiddenListHTML();
+  if(el&&h){el.insertAdjacentHTML('beforeend',h);bindHiddenList(el);}
+};
 
 // Thả vật đang chọn xuống MẶT NỀN ngay bên dưới (đáy hố, mặt dốc, mặt bục, sàn phòng…).
 // Bắn tia thẳng đứng từ đáy vật xuống; không trúng gì thì về mặt sàn y=0.
@@ -9577,6 +9620,7 @@ function renderInspector(){
     </div>
     ${paxSel?`<button class="delbtn" id="splitPaxBtn" style="color:var(--accent-warm);background:rgba(255,180,84,.1);border-color:rgba(255,180,84,.4);margin-top:12px"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8 8l12 10M8 16L20 6"/></svg>Tách ${paxSel} hành khách khỏi ghế</button>`:''}
     ${paxAll>paxSel?`<div style="text-align:center;margin-top:8px"><span id="splitPaxAll" style="font-family:'JetBrains Mono';font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline">Tách toàn bộ ${paxAll} hành khách trong cảnh</span></div>`:''}
+    <button class="dropbtn" id="hideBtn" title="Ẩn khỏi cảnh — vẫn lưu trong project; hiện lại ở mục “Đang ẩn” cuối bảng này">◌ Ẩn ${selection.length>1?selection.length+' vật đang chọn':'vật này'}${kbLabel('edit.hide')?' ('+kbLabel('edit.hide')+')':''}</button>
     <button class="delbtn" id="delBtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Xóa vật thể${kbLabel('edit.delete')?' ('+kbLabel('edit.delete')+')':''}</button>
   `;
   // color swatches — tô theo phần đang chọn (nếu là figure) hoặc cả người
@@ -9834,6 +9878,7 @@ function renderInspector(){
     updRange(texOff);
   }
   document.getElementById('delBtn').onclick=deleteSelected;
+  document.getElementById('hideBtn').onclick=hideSelected;
   if(u.isSet||canSplitMore(selected))bindSetBlockUI(selected);
   const spBtn=document.getElementById('splitPaxBtn');if(spBtn)spBtn.onclick=()=>runSplitPax(selection.slice(),false);
   const spAll=document.getElementById('splitPaxAll');if(spAll)spAll.onclick=()=>runSplitPax(objects.slice(),true);
@@ -10572,6 +10617,7 @@ function applySceneData(d){
   const ab=document.getElementById('btnAnno');if(ab)ab.classList.toggle('off',!annoOn);
   applyAnno();
   document.getElementById('vpMsg').style.display=objects.length?'none':'block';
+  renderInspector();                                  // mục "Đang ẩn" theo cảnh vừa nạp
   resize();
 }
 
@@ -10580,9 +10626,14 @@ const history=[];      // mảng snapshot (JSON string)
 let histIdx=-1;        // con trỏ vị trí hiện tại trong history
 let histLock=false;    // khóa khi đang áp dụng undo/redo để không tự ghi lại
 const HIST_MAX=60;     // giới hạn số bước nhớ
+// Bước hoàn tác = CẢNH đổi (vật, ẩn/hiện, ống kính, khung hình, cú máy…). Xoay / lia / zoom camera KHÔNG
+// thành bước nữa — trước đây mỗi lần kéo xoay camera là một bước nên Ctrl+Z chỉ trả camera về, tưởng như
+// không chạy. Hoàn tác / làm lại giữ nguyên góc camera đang nhìn.
+const HIST_NAV=['h','theta','phi','r','tx','ty','tz'];
+function histSnap(){const d=gatherSceneData();if(d.cam)HIST_NAV.forEach(k=>{delete d.cam[k];});return JSON.stringify(d);}
 function pushHistory(){
   if(histLock)return;
-  const snap=JSON.stringify(gatherSceneData());
+  const snap=histSnap();
   // nếu giống trạng thái hiện tại thì bỏ qua (tránh trùng)
   if(histIdx>=0&&history[histIdx]===snap)return;
   // cắt bỏ phần redo phía sau con trỏ
@@ -10595,7 +10646,11 @@ function pushHistory(){
 }
 function applyHistory(){
   histLock=true;
-  try{applySceneData(JSON.parse(history[histIdx]));}catch(e){}
+  try{
+    const d=JSON.parse(history[histIdx]);
+    if(d.cam)Object.assign(d.cam,{h:+camhSlider.value,theta:orbit.sph.theta,phi:orbit.sph.phi,r:orbit.sph.radius,tx:orbit.target.x,ty:orbit.target.y,tz:orbit.target.z});
+    applySceneData(d);
+  }catch(e){console.warn('[hoàn tác] không áp dụng được bước này',e);}
   histLock=false;
   updUndoButtons();
   autosave();
@@ -12280,12 +12335,14 @@ const KB_ACTS=[
   {g:'Đi camera',id:'cam.right',lb:'Sang phải',def:['ArrowRight'],any:1,rep:1,run:(e,s)=>orbit.strafe(kbStep(s,.5),0)},
   {g:'Đi camera',id:'cam.up',lb:'Lên cao',def:['PageUp'],any:1,rep:1,run:(e,s)=>orbit.strafe(0,kbStep(s,.15))},
   {g:'Đi camera',id:'cam.down',lb:'Xuống thấp',def:['PageDown'],any:1,rep:1,run:(e,s)=>orbit.strafe(0,-kbStep(s,.15))},
-  {g:'Chỉnh sửa',id:'edit.undo',lb:'Hoàn tác',def:['Ctrl+Z'],rep:1,run:()=>undo()},
+  {g:'Chỉnh sửa',id:'edit.undo',lb:'Hoàn tác (thay đổi cảnh — xoay/lia camera không tính)',def:['Ctrl+Z'],rep:1,run:()=>undo()},
   {g:'Chỉnh sửa',id:'edit.redo',lb:'Làm lại',def:['Ctrl+Shift+Z','Ctrl+Y'],rep:1,run:()=>redo()},
   {g:'Chỉnh sửa',id:'edit.delete',lb:'Xóa vật đang chọn',def:['Delete','Backspace'],run:()=>{if(!selected)return false;deleteSelected();}},
   {g:'Chỉnh sửa',id:'edit.group',lb:'Gộp các vật đang chọn thành một khối',def:['G','Ctrl+G'],run:()=>groupSelection()},
   {g:'Chỉnh sửa',id:'edit.split',lb:'Tách khối đang chọn ra bộ phận',def:['Shift+G'],run:kbSplit},
   {g:'Chỉnh sửa',id:'edit.drop',lb:'Thả vật xuống bề mặt bên dưới',def:['End'],run:()=>dropToSurface()},
+  {g:'Chỉnh sửa',id:'edit.hide',lb:'Ẩn vật đang chọn (hiện lại ở mục “Đang ẩn”)',def:[],run:()=>{if(!selection.length)return false;hideSelected();}},
+  {g:'Chỉnh sửa',id:'edit.unhide',lb:'Hiện lại tất cả vật đang ẩn',def:[],run:()=>{const h=objects.filter(o=>!o.visible);if(!h.length){toast('Không có vật nào đang ẩn');return;}showHidden(h,false);}},
   {g:'Chụp & lưu',id:'shot.take',lb:'Chụp shot',def:[],run:()=>document.getElementById('btnShot').click()},
   {g:'Chụp & lưu',id:'shot.story',lb:'Storyboard (ảnh có nhãn + prompt)',def:[],run:()=>document.getElementById('btnStory').click()},
   {g:'Chụp & lưu',id:'file.save',lb:'Xuất cảnh ra file .json',def:[],run:()=>document.getElementById('btnSave').click()},

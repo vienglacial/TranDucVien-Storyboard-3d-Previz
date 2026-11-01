@@ -45,7 +45,7 @@ Hai cột bên có thể **thu gọn** bằng nút mũi tên ở mép, hoặc �
 
 | Nút | Chức năng |
 |---|---|
-| **Hoàn tác / Làm lại** | Undo (`Ctrl+Z`) / Redo (`Ctrl+Shift+Z`) |
+| **Hoàn tác / Làm lại** | Undo (`Ctrl+Z`) / Redo (`Ctrl+Shift+Z`). Mỗi bước = một thay đổi **cảnh** (thêm/xoá/dời/xoay vật, tách/gộp, ẩn/hiện, ống kính…). Xoay / lia / zoom camera **không** thành bước, và hoàn tác giữ nguyên góc camera đang nhìn |
 | **Màn hình** | Nhiều góc nhìn & nhiều màn hình: bật **4 góc nhìn** (`V`), mở **cửa sổ phụ** (Màn hình máy quay / 4 góc nhìn), **Bố cục 2 / 3 màn hình** — xem [Nhiều màn hình](#nhiều-màn-hình-2--3-màn) |
 | **Full** | Ẩn hai panel, xem cảnh toàn màn hình (`~` hoặc `Tab`) |
 | **Hướng dẫn** | Mở bảng hướng dẫn nhanh + phím tắt (phím `?` / `H`); nút **⌨ Tùy chỉnh phím tắt** trong bảng để tự gán phím — xem [mục 10](#10-phím-tắt) |
@@ -160,6 +160,8 @@ Bấm nút **Màn hình** trên thanh trên cùng:
 - **Nâng lên / hạ xuống** — chọn vật, bấm **W** (Di chuyển) rồi **giữ Alt và kéo chuột lên/xuống**; hoặc gõ thẳng số vào ô **Độ cao** ở panel phải (vd `-6` để xuống đáy hố nhân sư)
 - **Phím End** (hoặc nút **⤓ Thả xuống bề mặt**) — đặt vật xuống đúng mặt nền ngay bên dưới: đáy hố, mặt dốc, mặt bục, sàn phòng
 - **Tách nhiều tầng** — tách khối bối cảnh ra bộ phận, chọn một bộ phận rồi **tách tiếp** thành từng mảnh, cứ thế cho tới khi không còn chia được. Vật nào còn từ 2 phần con trở lên thì panel phải hiện bảng **Tách tiếp**; dòng nào còn chia nhỏ được sẽ ghi số mảnh
+- **Tách rời toàn bộ giữ nguyên phần đang tắt** — bộ phận đang tắt (vd *Trần sương* của Thung lũng rạp xiếc) tách ra vẫn **tắt**, nằm ở mục **Đang ẩn** cuối tab Vật thể: bấm ○ để hiện lại, bấm tên để hiện + chọn, hoặc **Hiện tất cả**. Bấm ✂ ở riêng một dòng thì phần đó tách ra và hiện lên
+- **◌ Ẩn vật này** (tab Vật thể) — ẩn vật / nhóm đang chọn khỏi cảnh mà không xoá; vẫn lưu trong project, hiện lại ở mục **Đang ẩn**. Ẩn / hiện đều hoàn tác được
 - **Phím G** — gộp các vật đang chọn thành **một khối** (di chuyển/xoay/tỉ lệ/lưu như một vật); **Shift+G** — tách khối đang chọn ra lại
 - Khi chọn nhiều vật (Shift+bấm), các thanh trượt Xoay / Độ cao / Tỉ lệ ở panel phải áp cho **cả nhóm**
 
@@ -242,6 +244,9 @@ Khi chọn một vật, cột phải hiện đầy đủ điều khiển:
 - **Khớp tinh chỉnh:** cúi/ngả thân, gập hông, gập gối, đưa tay, gập khuỷu
 - **Chỉnh phụ kiện** (mắt/mỏ/tóc/mũ/áo): vị trí 3 chiều, kích thước, màu riêng
 - **Màu theo bộ phận:** cả người / đầu / thân / tay / chân
+
+- **◌ Ẩn vật này** — ẩn khỏi cảnh (không xoá), cuối bảng có mục **Đang ẩn** liệt kê mọi vật đang ẩn để hiện lại
+- **Đang ẩn · n vật** — hiện ở cuối tab Vật thể khi cảnh có vật ẩn (kể cả lúc chưa chọn gì): ○ = hiện lại, bấm tên = hiện + chọn, **Hiện tất cả**
 
 > Mẹo: **nháy đúp** vào bất kỳ thanh trượt nào để đưa về mặc định. Phím `Del` xóa vật đang chọn.
 
@@ -332,7 +337,7 @@ Mở app bằng cách nhấp đúp trên **Chrome** sẽ bị chặn lưu lâu d
 | `` ` `` / `~` / `Tab` | Toàn màn hình (ẩn 2 panel) |
 | `↑` `↓` `←` `→` | Đi tới / lùi / sang trái / sang phải (giữ `Shift` = bước nhỏ) |
 | `PgUp` / `PgDn` | Lên cao / xuống thấp (giữ `Shift` = bước nhỏ) |
-| `Ctrl+Z` | Hoàn tác |
+| `Ctrl+Z` | Hoàn tác (thay đổi cảnh — xoay/lia camera không tính) |
 | `Ctrl+Shift+Z` / `Ctrl+Y` | Làm lại |
 | `Del` / `Backspace` | Xóa vật đang chọn |
 | `G` / `Ctrl+G` | Gộp các vật đang chọn thành một khối |
@@ -356,7 +361,7 @@ Mở bảng bằng phím **`K`**, hoặc nút **Hướng dẫn (?)** → **⌨ T
 - **↺** ở cuối dòng = đưa thao tác đó về phím mặc định; **↺ Tất cả về mặc định** ở chân bảng = đưa toàn bộ về như cũ.
 - **Phím trùng:** gán một phím đang thuộc thao tác khác thì phím đó **tự chuyển** sang thao tác mới, bảng báo đã gỡ khỏi thao tác nào (dòng đó nháy màu cam).
 - **Không gán được:** `Esc` và các phím trình duyệt giữ (`Ctrl+W/T/N`, `Ctrl+Tab`, `F5` / `Ctrl+R`, `F11`, `F12`, `Ctrl+L`, `Alt+F4`, phóng to/thu nhỏ trang `Ctrl` `+` / `−` / `0`).
-- **Thao tác chưa có phím sẵn** để bạn tự gán: Chụp shot, Storyboard, Xuất `.json`, Mở bảng Project, Lưới sàn, Bật/tắt Bắt bước, Cửa sổ phụ (máy quay / 4 góc), Bố cục 2 / 3 màn hình, Đóng các cửa sổ phụ.
+- **Thao tác chưa có phím sẵn** để bạn tự gán: Chụp shot, Storyboard, Xuất `.json`, Mở bảng Project, Lưới sàn, Bật/tắt Bắt bước, Ẩn vật đang chọn, Hiện lại tất cả vật đang ẩn, Cửa sổ phụ (máy quay / 4 góc), Bố cục 2 / 3 màn hình, Đóng các cửa sổ phụ.
 - Ô **Tìm** ở đầu bảng lọc theo tên thao tác hoặc tên phím (vd `xoay`, `chụp`, `Ctrl`).
 - Phím đi camera (mặc định mũi tên, PgUp/PgDn) đổi sang phím khác vẫn giữ **Shift = bước nhỏ**. Giữ phím lâu thì chỉ đi camera và hoàn tác/làm lại lặp lại; các phím bật/tắt (4 góc, monitor, toàn màn hình…) không nhấp nháy.
 - Đang gõ chữ trong ô nhập thì phím tắt không chạy. Vừa kéo thanh trượt xong thì phím chữ vẫn chạy ngay; mũi tên / PgUp / PgDn / Home / End lúc đó là của thanh trượt.
