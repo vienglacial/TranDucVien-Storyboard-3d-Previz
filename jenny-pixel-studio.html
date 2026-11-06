@@ -1962,6 +1962,18 @@ function chainLink(w,h,c='#9aa0a8',cell=0.3){
 }
 // builder động: lắp vật thể từ danh sách "parts" do AI trả về
 // mỗi part: {shape:'box'|'cyl'|'sph'|'cone', size:[...], pos:[x,y,z], rot:[rx,ry,rz], color:'#..'}
+// tấm lưới mỏng dán theo mặt cong (miệng, mắt…): rows = mảng các hàng, mỗi hàng cùng số đỉnh [x,y,z]
+function stripMesh(rows,c){
+  const pos=[],idx=[],n=rows[0].length;
+  rows.forEach(r=>r.forEach(v=>pos.push(v[0],v[1],v[2])));
+  for(let i=0;i<rows.length-1;i++)for(let j=0;j<n-1;j++){
+    const a=i*n+j,b=a+1,d=a+n,e=d+1;idx.push(a,d,b,b,d,e);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  const m=new THREE.Mesh(g,mat(c));m.material.side=THREE.DoubleSide;m.receiveShadow=true;
+  return m;
+}
 function buildFromParts(parts){
   const g=new THREE.Group();let maxY=0;
   (parts||[]).forEach(p=>{
@@ -1971,12 +1983,14 @@ function buildFromParts(parts){
       if(p.shape==='cyl')mesh=cyl(s[0],s[1]!==undefined&&p.r2?s[1]:s[0],p.shape==='cyl'?(s[1]||s[0]):s[1],c,16);
       else if(p.shape==='sph')mesh=sph(s[0],c,16);
       else if(p.shape==='cone')mesh=cone(s[0],s[1],c,16);
+      else if(p.shape==='strip')mesh=stripMesh(p.rows,c);
       else mesh=box(s[0],s[1],s[2]!==undefined?s[2]:s[0],c);
       const pos=p.pos||[0,0,0];mesh.position.set(pos[0]||0,pos[1]||0,pos[2]||0);
       if(p.rot)mesh.rotation.set((p.rot[0]||0)*Math.PI/180,(p.rot[1]||0)*Math.PI/180,(p.rot[2]||0)*Math.PI/180);
       if(p.scale)mesh.scale.set(p.scale[0]||1,p.scale[1]||1,p.scale[2]||1); // bóp méo (cầu dẹt...)
       if(p.part)mesh.userData.part=p.part;
       if(p.bone)mesh.userData.bone=p.bone;   // ép vào xương (vd. gậy đi theo bàn tay)
+      if(p.opacity!==undefined){mesh.material.transparent=true;mesh.material.opacity=p.opacity;mesh.castShadow=false;}   // khói, vầng sáng
       g.add(mesh);
       const top=(pos[1]||0)+(s[1]||s[0]||1)/2;if(top>maxY)maxY=top;
     }catch(e){}
@@ -2146,6 +2160,207 @@ const FIXED_CHARS={
       add('sph',[.12],[0,.52,-.245],'#83502c','torso',{scale:[.78,1.1,.2],rot:[-12,0,0]});
       [-1,1].forEach(sd=>add('box',[.05,.035,.06],[sd*.13,.56,-.22],'#5a341c','torso'));
       return xfParts(P,{pick:p=>p.part==='head',pivot:[0,.62,.05],k:1.28,H:1.0});   // đầu to như ref, cao đúng 1.0 m
+    })(),
+  },
+  // ════ PHÙ THỦY — cao ~1.55 m tới đỉnh mũ (giả định, ref không ghi kích thước; đổi được bằng thanh Tỉ lệ).
+  // Mũ rộng vành chóp gập + hàng hạt đen, mặt là khoảng tối chỉ thấy 2 mắt xanh (mắt phải khung nheo lại), tóc cam tua tủa
+  // hai bên, cổ phễu tím che nửa mặt, áo choàng chuông gấu rách, găng đen, bốt đen, gậy gỗ đầu móc xoắn ở tay phải nv (−x).
+  witch:{
+    vi:'🧙 Phù thủy',
+    en:'a small witch cartoon character whose face is a black void showing only two glowing pale-green eyes with green irises (one wide open, one narrowed), spiky orange hair at both sides, a huge dark purple wide-brim witch hat with a crooked bent tip and a row of round black beads, a high funnel collar covering the lower face, a tattered dark purple bell-shaped cloak with wide torn sleeves, black gloves and boots, holding a tall gnarled brown wooden staff with a spiral hook',
+    parts:(()=>{
+      const HAT='#544073',HAT2='#6a5190',RB='#463757',RB2='#55446b',RB3='#392d48',BK='#0d0b11',GL='#17141c',BEAD='#08070b',
+        OR='#e8631a',OR2='#f28a2c',WD='#6f4c31',WD2='#855f40',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      const DG=180/Math.PI;
+      // góc xoay để trục +Y của khối hướng theo (dx,dy,dz)
+      const aim=d=>{const L=Math.hypot(...d);return [Math.atan2(d[2],d[1])*DG,0,-Math.asin(d[0]/L)*DG];};
+      const seg=(a,b,r,c,part,o={})=>{const d=b.map((v,i)=>v-a[i]);add('cyl',[r,Math.hypot(...d)],a.map((v,i)=>(v+b[i])/2),c,part,Object.assign({rot:aim(d)},o));};
+      const spike=(a,b,r,c,part,o={})=>{const d=b.map((v,i)=>v-a[i]);add('cone',[r,Math.hypot(...d)],a.map((v,i)=>(v+b[i])/2),c,part,Object.assign({rot:aim(d)},o));};   // chóp nón từ a tới b
+      // chân que + bốt đen (ló dưới gấu áo)
+      [-1,1].forEach(sd=>{
+        add('cyl',[.03,.13],[sd*.075,.135,0],GL,'leg');
+        add('cyl',[.04,.1],[sd*.075,.075,0],BK,'leg');
+        add('sph',[.05],[sd*.08,.04,.03],BK,'leg',{scale:[1,.8,1.7]});
+      });
+      // áo choàng: thân chuông + nếp gấp dọc + gấu rách nhọn
+      add('cone',[.46,.72],[0,.58,0],RB,'torso');
+      add('sph',[.17],[0,.66,0],RB,'torso');
+      for(let i=0;i<10;i++){const a=(i+.3)/10*6.283,R=.43;
+        spike([Math.sin(a)*R,.25,Math.cos(a)*R],[Math.sin(a)*.09,.86,Math.cos(a)*.09],.075,i%2?RB2:RB3,'torso');}
+      for(let i=0;i<20;i++){
+        const a=i/20*6.283,k=(i*37%11)/11,R=.4+.04*((i*17%5)/5),h=.13+.13*k,o=R+.05+.05*k;
+        spike([Math.sin(a)*R,.3,Math.cos(a)*R],[Math.sin(a)*o,.3-h,Math.cos(a)*o],.05+.035*((i*7%4)/4),i%3===0?RB2:RB,'torso');
+      }
+      // ── tay phải nv (−x) đưa ra trước nắm gậy, tay áo loe + vạt rách rủ xuống ──
+      const SH=[-.2,.8,.03],HD=[-.4,.7,.3];
+      add('sph',[.08],SH,RB2,'arm',{scale:[1.2,1,1.2]});
+      add('sph',[.05],[-.3,.75,.17],RB2,'arm');
+      add('sph',[.052],HD,GL,'arm');
+      spike([-.37,.715,.26],SH,.13,RB2,'arm',{bone:'foreL'});
+      spike([-.31,.73,.17],[-.33,.33,.2],.12,RB,'arm',{bone:'foreL'});
+      [[-.05,.03,.04],[-.02,-.02,.055],[.03,-.035,.04]].forEach(([x,y,z])=>add('sph',[.024],[HD[0]+x,HD[1]+y,HD[2]+z],BK,'arm',{scale:[1.3,.9,1],bone:'foreL'}));   // ngón tay ôm gậy
+      // ── tay trái nv (+x) buông, tay áo rách che gần hết ──
+      add('sph',[.075],[.2,.79,0],RB2,'arm',{scale:[1.1,1,1.1]});
+      add('sph',[.04],[.29,.55,.03],GL,'arm');
+      spike([.29,.47,.03],[.2,.83,.01],.12,RB2,'arm',{bone:'foreR'});
+      // ── gậy gỗ gồ ghề, đầu móc xoắn (đi theo tay phải) ──
+      const ST=[[-.4,0,.3],[-.425,.18,.31],[-.395,.36,.29],[-.425,.54,.31],[-.4,.7,.3],[-.43,.9,.31],[-.405,1.08,.29],[-.44,1.25,.3],[-.455,1.38,.3]];
+      for(let k=1;k<=16;k++){const t=k/16,A=Math.PI*(1-3*t*.72),Rh=.095-.06*t;      // vòng xoắn nhỏ dần, ngược chiều kim đồng hồ khi nhìn từ sau
+        ST.push([-.36+Math.cos(A)*Rh,1.44+Math.sin(A)*Rh*1.05,.3]);}
+      ST.slice(1).forEach((b,i)=>{const a=ST[i],r=i<8?.03-.0012*i:.021-.0007*(i-8);
+        seg(a,b,r,i%2?WD:WD2,'arm',{bone:'foreL'});
+        add('sph',[r*1.28],b,i%2?WD2:WD,'arm',{bone:'foreL'});});
+      spike([-.425,.54,.31],[-.5,.63,.33],.022,WD,'arm',{bone:'foreL'});   // mấu cành cụt
+      spike([-.405,1.08,.29],[-.33,1.15,.31],.018,WD2,'arm',{bone:'foreL'});
+      // ── mặt: khoảng tối + 2 mắt xanh ──
+      add('sph',[.2],[0,.91,.03],BK,'head',{scale:[1.05,.6,1]});
+      add('sph',[.062],[-.085,.905,.185],'#d7efb0','head',{scale:[1.05,.82,.45]});
+      add('sph',[.031],[-.067,.902,.209],'#2f9e36','head',{scale:[1,1,.45]});
+      add('sph',[.016],[-.063,.902,.222],'#05130a','head',{scale:[1,1,.4]});
+      add('sph',[.006],[-.056,.913,.229],'#ffffff','head');
+      add('sph',[.06],[.095,.895,.185],'#d7efb0','head',{scale:[1.1,.42,.42]});
+      add('sph',[.024],[.114,.894,.206],'#2f9e36','head',{scale:[1,.82,.45]});
+      add('sph',[.012],[.118,.894,.217],'#05130a','head',{scale:[1,.82,.4]});
+      add('box',[.14,.025,.05],[.095,.925,.19],BK,'head',{rot:[0,0,12]});                 // mí sụp: mắt phải khung nheo
+      // tóc cam tua tủa từ dưới vành mũ, xoè ra hai bên
+      [-1,1].forEach(sd=>[[.15,.95,.1,.37,.87,.15],[.17,.96,.03,.4,.92,.05],[.15,.94,.12,.32,.79,.18],[.18,.95,-.04,.37,.84,-.07],[.14,.92,.13,.25,.77,.19],[.13,.96,-.1,.29,.82,-.16]]
+        .forEach(([x,y,z,x2,y2,z2],i)=>spike([sd*x,y,z],[sd*x2,y2,z2],.052,i%2?OR2:OR,'head')));
+      // ── cổ phễu che nửa mặt: phễu ngược + 2 góc nhọn hai bên ──
+      add('cone',[.235,.28],[0,.71,.03],RB2,'head',{rot:[180,0,0],scale:[1,1,.95]});
+      [-1,1].forEach(sd=>spike([sd*.175,.83,.14],[sd*.225,.895,.17],.03,RB2,'head'));
+      // ── mũ: vành rộng hơi cụp phía trước + lót tím + chóp gập + hàng hạt đen ──
+      add('cyl',[.5,.022],[0,1.015,.01],HAT,'head',{rot:[6,0,0]});
+      add('cyl',[.485,.01],[0,1.0,.01],HAT2,'head',{rot:[6,0,0]});
+      spike([0,1.02,0],[0,1.43,0],.235,HAT,'head');
+      add('sph',[.078],[.01,1.305,0],HAT,'head');
+      spike([0,1.27,0],[.17,1.55,0],.098,HAT,'head');
+      add('sph',[.05],[.145,1.5,0],HAT,'head');
+      spike([.14,1.49,0],[.34,1.21,.02],.056,HAT,'head');
+      [[-38,.019],[-14,.034],[14,.034],[38,.019]].forEach(([a,r])=>{
+        const A=a*Math.PI/180,y=1.14,Rc=.235*(1.43-y)/.41;
+        add('sph',[r],[Math.sin(A)*Rc,y,Math.cos(A)*Rc],BEAD,'head');});
+      return P;
+    })(),
+  },
+  // ════ PHARAON HỒN MA — hà mã không chân: đầu → đai 1.1 m, thân ngang ~0.9 m, dưới đai là đuôi khói ~0.8 m xoắn S.
+  // Lơ lửng: đai ở cao 1.0 m → đỉnh đầu ~2.1 m. Đầu vòm nhỏ + mõm bè to, 2 mắt lồi sát nhau lé vào giữa, tai tròn nhỏ,
+  // tay ngắn buông, váy trắng xếp ly có vạt trước, đuôi nhỏ sau lưng, khói trong mờ + vầng sáng dưới đất. Không khăn, không gậy.
+  pharaon:{
+    vi:'👻 Pharaon (hồn ma)',
+    en:'Pharaon, a chubby legless ghost hippo cartoon character with pinkish-tan skin, a small dome head, huge wide muzzle with two small nostrils and a downturned mouth line, big glossy white bulging eyes set close together with tiny inward-looking pupils, small round ears, short stubby arms, a white pleated shendyt kilt with a front tab and a tiny tail, and instead of legs a translucent white smoke tail twisting down to a soft glow on the ground',
+    parts:(()=>{
+      const SK='#d9b8a3',SK2='#cfab95',LN='#9c7763',EAR='#d98f6f',W='#f3efe6',W2='#e2dccd',SM='#f4f2ee',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      const DG=180/Math.PI;
+      const aim=d=>{const L=Math.hypot(...d);return [Math.atan2(d[2],d[1])*DG,0,-Math.asin(d[0]/L)*DG];};
+      const seg=(a,b,r,c,part)=>{const d=b.map((v,i)=>v-a[i]);add('cyl',[r,Math.hypot(...d)],a.map((v,i)=>(v+b[i])/2),c,part,{rot:aim(d)});};
+      // ── đuôi khói trong mờ xoắn S + vầng sáng dưới đất ──
+      for(let i=0;i<32;i++){const t=i/31,r=.37*(1-t)**1.9+.012;
+        add('sph',[r],[Math.sin(t*8.6)*.1*Math.sin(t*3.14)**.6,.74-.64*t,Math.cos(t*8.6)*.05*t],SM,'torso',{opacity:.72,scale:[1,.82,.9]});}
+      add('cyl',[.44,.006],[0,.012,0],SM,'torso',{opacity:.28});
+      add('cyl',[.25,.008],[0,.02,0],SM,'torso',{opacity:.5});
+      // ── váy trắng xếp ly + đai 2 vòng + vạt trước + đuôi nhỏ ──
+      add('cyl',[.47,.27],[0,.865,0],W,'torso',{scale:[1,1,.86]});
+      add('cyl',[.485,.018],[0,1.0,0],W,'torso',{scale:[1,1,.86]});
+      add('cyl',[.485,.018],[0,.97,0],W2,'torso',{scale:[1,1,.86]});
+      for(let i=0;i<22;i++){const a=(i+.5)/22*6.283;
+        add('box',[.012,.24,.012],[Math.sin(a)*.472,.85,Math.cos(a)*.472*.86],W2,'torso',{rot:[0,a*DG,0]});}
+      add('box',[.17,.31,.022],[0,.85,.415],W,'torso');
+      [-1,1].forEach(sd=>add('box',[.008,.3,.026],[sd*.05,.85,.415],W2,'torso'));
+      add('sph',[.03],[0,.91,-.41],SK2,'torso',{scale:[.8,2.1,.6],rot:[-18,0,0]});
+      // ── thân quả lê, lưng vòm liền đầu ──
+      add('sph',[.48],[0,1.2,0],SK,'torso',{scale:[1,.72,.85]});
+      add('sph',[.42],[0,1.47,-.1],SK,'torso',{scale:[1,1.15,.86]});
+      // ── tay ngắn buông (dài xuống cạnh váy) + 3 ngón mập ──
+      [-1,1].forEach(sd=>{
+        add('sph',[.135],[sd*.48,1.3,-.02],SK,'arm',{scale:[.9,1.35,.95],rot:[0,0,sd*12]});
+        add('sph',[.115],[sd*.55,1.08,0],SK,'arm',{scale:[.95,1.25,1]});
+        add('sph',[.1],[sd*.57,.96,.01],SK2,'arm',{scale:[1,.95,1.05]});
+        [[-.05,.03],[0,.05],[.05,.03]].forEach(([dx,dz])=>add('sph',[.036],[sd*.57+dx,.875,.02+dz],SK2,'arm',{bone:sd<0?'foreL':'foreR',scale:[1,1.1,1]}));
+      });
+      // ── đầu vòm + mõm bè + nếp miệng trề xuống ──
+      add('sph',[.3],[0,1.84,-.02],SK,'head',{scale:[1,.95,.95]});
+      add('sph',[.5],[0,1.54,.12],SK,'head',{scale:[1,.54,.85]});
+      const MO=[[-.42,1.45],[-.32,1.39],[-.2,1.37],[-.1,1.385],[0,1.41],[.1,1.385],[.2,1.37],[.32,1.39],[.42,1.45]];
+      const moZ=(x,y)=>.12+.425*Math.sqrt(Math.max(.02,1-(x/.5)**2-((y-1.54)/.27)**2))+.004;
+      MO.slice(1).forEach(([x,y],i)=>{const [x0,y0]=MO[i];seg([x0,y0,moZ(x0,y0)],[x,y,moZ(x,y)],.008,LN,'head');});
+      seg([0,1.53,moZ(0,1.53)],[0,1.41,moZ(0,1.41)],.005,LN,'head');                    // rãnh giữa mõm
+      [-1,1].forEach(sd=>{
+        add('sph',[.03],[sd*.18,1.69,.435],LN,'head',{scale:[1,.9,.45],rot:[-40,0,0]});
+        add('sph',[.018],[sd*.18,1.693,.447],'#2c1d17','head',{scale:[1,.9,.45],rot:[-40,0,0]});   // lỗ mũi
+        // tai tròn nhỏ + lòng tai cam hồng
+        add('sph',[.06],[sd*.26,2.0,-.04],SK2,'head',{scale:[1,1,.5]});
+        add('sph',[.036],[sd*.26,2.0,-.018],EAR,'head',{scale:[1,1,.45]});
+        // mắt lồi sát nhau, con ngươi lé vào giữa
+        add('sph',[.135],[sd*.13,1.87,.2],'#ffffff','head',{scale:[1,1.05,.8]});
+        add('sph',[.03],[sd*.075,1.865,.303],'#101010','head',{scale:[1,1,.45]});
+        add('sph',[.008],[sd*.075+.012,1.878,.316],'#ffffff','head');
+      });
+      return P;
+    })(),
+  },
+  // ════ BILI — ma nhỏ xanh ngọc, cao ~1.3 m tính cả chong chóng (giả định, ref không ghi kích thước; đổi bằng thanh Tỉ lệ).
+  // Thân giọt nước ngược: 2 bên đầu phình rộng, thót xuống đuôi nhọn cong. Mắt vàng xếch, miệng cười toe răng cưa,
+  // tay vây nhỏ cong ở hông, mũ lưỡi trai không vành 3 màu nghiêng về bên phải khung + chong chóng đỏ. Không chân.
+  bili:{
+    vi:'👻 Bili (ma)',
+    en:'Bili, a small mischievous cyan ghost cartoon character with an upside-down teardrop body, wide rounded head lobes tapering into a pointed curled tail, angry slanted glowing yellow eyes, a huge wide grin with dark purple mouth and jagged zigzag teeth, tiny curled fin arms, wearing a tilted patchwork propeller beanie in red, mustard and green with a red propeller on top',
+    parts:(()=>{
+      const C='#4fd4e6',C2='#74e6f0',MO='#2c1a63',EY='#ffd21f',R='#b5482f',M='#b08c33',G='#6c8450',PR='#b8432e',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      const DG=180/Math.PI;
+      const aim=d=>{const L=Math.hypot(...d);return [Math.atan2(d[2],d[1])*DG,0,-Math.asin(d[0]/L)*DG];};
+      const spike=(a,b,r,c,part,o={})=>{const d=b.map((v,i)=>v-a[i]);add('cone',[r,Math.hypot(...d)],a.map((v,i)=>(v+b[i])/2),c,part,Object.assign({rot:aim(d)},o));};
+      // ── thân: đuôi nón ngược + đầu phình + 2 thuỳ + khối mặt ──
+      spike([0,.8,-.01],[0,.08,0],.37,C,'torso');
+      add('sph',[.43],[0,.84,0],C,'torso',{scale:[1,.62,.8]});
+      [-1,1].forEach(sd=>add('sph',[.2],[sd*.25,.82,-.02],C,'torso'));
+      add('sph',[.4],[0,.74,.02],C,'torso',{scale:[1,.85,.9]});
+      // mặt trước của thân tại (x,y): để miệng, mắt, răng dán sát mặt
+      const ell=(x,y,cy,cz,rx,ry,rz)=>{const k=1-(x/rx)**2-((y-cy)/ry)**2;return k>0?cz+rz*Math.sqrt(k):0;};
+      const surf=(x,y)=>Math.max(ell(x,y,.84,0,.43,.267,.344),ell(x,y,.74,.02,.4,.34,.36));
+      // ── đuôi nhọn cong + sợi khói ở mũi ──
+      for(let i=0;i<10;i++){const t=i/9;
+        add('sph',[.022*(1-t)+.004],[.13*t*t,.1-.075*Math.sin(t*2.1),0],i<7?C:C2,'torso',{opacity:i<7?1:.65});}
+      // ── tay vây nhỏ cong ──
+      [-1,1].forEach(sd=>{
+        const bn=sd<0?'foreL':'foreR';
+        add('sph',[.05],[sd*.21,.57,0],C,'arm');
+        add('sph',[.026],[sd*.31,.51,0],C,'arm');
+        spike([sd*.22,.565,0],[sd*.32,.5,0],.045,C,'arm',{bone:bn});
+        spike([sd*.31,.515,0],[sd*.385,.57,0],.02,C2,'arm',{bone:bn});
+        spike([sd*.31,.515,0],[sd*.3,.455,0],.016,C2,'arm',{bone:bn});
+      });
+      const rd=v=>+v.toFixed(3);
+      // ── miệng cười toe: tấm tím dán theo mặt, 2 mép khoét răng cưa nên răng chính là màu thân ──
+      const W=.245,tri=(x,o)=>{const u=((x+o)/.08%1+1)%1;return 1-Math.abs(u*2-1);};
+      const yT=x=>.745+.09*(Math.abs(x)/W)**2-.06*tri(x,.04)*Math.min(1,(W-Math.abs(x))/.05);
+      const yB=x=>.47+.365*(Math.abs(x)/W)**2.4+.05*tri(x,0)*Math.min(1,(W-Math.abs(x))/.06);
+      const mRows=[];
+      for(let r=0;r<=5;r++){const row=[];
+        for(let i=0;i<=48;i++){const x=-W+i/48*2*W,t=yT(x),b=Math.min(t,yB(x)),y=t+(b-t)*r/5;
+          row.push([rd(x),rd(y),rd(surf(x,y)+.005)]);}
+        mRows.push(row);}
+      add('strip',[1],[0,0,0],MO,'head',{rows:mRows});
+      // ── mắt vàng xếch: đuôi ngoài chếch lên, đuôi trong nhọn chúi vào giữa ──
+      [-1,1].forEach(sd=>{
+        const eRows=[[],[],[]];
+        for(let i=0;i<=16;i++){const t=i/16,x0=.055+.145*t,y0=.825+.15*t-.03*Math.sin(t*3.14),w=.05*Math.sin(t*3.14)**.75;
+          [-1,0,1].forEach((k,q)=>{const x=x0+k*w*.72,y=y0-k*w*.7;eRows[q].push([rd(sd*x),rd(y),rd(surf(x,y)+.006)]);});}
+        add('strip',[1],[0,0,0],EY,'head',{rows:eRows});
+      });
+      // ── mũ 3 màu nghiêng ~14° về +x: 3 múi quay quanh trục mũ + nút + chong chóng ──
+      const T=-14/DG,Cp=[.09,1.05,-.01],U=[-Math.sin(T),Math.cos(T)],at=k=>[Cp[0]+U[0]*k,Cp[1]+U[1]*k,Cp[2]];
+      const tilt=a=>{const e=new THREE.Euler().setFromQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,0,T)).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,a,0))));return [e.x*DG,e.y*DG,e.z*DG];};
+      add('sph',[.2],Cp,G,'head',{scale:[1,.72,1],rot:tilt(0)});
+      [[0,R],[60/DG,M],[120/DG,G]].forEach(([a,c])=>add('sph',[.204],Cp,c,'head',{scale:[.925,.735,1],rot:tilt(a)}));
+      add('cyl',[.018,.012],at(.148),'#7c3a26','head',{rot:tilt(0)});
+      add('cyl',[.009,.07],at(.185),PR,'head',{rot:tilt(0)});
+      add('sph',[.018],at(.222),PR,'head');
+      [-1,1].forEach(sd=>{const q=at(.222);
+        add('sph',[.075],[q[0]+sd*.08*Math.cos(T),q[1]+sd*.08*Math.sin(T),q[2]],PR,'head',{scale:[1,.11,.34],rot:tilt(sd*14/DG)});});
+      return P;
     })(),
   },
   // ════ PHARAOH HÀ MÃ — 1.4 m + khăn nemes 0.6 m. Thân quả lê to, đầu mõm bè, mắt trắng tròn to trên đỉnh,
@@ -2635,6 +2850,9 @@ const BUILDERS={
   badger(){return makeFixedChar('badger');},  // nhân vật cố định Honey Badger
   coppa(){return makeFixedChar('coppa');},    // Coppa ngựa 1.0 m (tập 3)
   hippo(){return makeFixedChar('hippo');},    // Pharaoh hà mã 1.4 + nemes 0.6
+  pharaon(){return makeFixedChar('pharaon');},// Pharaon hồn ma không chân, đỉnh đầu ~2.1 m
+  bili(){return makeFixedChar('bili');},      // Bili ma xanh ~1.3 m cả chong chóng
+  witch(){return makeFixedChar('witch');},    // Phù thủy ~1.55 m tới đỉnh mũ
   chibi(){return makeFigure({height:1.1,build:2.2,legRatio:0.32,shoulder:1.1});}, // dáng chibi/gà: thân tròn mập, chân ngắn
   child(){return makeFigure({height:1.2,build:0.85,legRatio:0.9});},
   tall(){return makeFigure({height:2.05,build:0.85,legRatio:1.2});},      // cao gầy
@@ -8868,7 +9086,11 @@ function detachChild(parent,child,keepVis){
   }
   obj.position.copy(p);obj.rotation.setFromQuaternion(q);obj.scale.setScalar(sc.x);
   const hasBuilder=child.userData.partKey&&BUILDERS[child.userData.partKey];
-  if(hasBuilder){                                      // bộ phận của khối set / khối gộp
+  const fromGroup=parent.userData.isSet==='__group';
+  if(fromGroup){                                       // con của khối gộp: trở lại đúng vật ban đầu (nhân vật, khối set, mảnh…)
+    obj.userData.key=child.userData.partKey||child.userData.key;
+    obj.userData.label=child.userData.partLabel||child.userData.label;
+  }else if(hasBuilder){                                // bộ phận của khối set
     obj.userData.key=child.userData.partKey;
     obj.userData.label=child.userData.partLabel;
   }else{                                               // mảnh con: nhớ nguồn + đường chỉ số
@@ -8880,7 +9102,7 @@ function detachChild(parent,child,keepVis){
   }
   // tách rời toàn bộ: bộ phận đang TẮT (vd TRẦN SƯƠNG của thung lũng) vẫn tắt — hiện lại ở mục "Đang ẩn" cuối Inspector.
   // tách lẻ một dòng (✂): người dùng chọn đúng phần đó nên cho hiện ra
-  obj.userData.id=++idCounter;obj.userData.noTint=true;obj.visible=keepVis?wasVis:true;
+  obj.userData.id=++idCounter;if(!fromGroup)obj.userData.noTint=true;obj.visible=keepVis?wasVis:true;
   scene.add(obj);objects.push(obj);
   return obj;
 }
@@ -8998,12 +9220,10 @@ function dropToSurface(list){
 }
 
 // GỘP các vật đang chọn thành MỘT khối (ngược với tách). Giữ nguyên vị trí thế giới.
-// Chỉ nhận vật dựng lại được từ tên builder (bộ phận set, model kho) để lưu/nạp không mất gì.
+// Nhận mọi loại vật (nhân vật, khối set, mảnh tách, khối gộp…): mỗi con lưu trọn bản ghi như vật độc lập.
 function groupSelection(){
   const list=selection.slice();
   if(list.length<2){toast('Chọn ít nhất 2 vật (Shift + bấm) rồi gộp');return;}
-  const bad=list.find(o=>o.userData.isSet||o.userData.figure||o.userData.fixedChar||o.userData.key==='__custom'||o.userData.key==='cardchar'||!BUILDERS[o.userData.key]);
-  if(bad){toast('Không gộp được "'+bad.userData.label+'" — nhân vật/khối AI/khối đã gộp thì để riêng');return;}
   const g=new THREE.Group();
   const c=new THREE.Vector3();list.forEach(o=>c.add(o.position));c.divideScalar(list.length);
   g.position.set(c.x,0,c.z);
@@ -9022,16 +9242,13 @@ function groupSelection(){
   if(typeof autosave==='function')autosave();
   if(typeof pushHistory==='function')pushHistory();
 }
-// dựng lại khối gộp từ danh sách con đã lưu
+// dựng lại khối gộp từ danh sách con đã lưu (bản ghi cũ chỉ có key + vị trí vẫn đọc được)
 function buildGroupFromKids(kids){
   const g=new THREE.Group();
   (kids||[]).forEach((k,i)=>{
-    const c=BUILDERS[k.key]?BUILDERS[k.key]():null;if(!c)return;
-    c.position.set(k.pos[0],k.pos[1],k.pos[2]);
-    c.rotation.set(k.rotX||0,k.rotY||0,k.rotZ||0);
-    c.scale.setScalar(k.scale||1);
-    c.userData.key=k.key;c.userData.label=k.label;c.userData.noTint=true;
-    c.userData.partKey=k.key;c.userData.partLabel=k.label;c.userData.partIdx=i;
+    const c=objFromRec(k);if(!c)return;
+    if(!k.color)c.userData.noTint=true;
+    c.userData.partKey=k.key;c.userData.partLabel=k.label;c.userData.partIdx=k.partIdx??i;
     g.add(c);
   });
   g.userData.isSet='__group';g.userData.noTint=true;
@@ -9061,13 +9278,14 @@ function setEnvRestore(){
   gridOn=true;grid.visible=true;axesG.visible=true;ground.visible=true;
 }
 function updateSetEnv(){
-  const has=objects.some(o=>{
+  const isBig=o=>{
     if(!o.userData)return false;
     if(o.userData.key==='__frag')return !!SET_PART_LABEL[o.userData.fragSrc]&&!/^bd_/.test(o.userData.fragSrc||'');
-    if(o.userData.isSet==='__group')return o.children.some(c=>!!SET_PART_LABEL[c.userData.partKey]&&!/^bd_/.test(c.userData.partKey||''));
+    if(o.userData.isSet==='__group')return o.children.some(isBig);
     if(o.userData.isSet)return !(SET_DEFS[o.userData.isSet]||{}).small;
     return !!SET_PART_LABEL[o.userData.key]&&!/^bd_/.test(o.userData.key||'');
-  });
+  };
+  const has=objects.some(isBig);
   if(has)bigSetEnv();
   else if(bigSetOn)setEnvRestore();
 }
@@ -9211,6 +9429,9 @@ const ASSETS={
   grpChar:[
     ['pipo','★ Pipo (gà)',ic('<circle cx="12" cy="8" r="4"/><path d="M12 12v3M8 14h8M10 19l2-4 2 4M9.5 7l1 1M14.5 7l-1 1"/><path d="M8.5 5.5q3.5-2 7 0"/>')],
     ['coppa','★ Coppa (ngựa)',ic('<path d="M8 21v-3M16 21v-3M7 18c-1-4 1-8 5-8s6 4 5 8zM12 10V8M9 8c0-3 1.5-5 3-5s3 2 3 5M9.5 3.5 9 1.5M14.5 3.5l.5-2M10 5.5h.01M14 5.5h.01"/>')],
+    ['witch','★ Phù thủy',ic('<path d="M3 13c3 2 15 2 18 0M6 13c1-4 3-5 4-9 3-2 6 0 7 3l-3-1c1 2 2 4 3 7M9 16h.01M15 16h.01M7 15c1 4 9 4 10 0M6 21l3-3 3 3 3-3 3 3"/>')],
+    ['pharaon','★ Pharaon hồn ma',ic('<path d="M9 7a3 3 0 0 1 6 0M6 12c0-3 3-5 6-5s6 2 6 5-3 4-6 4-6-1-6-4zM10 5h.01M14 5h.01M7 16h10l-1 3H8zM12 19c2 1-1 2 0 3"/>')],
+    ['bili','★ Bili (ma)',ic('<path d="M5 10c0-3 3-5 7-5s7 2 7 5-1 4-2 6l-5 6-5-6c-1-2-2-3-2-6zM9 9l2 1M15 9l-2 1M8 13c2 2 6 2 8 0M9 4c1-2 5-2 6 0M12 2v1M10 1.500h4"/>')],
     ['hippo','★ Pharaoh hà mã',ic('<path d="M7 21v-2M17 21v-2M5 19c0-5 3-7 7-7s7 2 7 7zM7 11c0-4 2-7 5-7s5 3 5 7M6 11h12M9 7.5h.01M15 7.5h.01M3 21V3M3 3l1.5 1.5"/>')],
     ['badger','★ Buro (lửng)',ic('<circle cx="12" cy="7" r="3.5"/><path d="M12 10.5v5M7 12h10M8 19l4-3.5 4 3.5M12 4v6"/>')],
     ['human','Người',ic('<circle cx="12" cy="5" r="2.5"/><path d="M12 7.5v7M8 18l4-4 4 4M9 11h6"/>')],
@@ -9357,6 +9578,111 @@ let selection=[];   // mảng các vật đang chọn (cho chọn nhiều)
 let idCounter=0;
 let toastT=null;    // timer cho toast (khai báo sớm để mọi handler dùng được)
 
+/* Đặt vật mới vào GIỮA KHUNG HÌNH khi cảnh có khối bối cảnh (gốc toạ độ của set thường nằm trong công trình / dưới nền).
+   Trúng mặt phẳng thì đứng lên đó; trúng vách, mái dốc thì lùi về phía máy quay tới chỗ đứng được.
+   Máy ngang tầm mà nhìn ra xa / lên trời (trong hầm, trên gờ): đứng trên nền ngay trước máy, khỏi văng sang đầu kia bối cảnh.
+   Điểm đặt quá xa hoặc ngoài khung thì đưa camera lại gần để thấy vật. Cảnh chưa có set: giữ cách đặt cũ. */
+const _spRay=new THREE.Raycaster(),_spN=new THREE.Vector3(),_spM=new THREE.Matrix4(),_spO=new THREE.Vector3(),_spC=new THREE.Vector2(0,0);
+const SP_DOWN=new THREE.Vector3(0,-1,0),SP_FLAT=.85,SP_FAR=30,SP_BIG=40,SP_NEAR=10,SP_EYE=12,SP_MIN=2;
+function isSetObj(o){
+  const u=o.userData;
+  if(u.isSet==='__group')return o.children.some(isSetObj);
+  return !!u.isSet||u.key==='__frag'||!!SET_PART_LABEL[u.key];
+}
+function spUp(h){                                    // độ "ngửa" của mặt trúng: 1 = phẳng, 0 = vách đứng
+  if(!h.face)return 1;
+  _spN.copy(h.face.normal);
+  if(h.instanceId!==undefined){h.object.getMatrixAt(h.instanceId,_spM);_spM.premultiply(h.object.matrixWorld);_spN.transformDirection(_spM);}
+  else _spN.transformDirection(h.object.matrixWorld);
+  return _spN.y;
+}
+function spMeshes(){
+  const meshes=[];
+  objects.forEach(o=>{
+    if(!o.visible||!isSetObj(o))return;
+    o.traverseVisible(m=>{                           // bỏ chữ/zone, vòm trời, sương + vật trong suốt
+      if(m.isMesh&&!m.userData.__anno&&!m.userData.__zone&&!m.userData.__decal&&m.material&&!m.material.transparent&&m.material.side!==THREE.BackSide)meshes.push(m);
+    });
+  });
+  return meshes;
+}
+function spawnPoint(){
+  const meshes=spMeshes();
+  if(!meshes.length)return null;
+  scene.updateMatrixWorld(true);
+  const drop=(x,y,z)=>{_spO.set(x,y,z);_spRay.set(_spO,SP_DOWN);_spRay.far=500;return _spRay.intersectObjects(meshes,false)[0]||null;};
+  const eye=camera.getWorldPosition(new THREE.Vector3());
+  const fwd=camera.getWorldDirection(new THREE.Vector3());
+  const hd=new THREE.Vector3(fwd.x,0,fwd.z);
+  if(hd.lengthSq()<1e-4)hd.set(0,0,-1);else hd.normalize();
+  _spRay.setFromCamera(_spC,camera);_spRay.far=Infinity;
+  const hit=_spRay.intersectObjects(meshes,false)[0]||null;
+  let pt=null;
+  if(!hit||hit.distance>SP_FAR){
+    const h=drop(eye.x+hd.x*SP_NEAR,eye.y+.5,eye.z+hd.z*SP_NEAR);
+    if(h&&h.distance<=SP_EYE&&spUp(h)>=SP_FLAT)pt=h.point.clone();
+  }
+  if(pt);
+  else if(hit&&spUp(hit)>=SP_FLAT)pt=hit.point.clone();
+  else{
+    const from=hit?hit.point.clone():eye.clone().addScaledVector(hd,12);
+    const y0=hit?hit.point.y+.2:eye.y;
+    const maxBack=Math.max(0,Math.hypot(from.x-eye.x,from.z-eye.z)-1);
+    let d=hit?1:0,last=null;
+    for(let i=0;i<8&&!pt;i++,d=d?d*2:1){
+      const b=Math.min(d,maxBack),x=from.x-hd.x*b,z=from.z-hd.z*b,h=drop(x,y0,z);
+      if(!h){last=new THREE.Vector3(x,0,z);continue;}
+      last=h.point.clone();
+      if(spUp(h)>=SP_FLAT)pt=last;
+      if(b>=maxBack)break;
+    }
+    if(!pt)pt=last||new THREE.Vector3(from.x,0,from.z);
+  }
+  // sát máy quá thì che hết khung: đẩy ra trước máy
+  if(Math.hypot(pt.x-eye.x,pt.z-eye.z)<SP_MIN){
+    const x=eye.x+hd.x*SP_MIN,z=eye.z+hd.z*SP_MIN,h=drop(x,eye.y+.5,z);
+    if(h&&spUp(h)>=SP_FLAT)pt=h.point.clone();
+  }
+  // tránh đứng chồng lên vật đã đặt: dịch ngang theo hướng phải của khung hình
+  const others=objects.filter(o=>o.visible&&!isSetObj(o));
+  for(let k=0;k<8&&others.some(o=>Math.hypot(o.position.x-pt.x,o.position.z-pt.z)<.9);k++){
+    const x=pt.x-hd.z,z=pt.z+hd.x,h=drop(x,pt.y+2,z);
+    pt=h&&spUp(h)>=SP_FLAT?h.point.clone():new THREE.Vector3(x,pt.y,z);
+  }
+  return pt;
+}
+function placeInView(g){
+  const r=getRadius(g);
+  if(r>SP_BIG)return false;                          // bộ phận cỡ cả bối cảnh: toạ độ gốc đã đúng chỗ
+  const pt=spawnPoint();if(!pt)return false;
+  g.position.set(pt.x,pt.y+(g.userData.spawnY||0),pt.z);
+  const c=getCenter(g),ndc=c.clone().project(camera);
+  const outF=Math.abs(ndc.x)>.95||Math.abs(ndc.y)>.95||ndc.z>1;
+  if(!g.userData.camOnAdd&&(outF||camera.getWorldPosition(new THREE.Vector3()).distanceTo(pt)>Math.max(SP_FAR,r*8))){
+    const eye0=camera.getWorldPosition(new THREE.Vector3()),fwd0=camera.getWorldDirection(new THREE.Vector3());
+    orbit.sph.phi=Math.max(orbit.sph.phi,1.1);       // đang nhìn gần như từ trên xuống: hạ máy xuống cho thấy dáng vật
+    orbit.frame(c,Math.max(r,.8)*2);
+    // máy mới bị vật khác che: xoay quanh vật tới hướng nhìn thấy
+    const meshes=spMeshes(),th0=orbit.sph.theta;
+    const clear=()=>{
+      camera.updateMatrixWorld(true);
+      const eye=camera.getWorldPosition(new THREE.Vector3()),d=c.clone().sub(eye),L=d.length();
+      _spRay.set(eye,d.normalize());_spRay.far=L;
+      return !_spRay.intersectObjects(meshes,false).length;
+    };
+    for(let k=1;k<8&&!clear();k++){orbit.sph.theta=th0+(k%2?1:-1)*Math.ceil(k/2)*Math.PI/4;orbit._update();}
+    if(!clear()){                                    // vật lọt vào giữa khối đặc (gầm giàn, lòng hang): đặt ngay trước máy, giữ chỗ máy và quay nhìn xuống vật
+      const L=Math.hypot(fwd0.x,fwd0.z)||1,x=eye0.x+fwd0.x/L*3,z=eye0.z+fwd0.z/L*3;
+      _spRay.set(new THREE.Vector3(x,eye0.y+.5,z),SP_DOWN);_spRay.far=500;
+      const h=_spRay.intersectObjects(meshes,false)[0];
+      g.position.set(x,(h?h.point.y:pt.y)+(g.userData.spawnY||0),z);
+      c.copy(getCenter(g));orbit.target.copy(c);orbit.sph.setFromVector3(eye0.clone().sub(c));orbit._update();
+    }
+    const cs=document.getElementById('camh');
+    if(cs){const v=Math.max(+cs.min,Math.min(+cs.max,c.y));cs.value=v;document.getElementById('vHeight').textContent=(+v).toFixed(1)+'m';updRange(cs);}
+  }
+  return true;
+}
 function addObject(key,label){
   const g=BUILDERS[key]();
   g.userData.key=key;g.userData.id=++idCounter;
@@ -9370,6 +9696,7 @@ function addObject(key,label){
   }else{
     const off=objects.length*1.6;
     g.position.set((Math.random()-.5)*2,g.userData.spawnY||0,off*0.4+(Math.random()-.5)*1.5);
+    placeInView(g);
   }
   scene.add(g);objects.push(g);
   select(g);
@@ -10506,38 +10833,39 @@ function gatherSceneData(){
     camMove: camMoveSave(),
     bg: bgDataUrl?{data:bgDataUrl,mode:bgMode,opacity:+document.getElementById('bgOpacity').value,
          dist:+document.getElementById('bgDist').value,scale:+document.getElementById('bgScale').value}:null,
-    objects:objects.map(o=>{
-      const col=lastMeshColor(o);
-      const rec={key:o.userData.key,label:o.userData.label,
-        pos:[o.position.x,o.position.y,o.position.z],rotY:o.rotation.y,rotX:o.rotation.x,rotZ:o.rotation.z,scale:o.scale.x,color:col};
-      if(o.userData.enName)rec.enName=o.userData.enName;
-      if(o.userData.variant!==undefined)rec.variant=o.userData.variant;
-      if(o.userData.charImg){rec.charImg=o.userData.charImg;rec.charH=o.userData.h;}
-      if(o.userData.key==='__custom'||o.userData.fixedChar)rec.parts=o.userData.parts;
-      if(o.userData.noTint)rec.noTint=1;
-      if(o.userData.key==='__frag'){rec.fragSrc=o.userData.fragSrc;rec.fragPath=o.userData.fragPath;}
-      if(!o.visible)rec.hidden=1;
-      if(o.userData.isSet==='__group')rec.kids=o.children.map(c=>({key:c.userData.partKey,label:c.userData.partLabel,
-        pos:[c.position.x,c.position.y,c.position.z],rotX:c.rotation.x,rotY:c.rotation.y,rotZ:c.rotation.z,scale:c.scale.x}));
-      if(o.userData.isSet){
-        rec.setParts=o.children.map(c=>c.userData.partIdx);
-        rec.setHidden=o.children.filter(c=>!c.visible).map(c=>c.userData.partIdx);
-      }
-      if(o.userData.figure)rec.figure=o.userData.figure;
-      if(o.userData.fixedChar)rec.fixedChar=o.userData.fixedChar;
-      if(o.userData.features)rec.features=o.userData.features;
-      if(o.userData.partColors)rec.partColors=o.userData.partColors;
-      if(o.userData.pose){rec.pose=o.userData.pose;rec.poseName=o.userData.poseName;}
-      if(o.userData.tex && o.userData.tex.data){
-        rec.tex={data:o.userData.tex.data, mode:o.userData.tex.mode||'wrap'};
-        if(o.userData.tex.mode==='decal'){
-          rec.tex.scale=o.userData.tex.scale||1;
-          rec.tex.offY=o.userData.tex.offY||0;
-        }
-      }
-      return rec;
-    })
+    objects:objects.map(objRec)
   };
+}
+// bản ghi lưu của MỘT vật (vật trong cảnh hoặc con của khối gộp)
+function objRec(o){
+  const col=lastMeshColor(o);
+  const rec={key:o.userData.key,label:o.userData.label,
+    pos:[o.position.x,o.position.y,o.position.z],rotY:o.rotation.y,rotX:o.rotation.x,rotZ:o.rotation.z,scale:o.scale.x,color:col};
+  if(o.userData.enName)rec.enName=o.userData.enName;
+  if(o.userData.variant!==undefined)rec.variant=o.userData.variant;
+  if(o.userData.charImg){rec.charImg=o.userData.charImg;rec.charH=o.userData.h;}
+  if(o.userData.key==='__custom'||o.userData.fixedChar)rec.parts=o.userData.parts;
+  if(o.userData.noTint)rec.noTint=1;
+  if(o.userData.key==='__frag'){rec.fragSrc=o.userData.fragSrc;rec.fragPath=o.userData.fragPath;}
+  if(!o.visible)rec.hidden=1;
+  if(o.userData.isSet==='__group')rec.kids=o.children.map(c=>Object.assign(objRec(c),{key:c.userData.partKey||c.userData.key,label:c.userData.partLabel||c.userData.label,partIdx:c.userData.partIdx}));
+  if(o.userData.isSet){
+    rec.setParts=o.children.map(c=>c.userData.partIdx);
+    rec.setHidden=o.children.filter(c=>!c.visible).map(c=>c.userData.partIdx);
+  }
+  if(o.userData.figure)rec.figure=o.userData.figure;
+  if(o.userData.fixedChar)rec.fixedChar=o.userData.fixedChar;
+  if(o.userData.features)rec.features=o.userData.features;
+  if(o.userData.partColors)rec.partColors=o.userData.partColors;
+  if(o.userData.pose){rec.pose=o.userData.pose;rec.poseName=o.userData.poseName;}
+  if(o.userData.tex && o.userData.tex.data){
+    rec.tex={data:o.userData.tex.data, mode:o.userData.tex.mode||'wrap'};
+    if(o.userData.tex.mode==='decal'){
+      rec.tex.scale=o.userData.tex.scale||1;
+      rec.tex.offY=o.userData.tex.offY||0;
+    }
+  }
+  return rec;
 }
 // màu của mesh cuối cùng trong vật (dùng để lưu/so sánh khi tải lại; vật nhiều màu chỉ bị tô lại nếu người dùng đã đổi màu)
 function lastMeshColor(o){
@@ -10551,50 +10879,52 @@ function lastMeshColor(o){
   });
   return col;
 }
+// dựng lại MỘT vật từ bản ghi đã lưu (chưa thêm vào cảnh)
+function objFromRec(od){
+  let g;
+  if(od.fixedChar&&od.parts)g=buildRigFromParts(od.parts,od.pose);
+  else if(od.key==='__custom'&&od.parts)g=buildFromParts(od.parts);
+  else if(od.figure)g=makeFigure({...od.figure,color:od.color,pose:od.pose,poseName:od.poseName,features:od.features||[]});
+  else if(od.key==='__frag')g=fragFromBuilder(od.fragSrc,od.fragPath);
+  else if(od.key==='__group')g=buildGroupFromKids(od.kids);
+  else g=BUILDERS[od.key]?BUILDERS[od.key](od.variant):null;
+  if(g&&g.userData.extras)delete g.userData.extras; // khoang máy bay: các dãy ghế đã được lưu thành vật riêng
+  if(g)delete g.userData.camOnAdd;
+  if(!g)return null;
+  g.userData.key=od.key;g.userData.label=od.label;g.userData.id=++idCounter;
+  if(od.key==='airsitter')g.userData.__airPax=true;   // giữ dấu hành khách để đếm/tách đúng
+  if(od.enName)g.userData.enName=od.enName;
+  if(od.key==='__custom'||od.fixedChar)g.userData.parts=od.parts;
+  if(od.figure)g.userData.figure=od.figure;
+  if(od.fixedChar)g.userData.fixedChar=od.fixedChar;
+  if(od.partColors){g.userData.partColors=od.partColors;
+    g.traverse(m=>{if(m.isMesh&&m.userData.part&&!m.userData.__feat&&od.partColors[m.userData.part]&&m.material&&m.material.color)m.material.color.set(od.partColors[m.userData.part]);});}
+  if(od.pose){g.userData.pose=od.pose;g.userData.poseName=od.poseName;}
+  else if(od.fixedChar){g.userData.pose=Object.assign({},POSE_PRESETS.stand);g.userData.poseName='stand';}
+  g.position.set(...od.pos);g.rotation.y=od.rotY;if(od.rotX)g.rotation.x=od.rotX;if(od.rotZ)g.rotation.z=od.rotZ;g.scale.setScalar(od.scale);
+  if(od.key!=='__custom'&&!od.figure&&!od.fixedChar&&od.key!=='cardchar'&&!od.noTint&&!g.userData.noTint&&od.color&&od.color!==lastMeshColor(g))g.traverse(m=>{if(m.isMesh&&m.material.color.getHexString()!=='2a2a2a')m.material.color.set(od.color);});
+  if(g.userData.isSet){
+    // khôi phục đúng các bộ phận còn lại (đã tách bớt) và bộ phận đang ẩn
+    if(od.setParts&&od.key!=='__group')g.children.slice().forEach(c=>{if(od.setParts.indexOf(c.userData.partIdx)<0)g.remove(c);});
+    (od.setHidden||[]).forEach(ix=>{const c=g.children.find(k=>k.userData.partIdx===ix);if(c)c.visible=false;});
+  }
+  if(od.key==='__frag'){g.userData.fragSrc=od.fragSrc;g.userData.fragPath=od.fragPath;}
+  if(od.hidden)g.visible=false;
+  // áp lại ảnh nhân vật billboard nếu có
+  if(od.key==='cardchar'&&od.charImg){
+    applyCharImage(g,od.charImg,od.charH||1.8);
+  }
+  // áp lại texture nếu scene cũ có
+  if(od.tex && od.tex.data){
+    g.userData.tex={data:od.tex.data, mode:od.tex.mode||'wrap', scale:od.tex.scale, offY:od.tex.offY};
+    reapplyTexture(g);
+  }
+  return g;
+}
 // áp dụng lại trạng thái cảnh từ object
 function applySceneData(d){
   objects.slice().forEach(o=>scene.remove(o));objects.length=0;select(null);
-  (d.objects||[]).forEach(od=>{
-    let g;
-    if(od.fixedChar&&od.parts)g=buildRigFromParts(od.parts,od.pose);
-    else if(od.key==='__custom'&&od.parts)g=buildFromParts(od.parts);
-    else if(od.figure)g=makeFigure({...od.figure,color:od.color,pose:od.pose,poseName:od.poseName,features:od.features||[]});
-    else if(od.key==='__frag')g=fragFromBuilder(od.fragSrc,od.fragPath);
-    else if(od.key==='__group')g=buildGroupFromKids(od.kids);
-    else g=BUILDERS[od.key]?BUILDERS[od.key](od.variant):null;
-    if(g&&g.userData.extras)delete g.userData.extras; // khoang máy bay: các dãy ghế đã được lưu thành vật riêng
-    if(g)delete g.userData.camOnAdd;
-    if(!g)return;
-    g.userData.key=od.key;g.userData.label=od.label;g.userData.id=++idCounter;
-    if(od.key==='airsitter')g.userData.__airPax=true;   // giữ dấu hành khách để đếm/tách đúng
-    if(od.enName)g.userData.enName=od.enName;
-    if(od.key==='__custom'||od.fixedChar)g.userData.parts=od.parts;
-    if(od.figure)g.userData.figure=od.figure;
-    if(od.fixedChar)g.userData.fixedChar=od.fixedChar;
-    if(od.partColors){g.userData.partColors=od.partColors;
-      g.traverse(m=>{if(m.isMesh&&m.userData.part&&!m.userData.__feat&&od.partColors[m.userData.part]&&m.material&&m.material.color)m.material.color.set(od.partColors[m.userData.part]);});}
-    if(od.pose){g.userData.pose=od.pose;g.userData.poseName=od.poseName;}
-    else if(od.fixedChar){g.userData.pose=Object.assign({},POSE_PRESETS.stand);g.userData.poseName='stand';}
-    g.position.set(...od.pos);g.rotation.y=od.rotY;if(od.rotX)g.rotation.x=od.rotX;if(od.rotZ)g.rotation.z=od.rotZ;g.scale.setScalar(od.scale);
-    if(od.key!=='__custom'&&!od.figure&&!od.fixedChar&&od.key!=='cardchar'&&!od.noTint&&!g.userData.noTint&&od.color!==lastMeshColor(g))g.traverse(m=>{if(m.isMesh&&m.material.color.getHexString()!=='2a2a2a')m.material.color.set(od.color);});
-    if(g.userData.isSet){
-      // khôi phục đúng các bộ phận còn lại (đã tách bớt) và bộ phận đang ẩn
-      if(od.setParts)g.children.slice().forEach(c=>{if(od.setParts.indexOf(c.userData.partIdx)<0)g.remove(c);});
-      (od.setHidden||[]).forEach(ix=>{const c=g.children.find(k=>k.userData.partIdx===ix);if(c)c.visible=false;});
-    }
-    if(od.key==='__frag'){g.userData.fragSrc=od.fragSrc;g.userData.fragPath=od.fragPath;}
-    if(od.hidden)g.visible=false;
-    scene.add(g);objects.push(g);
-    // áp lại ảnh nhân vật billboard nếu có
-    if(od.key==='cardchar'&&od.charImg){
-      applyCharImage(g,od.charImg,od.charH||1.8);
-    }
-    // áp lại texture nếu scene cũ có
-    if(od.tex && od.tex.data){
-      g.userData.tex={data:od.tex.data, mode:od.tex.mode||'wrap', scale:od.tex.scale, offY:od.tex.offY};
-      reapplyTexture(g);
-    }
-  });
+  (d.objects||[]).forEach(od=>{const g=objFromRec(od);if(g){scene.add(g);objects.push(g);}});
   if(d.cam){setFocal(d.cam.focal);camhSlider.value=d.cam.h;document.getElementById('vHeight').textContent=d.cam.h.toFixed(1)+'m';updRange(camhSlider);
     orbit.sph.set(d.cam.r,d.cam.phi,d.cam.theta);orbit.target.set(d.cam.tx,d.cam.ty,d.cam.tz);orbit._update();
     if(d.cam.aspect){aspect=d.cam.aspect;document.querySelectorAll('#aspectSeg button').forEach(x=>x.classList.toggle('active',+x.dataset.a===aspect));}
@@ -11015,6 +11345,7 @@ Trả về object: {"parts":[ {"shape":"box|cyl|sph|cone","size":[...],"pos":[x,
     g.userData.key='__custom';g.userData.label=name;g.userData.id=++idCounter;g.userData.parts=parts;
     // đặt gần camera target
     g.position.set(orbit.target.x,0,orbit.target.z+1);
+    placeInView(g);
     scene.add(g);objects.push(g);select(g);
     document.getElementById('vpMsg').style.display='none';
     genStatus.className='ai-status';genStatus.textContent=`✓ Đã tạo "${name}" (${parts.length} khối). Có thể chỉnh như vật thường.`;
@@ -11044,6 +11375,7 @@ document.getElementById('charInput').onchange=e=>{
     if(en)g.userData.enName=en;
     // đặt gần tâm camera, hơi nhô trước
     g.position.set(orbit.target.x,0,orbit.target.z+1);
+    placeInView(g);
     scene.add(g);objects.push(g);
     await applyCharImage(g,dataUrl,h);
     select(g);
@@ -11134,6 +11466,7 @@ FEATURES — các mảng màu chi tiết ĐÈ LÊN cơ thể (mắt, mỏ, tóc,
     g.userData.partColors=partColors;
     g.traverse(m=>{if(m.isMesh&&m.userData.part&&!m.userData.__feat&&partColors[m.userData.part]&&m.material&&m.material.color)m.material.color.set(partColors[m.userData.part]);});
     g.position.set(orbit.target.x,0,orbit.target.z+1);
+    placeInView(g);
     scene.add(g);objects.push(g);select(g);
     document.getElementById('vpMsg').style.display='none';
     pushHistory&&pushHistory();autosave&&autosave();
@@ -12318,6 +12651,7 @@ function kbFrame(){
 }
 function kbSplit(){
   const sets=selection.filter(o=>o.userData.isSet);
+  if(!sets.length&&selection.length>=2){groupSelection();return;}   // còn giữ Shift sau khi Shift+bấm chọn nhiều
   if(!sets.length){toast('Chọn một khối rồi bấm '+(kbLabel('edit.split')||'nút Tách')+' để tách');return;}
   sets.forEach(k=>splitSet(k));
 }

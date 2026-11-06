@@ -162,7 +162,8 @@ Bấm nút **Màn hình** trên thanh trên cùng:
 - **Tách nhiều tầng** — tách khối bối cảnh ra bộ phận, chọn một bộ phận rồi **tách tiếp** thành từng mảnh, cứ thế cho tới khi không còn chia được. Vật nào còn từ 2 phần con trở lên thì panel phải hiện bảng **Tách tiếp**; dòng nào còn chia nhỏ được sẽ ghi số mảnh
 - **Tách rời toàn bộ giữ nguyên phần đang tắt** — bộ phận đang tắt (vd *Trần sương* của Thung lũng rạp xiếc) tách ra vẫn **tắt**, nằm ở mục **Đang ẩn** cuối tab Vật thể: bấm ○ để hiện lại, bấm tên để hiện + chọn, hoặc **Hiện tất cả**. Bấm ✂ ở riêng một dòng thì phần đó tách ra và hiện lên
 - **◌ Ẩn vật này** (tab Vật thể) — ẩn vật / nhóm đang chọn khỏi cảnh mà không xoá; vẫn lưu trong project, hiện lại ở mục **Đang ẩn**. Ẩn / hiện đều hoàn tác được
-- **Phím G** — gộp các vật đang chọn thành **một khối** (di chuyển/xoay/tỉ lệ/lưu như một vật); **Shift+G** — tách khối đang chọn ra lại
+- **Thêm vật khi đã có khối bối cảnh** — vật mới đứng ngay giữa khung hình, đúng độ cao mặt nền (không rơi vào gốc toạ độ của set); điểm đặt ở xa hoặc ngoài khung thì camera tự tiến lại, bấm lại bookmark để về góc cũ.
+- **Phím G** — gộp các vật đang chọn thành **một khối** (di chuyển/xoay/tỉ lệ/lưu như một vật), gộp được mọi loại vật: nhân vật, khối set, mảnh đã tách, khối gộp khác; **Shift+G** — tách khối đang chọn ra lại
 - Khi chọn nhiều vật (Shift+bấm), các thanh trượt Xoay / Độ cao / Tỉ lệ ở panel phải áp cho **cả nhóm**
 
 > Tầm zoom được giới hạn theo cỡ cảnh: gần nhất 0.25 m (soi được bảng PET, chùm chà là),
@@ -240,7 +241,7 @@ Khi chọn một vật, cột phải hiện đầy đủ điều khiển:
 **Với nhân vật có khung xương**, có thêm:
 - **Chiều cao, độ mập, tỉ lệ chân, bề ngang vai**
 - **Tư thế dựng sẵn:** Đứng · Ngồi ghế · Ngồi ghế máy bay (ngả lưng nhẹ, cẳng tay đặt lên tay vịn; nhân vật *Ngồi máy bay* trong kho sinh ra đúng độ cao để thả lên ghế máy bay) · Ngồi lái xe · Nằm · Ngồi xổm · Quỳ · Giơ tay · Chỉ tay · Chạy
-- **Nhân vật chính ★ Pipo · Buro · Coppa · Pharaoh hà mã** cũng có khung xương: dùng chung dropdown Tư thế + các thanh gập khớp (thân/hông/gối/tay/khuỷu). Dáng đứng = đúng mẫu thiết kế; quỳ/xổm/chạy/nằm tự chạm sàn, ngồi ghế giữ độ cao để thả lên ghế. Gậy của hà mã đi theo bàn tay. Project cũ có sẵn các nhân vật này cũng tự có khớp khi mở lại
+- **Nhân vật chính ★ Pipo · Buro · Coppa · Phù thủy · Pharaon hồn ma · Bili · Pharaoh hà mã** cũng có khung xương: dùng chung dropdown Tư thế + các thanh gập khớp (thân/hông/gối/tay/khuỷu). Dáng đứng = đúng mẫu thiết kế; quỳ/xổm/chạy/nằm tự chạm sàn, ngồi ghế giữ độ cao để thả lên ghế. Gậy của hà mã đi theo bàn tay. Project cũ có sẵn các nhân vật này cũng tự có khớp khi mở lại
 - **Khớp tinh chỉnh:** cúi/ngả thân, gập hông, gập gối, đưa tay, gập khuỷu
 - **Chỉnh phụ kiện** (mắt/mỏ/tóc/mũ/áo): vị trí 3 chiều, kích thước, màu riêng
 - **Màu theo bộ phận:** cả người / đầu / thân / tay / chân
