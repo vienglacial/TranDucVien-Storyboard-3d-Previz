@@ -9642,7 +9642,7 @@ const SET_DEFS={
   },
   setOffice:{
     label:'Văn phòng ông chủ · quát mắng sau rèm sáo',
-    note:'Phòng 7.2×8.4×3.5 m. Ông chủ ngồi bàn phía −Z, chàng trai đứng phía +Z. +X = vách kính + rèm sáo gỗ, ngoài là hồ bơi; −X = tủ kính cúp, poster, máy quay cổ; −Z = két sắt + kệ sách; +Z = sofa + cửa sổ vườn. Tường + trần chỉ hiện mặt trong. Hai nhân vật là rig: bấm ✂ ở dòng nhân vật để tách ra rồi đổi tư thế / kéo khớp (có cả Cúi/ngửa đầu). Tắt "Trần" khi cần quay từ trên xuống, tắt "Rèm sáo" khi cần khung sạch. Cảnh đêm: hạ nắng thấp + giảm sáng.',
+    note:'Phòng 7.2×8.4×3.5 m. Ông chủ ngồi bàn phía −Z, chàng trai đứng phía +Z. +X = vách kính + rèm sáo gỗ, ngoài là hồ bơi; −X = tủ kính cúp, poster, máy quay cổ; −Z = két sắt + kệ sách; +Z = sofa + cửa sổ vườn. Tường + trần chỉ hiện mặt trong. Hai nhân vật đã gắn xương và là vật thể RIÊNG (không nằm trong khối): bấm thẳng vào nhân vật để đổi tư thế / kéo khớp thân, đầu, hông, gối, tay, khuỷu. Tắt "Trần" khi cần quay từ trên xuống, tắt "Rèm sáo" khi cần khung sạch. Cảnh đêm: hạ nắng thấp + giảm sáng.',
     small:true,
     parts:[
       {k:'of_room',   p:[0,0,0]},
@@ -9657,9 +9657,9 @@ const SET_DEFS={
       {k:'of_decor',  p:[0,0,0]},
       {k:'of_pool',   p:[0,0,0]},
       {k:'of_moon',   p:[0,0,0]},
-      {k:'of_boss',   p:[OF_CHAIR.x,OF_SEAT+.08-fixedHipY('boss'),OF_CHAIR.z+.06]},
-      {k:'of_son',    p:[OF_SON.x,0,OF_SON.z], ry:Math.PI},
-      {k:'of_zones',  p:[0,0,0]}
+      {k:'of_zones',  p:[0,0,0]},
+      {k:'of_boss',   p:[OF_CHAIR.x,OF_SEAT+.08-fixedHipY('boss'),OF_CHAIR.z+.06], free:true},
+      {k:'of_son',    p:[OF_SON.x,0,OF_SON.z], ry:Math.PI, free:true}
     ],
     cams:[
       {t:'—',n:'Tổng thể — đứng ngoài nhìn xuyên tường',        p:[8.5,7.5,10.5],  tg:[0,.9,-.4],     f:24},
@@ -9763,6 +9763,10 @@ Object.keys(SET_DEFS).forEach(sk=>{
       c.userData.partIdx=i;
       c.userData.partLabel=pt.l||SET_PART_LABEL[pt.k]||pt.k;
       if(pt.hidden)c.visible=false;      // state/lớp phụ: dựng sẵn nhưng tắt, bật bằng danh sách bộ phận
+      if(pt.free){                       // nhân vật có xương: thả vào cảnh thành vật thể RIÊNG → bấm chọn là chỉnh khớp ngay, khỏi tách
+        c.userData.key=pt.k;c.userData.label=c.userData.partLabel;c.userData.freeOfSet=sk;
+        (g.userData.extras||(g.userData.extras=[])).push(c);return;
+      }
       g.add(c);
     });
     g.userData.isSet=sk;
@@ -10437,7 +10441,8 @@ function addObject(key,label){
   if(g.userData.extras){
     g.userData.extras.forEach(e=>{e.userData.id=++idCounter;e.position.add(g.position);scene.add(e);objects.push(e);});
     const n=g.userData.extras.length;delete g.userData.extras;
-    toast(`Đã thêm: ${label} (+${n} dãy ghế — chọn 1 dãy rồi bấm “Tách hành khách” để xóa từng người)`);
+    toast(g.userData.isSet?`Đã thêm: ${label} (+${n} nhân vật có xương — bấm vào nhân vật để đổi tư thế / kéo khớp)`
+      :`Đã thêm: ${label} (+${n} dãy ghế — chọn 1 dãy rồi bấm “Tách hành khách” để xóa từng người)`);
   }else toast(`Đã thêm: ${label}`);
   if(g.userData.camOnAdd){const c=g.userData.camOnAdd;orbit.target.set(c.target[0]+g.position.x,c.target[1],c.target[2]+g.position.z);orbit.sph.radius=c.r;orbit.sph.phi=c.phi;orbit.sph.theta=c.theta;orbit._update();delete g.userData.camOnAdd;}
   if(typeof autosave==='function')autosave();
