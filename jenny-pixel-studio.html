@@ -530,11 +530,11 @@
   .asset span{font-size:11.5px;color:var(--ink-dim)}
   .panel.left .asset:hover{border-color:var(--accent-warm);background:#252118;transform:none}
   .panel.left .asset:hover svg{stroke:var(--accent-warm)}
-  #grpSet3,#grpSet4,#grpSetTi,#grpSetHb,#grpSetXc{grid-template-columns:1fr}
-  #grpSet3 .asset,#grpSet4 .asset,#grpSetTi .asset,#grpSetHb .asset,#grpSetXc .asset{height:auto;flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px}
-  #grpSet3 .asset svg,#grpSet4 .asset svg,#grpSetTi .asset svg,#grpSetHb .asset svg,#grpSetXc .asset svg{width:34px;height:34px;padding:7px;border-radius:8px;background:#2A2418;stroke:var(--accent-warm);flex-shrink:0}
-  #grpSet3 .asset span,#grpSet4 .asset span,#grpSetTi .asset span,#grpSetHb .asset span,#grpSetXc .asset span{text-align:left;font-size:13px;font-weight:600;color:var(--ink);padding:0;display:flex;flex-direction:column;gap:1px;min-width:0}
-  #grpSet3 .asset span small,#grpSet4 .asset span small,#grpSetTi .asset span small,#grpSetHb .asset span small,#grpSetXc .asset span small{font-size:11.5px;font-weight:400;color:var(--ink-faint)}
+  #grpSet3,#grpSet4,#grpSetTi,#grpSetHb,#grpSetOf,#grpSetXc{grid-template-columns:1fr}
+  #grpSet3 .asset,#grpSet4 .asset,#grpSetTi .asset,#grpSetHb .asset,#grpSetOf .asset,#grpSetXc .asset{height:auto;flex-direction:row;justify-content:flex-start;gap:10px;padding:9px 10px}
+  #grpSet3 .asset svg,#grpSet4 .asset svg,#grpSetTi .asset svg,#grpSetHb .asset svg,#grpSetOf .asset svg,#grpSetXc .asset svg{width:34px;height:34px;padding:7px;border-radius:8px;background:#2A2418;stroke:var(--accent-warm);flex-shrink:0}
+  #grpSet3 .asset span,#grpSet4 .asset span,#grpSetTi .asset span,#grpSetHb .asset span,#grpSetOf .asset span,#grpSetXc .asset span{text-align:left;font-size:13px;font-weight:600;color:var(--ink);padding:0;display:flex;flex-direction:column;gap:1px;min-width:0}
+  #grpSet3 .asset span small,#grpSet4 .asset span small,#grpSetTi .asset span small,#grpSetHb .asset span small,#grpSetOf .asset span small,#grpSetXc .asset span small{font-size:11.5px;font-weight:400;color:var(--ink-faint)}
 
   /* viewport: dock công cụ xuống dưới, số đo mono */
   .vp-toolbar{top:auto;bottom:16px;padding:6px;border-radius:12px;background:rgba(17,19,24,.92);border-color:var(--line)}
@@ -778,6 +778,10 @@
     <div class="sec">
       <h3>Trường học · Khối bối cảnh</h3>
       <div class="agrid" id="grpSetHb"></div>
+    </div>
+    <div class="sec">
+      <h3>Văn phòng ông chủ · Khối bối cảnh</h3>
+      <div class="agrid" id="grpSetOf"></div>
     </div>
     <div class="sec">
       <h3>Người &amp; Động vật</h3>
@@ -2467,6 +2471,172 @@ const FIXED_CHARS={
       return xfParts(P,{pick:p=>p.part==='head',pivot:[0,1.1,.05],k:1.12,off:[0,.13,.07],H:1.4});   // đầu nhô khỏi vai như ref
     })(),
   },
+  // ════ ÔNG CHỦ — ông già lùn mập ~1.62 m: đầu to hói đỉnh, tóc xám hai bên + sau gáy, tai to, lông mày xám rậm cau lại,
+  // kính gọng vàng to kiểu aviator, miệng há quát lộ răng, râu lún phún xám quanh cằm; áo cardigan len xám than cổ lật
+  // khoác ngoài sơ mi xanh nhạt + áo lót trắng, quần xám, nhẫn ngọc xanh ở cả hai tay. Ngón trỏ tay TRÁI nv (+x) chìa ra để chỉ.
+  boss:{
+    vi:'👴 Ông chủ (kính vàng)',
+    en:'a short stocky elderly Asian boss cartoon character, big bald-top head with grey hair at the sides and back, big ears, thick angry grey eyebrows, large gold aviator glasses, shouting open mouth, grey stubble, dark charcoal knitted shawl-collar cardigan over a light blue shirt and white undershirt, grey trousers, green jade rings on both hands',
+    parts:(()=>{
+      const SK='#dca487',SK2='#c98a6f',GY='#8b8a8e',GY2='#a9a8ab',CD='#3d4149',CD2='#4b505a',SH='#b9cad8',WH='#f1efe9',
+        TR='#3a3c42',AU='#d2a644',JD='#1fa45c',SHOE='#2b1d16',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      // giày + chân ngắn
+      [-1,1].forEach(sd=>{
+        add('sph',[.06],[sd*.11,.045,.05],SHOE,'leg',{scale:[1.05,.75,1.8]});
+        add('cyl',[.07,.36],[sd*.11,.25,0],TR,'leg');
+        add('cyl',[.09,.38],[sd*.11,.6,0],TR,'leg');
+      });
+      add('sph',[.22],[0,.76,0],TR,'torso',{scale:[1.1,.5,.85]});                     // hông
+      // thân bụng tròn: cardigan + dải sơ mi lộ giữa hai vạt + áo lót trắng ở cổ
+      add('sph',[.25],[0,1.0,.01],CD,'torso',{scale:[1.08,1.12,.92]});
+      add('sph',[.2],[0,1.0,.1],SH,'torso',{scale:[.56,1.15,.76]});
+      [-1,1].forEach(sd=>{
+        add('box',[.075,.44,.05],[sd*.11,1.05,.215],CD2,'torso',{rot:[8,0,sd*-9]});   // cổ lật cardigan
+        add('sph',[.13],[sd*.2,1.18,0],CD,'torso',{scale:[1,.8,1]});                  // bờ vai
+        add('box',[.075,.035,.03],[sd*.05,1.262,.135],SH,'torso',{rot:[0,0,sd*24]});  // cổ sơ mi
+      });
+      add('sph',[.06],[0,1.235,.125],WH,'torso',{scale:[1,.7,.5]});
+      [.84,.93].forEach(y=>add('sph',[.014],[.095,y,.238],'#1b1c20','torso'));        // cúc cardigan
+      add('cyl',[.07,.07],[0,1.29,0],SK,'torso');                                     // cổ
+      // tay: vai → bắp → cẳng → cổ tay sơ mi → bàn tay + nhẫn ngọc
+      [-1,1].forEach(sd=>{
+        add('sph',[.095],[sd*.3,1.2,0],CD,'arm');
+        add('cyl',[.075,.26],[sd*.33,1.06,0],CD,'arm');
+        add('cyl',[.068,.25],[sd*.34,.83,0],CD,'arm');
+        add('cyl',[.06,.03],[sd*.34,.7,0],SH,'arm');
+        add('sph',[.062],[sd*.34,.645,0],SK,'arm',{scale:[.9,1.1,1]});
+        add('cyl',[.02,.014],[sd*.34,.61,.05],AU,'arm',{rot:[90,0,0]});
+        add('sph',[.016],[sd*.34,.61,.064],JD,'arm');
+      });
+      add('cyl',[.017,.1],[.345,.55,.02],SK,'arm');                                   // ngón trỏ tay trái nv chìa ra
+      // ĐẦU to: sọ + má xệ + cằm
+      add('sph',[.17],[0,1.47,0],SK,'head',{scale:[1,1.02,1]});
+      add('sph',[.15],[0,1.4,.02],SK,'head',{scale:[1.12,.8,1]});
+      add('sph',[.07],[0,1.325,.07],SK,'head');
+      // tóc xám hai bên + sau gáy (đỉnh hói), vài sợi vắt ngang đỉnh
+      add('sph',[.13],[0,1.47,-.08],GY,'head',{scale:[1.15,.9,.8]});
+      [-1,1].forEach(sd=>{
+        add('sph',[.085],[sd*.14,1.5,-.05],GY,'head',{scale:[.7,1,1.35]});
+        add('cone',[.03,.08],[sd*.172,1.565,-.03],GY2,'head',{rot:[0,0,sd*-52]});
+        add('cone',[.026,.07],[sd*.165,1.54,-.09],GY2,'head',{rot:[-30,0,sd*-60]});
+        add('sph',[.05],[sd*.176,1.45,-.01],SK2,'head',{scale:[.45,1.15,.8]});        // tai to
+      });
+      [-.02,.02].forEach(z=>add('box',[.13,.005,.008],[0,1.642,z],GY2,'head'));
+      // trán nhăn + gân nổi
+      [1.558,1.584].forEach(y=>add('box',[.11,.006,.006],[0,y,.148-(y-1.558)*.5],SK2,'head'));
+      add('box',[.012,.05,.008],[.05,1.58,.135],'#c58270','head',{rot:[0,0,24]});
+      // lông mày xám rậm cau (đầu trong chúc xuống) + mắt
+      [-1,1].forEach(sd=>{
+        add('box',[.078,.022,.022],[sd*.07,1.522,.158],GY,'head',{rot:[0,0,sd*22]});
+        add('sph',[.026],[sd*.065,1.485,.148],'#ffffff','head',{scale:[1,.85,.5]});
+        add('sph',[.012],[sd*.061,1.483,.163],'#1a1410','head');
+        add('sph',[.04],[sd*.112,1.428,.125],'#d98f7c','head',{scale:[1,.8,.5]});      // gò má đỏ
+      });
+      add('sph',[.038],[0,1.445,.175],'#d0876f','head',{scale:[1.1,.9,1]});           // mũi to
+      // miệng há quát: khoang miệng + răng trên/dưới + lưỡi
+      add('sph',[.05],[0,1.365,.145],'#4a1414','head',{scale:[1.15,.9,.6]});
+      add('box',[.07,.014,.012],[0,1.39,.168],'#f2efe6','head');
+      add('box',[.06,.012,.012],[0,1.343,.164],'#f2efe6','head');
+      add('sph',[.022],[0,1.352,.155],'#c9606a','head',{scale:[1.2,.6,1]});
+      add('sph',[.04],[0,1.318,.108],GY2,'head',{scale:[1.25,.5,.6]});                // râu lún phún
+      add('box',[.1,.01,.012],[0,1.412,.172],GY2,'head');
+      // kính gọng vàng to
+      [-1,1].forEach(sd=>{
+        add('box',[.098,.007,.006],[sd*.07,1.513,.188],AU,'head');
+        add('box',[.082,.007,.006],[sd*.07,1.449,.188],AU,'head');
+        add('box',[.007,.066,.006],[sd*.118,1.481,.188],AU,'head',{rot:[0,0,sd*-8]});
+        add('box',[.007,.058,.006],[sd*.026,1.483,.188],AU,'head');
+        add('box',[.005,.006,.2],[sd*.121,1.5,.088],AU,'head');
+        add('box',[.09,.06,.002],[sd*.07,1.481,.186],'#d6ecf2','head',{opacity:.22});
+      });
+      add('box',[.05,.007,.006],[0,1.506,.188],AU,'head');
+      return xfParts(P,{H:1.62,topOf:p=>p.part==='head'});
+    })(),
+  },
+  // ════ CHÀNG TRAI VEST — thanh niên cao gầy ~1.8 m: tóc đen vuốt ngược bồng, kính gọng vàng mảnh, lông mày buồn, mặt cúi;
+  // vest đen hoạ tiết đường nứt vàng kim (kintsugi), sơ mi kem cổ tàu cúc vàng, quần âu đen ôm, giày lười đen khoá vàng.
+  suitguy:{
+    vi:'🕴 Chàng trai vest',
+    en:'a tall slim young Asian man cartoon character with slicked-back black pompadour hair, thin gold-rimmed glasses, sad lowered eyebrows, wearing a black blazer with a gold kintsugi crack-line pattern over a cream mandarin-collar shirt with gold buttons, slim black trousers and black loafers with gold buckles',
+    parts:(()=>{
+      const SK='#e3b190',SK2='#cf9a79',HR='#15120f',SU='#1d1c20',SU2='#2a292e',AU='#c9a04a',CR='#ece3cf',SHOE='#0f0e10',P=[];
+      const add=(shape,size,pos,color,part,o={})=>P.push(Object.assign({shape,size,pos,color,part},o));
+      const R=rnd(9137),DG=180/Math.PI;
+      // giày lười + chân dài ôm
+      [-1,1].forEach(sd=>{
+        add('sph',[.055],[sd*.09,.045,.05],SHOE,'leg',{scale:[1,.75,1.9]});
+        add('box',[.05,.012,.02],[sd*.09,.083,.1],AU,'leg');
+        add('cyl',[.058,.44],[sd*.085,.29,0],SU,'leg');
+        add('cyl',[.07,.46],[sd*.085,.72,0],SU,'leg');
+      });
+      add('box',[.3,.12,.19],[0,.9,0],SU,'torso');                                    // hông
+      // thân vest + vai + ve áo + dải sơ mi kem + cổ tàu
+      add('box',[.4,.58,.21],[0,1.2,0],SU,'torso');
+      [-1,1].forEach(sd=>{
+        add('sph',[.075],[sd*.2,1.45,0],SU,'torso',{scale:[1,.7,1.3]});
+        add('box',[.07,.34,.014],[sd*.078,1.3,.108],SU2,'torso',{rot:[0,0,sd*-13]});
+        add('box',[.1,.02,.01],[sd*.13,1.02,.107],SU2,'torso');
+      });
+      add('box',[.09,.3,.012],[0,1.33,.104],CR,'torso');
+      [0,1,2,3].forEach(k=>add('sph',[.008],[0,1.44-k*.065,.112],AU,'torso'));
+      [1.1,1.02].forEach(y=>add('sph',[.011],[.02,y,.108],AU,'torso'));
+      add('cyl',[.055,.05],[0,1.5,.005],CR,'torso');
+      add('cyl',[.042,.08],[0,1.53,0],SK,'torso');
+      // đường nứt vàng (kintsugi): mỗi vết = 2–4 đoạn gãy khúc nối nhau; phủ mặt trước / sau / hai sườn thân vest
+      const crack=(x,y,put)=>{let a=R()*360;const n=2+Math.floor(R()*3);
+        for(let k=0;k<n;k++){const len=.05+R()*.07,ar=a/DG;put(x+Math.cos(ar)*len/2,y+Math.sin(ar)*len/2,len,a);
+          x+=Math.cos(ar)*len;y+=Math.sin(ar)*len;a+=(R()<.5?-1:1)*(25+R()*45);}};
+      [1,-1].forEach(fz=>{for(let k=0;k<13;k++)crack((R()-.5)*.34,.97+R()*.46,(cx,cy,len,a)=>{
+        if(Math.abs(cx)>.185||cy<.93||cy>1.47||(fz>0&&Math.abs(cx)<.09&&cy>1.14))return;
+        add('box',[len,.004,.004],[cx,cy,fz*.1065],AU,'torso',{rot:[0,0,a]});});});
+      [1,-1].forEach(sd=>{for(let k=0;k<3;k++)crack((R()-.5)*.14,.98+R()*.4,(cz,cy,len,a)=>{
+        if(Math.abs(cz)>.09||cy<.93||cy>1.4)return;
+        add('box',[len,.004,.004],[sd*.2015,cy,cz],AU,'torso',{rot:[0,90,a]});});});
+      // tay + đường nứt vàng quấn quanh ống tay
+      [-1,1].forEach(sd=>{
+        add('sph',[.062],[sd*.245,1.42,0],SU,'arm');
+        add('cyl',[.05,.3],[sd*.255,1.27,0],SU,'arm');
+        add('cyl',[.045,.3],[sd*.26,.99,0],SU,'arm');
+        add('cyl',[.047,.03],[sd*.26,.845,0],CR,'arm');
+        add('sph',[.045],[sd*.26,.785,0],SK,'arm',{scale:[.8,1.2,1]});
+        for(let k=0;k<6;k++)crack(R()*.3,.9+R()*.44,(u,cy,len,a)=>{          // u = cung quanh ống tay
+          if(cy<.875||cy>1.39)return;
+          const up=cy>1.13,cx=sd*(up?.255:.26),r=(up?.05:.045)+.0015,th=u/r;
+          add('box',[len*.8,.004,.004],[cx+Math.cos(th)*r,cy,Math.sin(th)*r],AU,'arm',{rot:[0,90-th*DG,-a]});});
+      });
+      // ĐẦU: sọ + cằm thon + tai
+      add('sph',[.12],[0,1.69,0],SK,'head',{scale:[.92,1.12,.98]});
+      add('sph',[.085],[0,1.61,.02],SK,'head',{scale:[.95,1,.95]});
+      [-1,1].forEach(sd=>add('sph',[.03],[sd*.112,1.68,-.01],SK2,'head',{scale:[.5,1,.8]}));
+      // tóc đen vuốt ngược: chỏm + bồng trước + hai bên
+      add('sph',[.125],[0,1.74,-.025],HR,'head',{scale:[.95,.95,1.02]});
+      add('sph',[.075],[0,1.815,.045],HR,'head',{scale:[1.25,.7,1.1]});
+      add('sph',[.11],[0,1.685,-.045],HR,'head',{scale:[.95,1.05,.9]});              // gáy
+      [-1,1].forEach(sd=>add('sph',[.05],[sd*.095,1.73,-.02],HR,'head',{scale:[.6,1.3,1.6]}));
+      // mắt cụp + lông mày buồn (đầu trong nhướn lên)
+      [-1,1].forEach(sd=>{
+        add('sph',[.02],[sd*.045,1.695,.1],'#ffffff','head',{scale:[1,.8,.5]});
+        add('sph',[.011],[sd*.045,1.689,.11],'#1a1410','head');
+        add('box',[.05,.012,.02],[sd*.045,1.712,.104],SK,'head',{rot:[0,0,sd*12]});
+        add('box',[.05,.011,.012],[sd*.048,1.737,.108],HR,'head',{rot:[0,0,sd*-17]});
+      });
+      add('sph',[.02],[0,1.665,.116],SK2,'head',{scale:[.8,1.1,1]});                  // mũi
+      add('box',[.036,.008,.01],[0,1.612,.098],'#8a4a40','head');                     // miệng mím
+      [-1,1].forEach(sd=>add('box',[.014,.007,.01],[sd*.024,1.608,.096],'#8a4a40','head',{rot:[0,0,sd*-28]}));
+      // kính gọng vàng mảnh
+      [-1,1].forEach(sd=>{
+        add('box',[.064,.005,.005],[sd*.047,1.717,.124],AU,'head');
+        add('box',[.064,.005,.005],[sd*.047,1.673,.124],AU,'head');
+        add('box',[.005,.046,.005],[sd*.079,1.695,.124],AU,'head');
+        add('box',[.005,.046,.005],[sd*.015,1.695,.124],AU,'head');
+        add('box',[.004,.005,.135],[sd*.081,1.705,.058],AU,'head');
+        add('box',[.06,.042,.002],[sd*.047,1.695,.122],'#d6ecf2','head',{opacity:.2});
+      });
+      add('box',[.03,.005,.005],[0,1.705,.124],AU,'head');
+      return xfParts(P,{H:1.8,topOf:p=>p.part==='head'});
+    })(),
+  },
 };
 // ── RIG CHO NHÂN VẬT CỐ ĐỊNH: tự dựng khung xương từ nhãn part (leg/arm/torso/head) ──
 // Cùng quy ước khớp với makeFigure → dùng chung dropdown Tư thế + slider gập khớp.
@@ -2511,10 +2681,18 @@ function buildRigFromParts(parts,poseIn){
     A.forEach(i=>attach(i,i.c.distanceTo(shW)>dEl?el:sh));
     bones[sd<0?'shL':'shR']=sh;bones[sd<0?'elL':'elR']=el;
   });
+  // cổ: các khối đầu xoay quanh gáy (cúi / ngửa đầu)
+  const heads=info.filter(i=>i.m.userData.part==='head'&&!i.m.userData.bone);
+  let neck=null;
+  if(heads.length){
+    const y0=Math.min(...heads.map(i=>i.b.min.y)),y1=Math.max(...heads.map(i=>i.b.max.y));
+    neck=new THREE.Group();neck.position.set(0,y0+(y1-y0)*.15-hipY,0);spine.add(neck);
+  }
   // còn lại: xương ép tay, thân, đầu
   info.forEach(i=>{
     if(i.m.parent!==src)return;
     const bn=i.m.userData.bone;
+    if(neck&&!bn&&i.m.userData.part==='head'){attach(i,neck);return;}
     if(bn&&bn.startsWith('fore')){const el=bones[bn==='foreL'?'elL':'elR'];if(el){attach(i,el);return;}}
     if(i.m.userData.part==='torso'&&i.c.y<hipY)attach(i,pelvis);else attach(i,spine);
   });
@@ -2524,7 +2702,10 @@ function buildRigFromParts(parts,poseIn){
   if(bones.hipL){bones.hipL.rotation.z=sp;bones.hipL.rotation.x=hipA;bones.kneeL.rotation.x=kneeA;}
   if(bones.hipR){bones.hipR.rotation.z=-sp;bones.hipR.rotation.x=pose.stride?-hipA*.7:hipA;bones.kneeR.rotation.x=pose.stride?kneeA*.3:kneeA;}
   const shF=(pose.shoulderF||0)*D, shZ=((pose.shoulder!==undefined?pose.shoulder:5)-5)*D, elA=(pose.elbow||0)*D;
-  if(bones.shL){bones.shL.rotation.x=pose.oneArm?5*D:shF;bones.shL.rotation.z=shZ;bones.elL.rotation.x=elA;}
+  if(neck)neck.rotation.x=(pose.head||0)*D;
+  // shoulderF2 / elbow2: đặt riêng tay phải nhân vật (−x) khi hai tay làm hai việc khác nhau (dáng dựng sẵn trong khối bối cảnh)
+  if(bones.shL){bones.shL.rotation.x=pose.shoulderF2!==undefined?pose.shoulderF2*D:pose.oneArm?5*D:shF;bones.shL.rotation.z=shZ;
+    bones.elL.rotation.x=pose.elbow2!==undefined?pose.elbow2*D:elA;}
   if(bones.shR){bones.shR.rotation.x=pose.stride?-shF:shF;bones.shR.rotation.z=-shZ;bones.elR.rotation.x=elA;}
   if(pose.lying)root.rotation.x=-Math.PI/2;
   // chạm sàn: quỳ/xổm/chạy/nằm hạ người xuống cho điểm thấp nhất = 0. Ngồi ghế (cẳng chân dựng đứng) giữ độ cao để đặt lên ghế.
@@ -2616,6 +2797,7 @@ function makeFigure(o){
 
   // ── ÁP TƯ THẾ ──
   spine.rotation.x = (pose.torsoLean||0)*D2R;
+  head.rotation.x = (pose.head||0)*D2R;   // cúi / ngửa đầu
   const sp = (pose.spread||0)*D2R;
   legL.hip.rotation.z = sp; legR.hip.rotation.z = -sp;
   // gập hông/gối (x = gập tới trước)
@@ -2853,6 +3035,8 @@ const BUILDERS={
   pharaon(){return makeFixedChar('pharaon');},// Pharaon hồn ma không chân, đỉnh đầu ~2.1 m
   bili(){return makeFixedChar('bili');},      // Bili ma xanh ~1.3 m cả chong chóng
   witch(){return makeFixedChar('witch');},    // Phù thủy ~1.55 m tới đỉnh mũ
+  boss(){return makeFixedChar('boss');},      // Ông chủ lùn mập 1.62 m, kính vàng, cardigan
+  suitguy(){return makeFixedChar('suitguy');},// Chàng trai vest hoạ tiết vàng 1.8 m
   chibi(){return makeFigure({height:1.1,build:2.2,legRatio:0.32,shoulder:1.1});}, // dáng chibi/gà: thân tròn mập, chân ngắn
   child(){return makeFigure({height:1.2,build:0.85,legRatio:0.9});},
   tall(){return makeFigure({height:2.05,build:0.85,legRatio:1.2});},      // cao gầy
@@ -6021,6 +6205,493 @@ function buildHbZones(){
   g.userData.h=0;return g;
 }
 
+/* ══════════ VĂN PHÒNG ÔNG CHỦ — INT. ĐÊM · ông chủ ngồi bàn chỉ tay quát, chàng trai đứng cúi đầu ══════════
+   Dựng theo 2 ảnh ref: (1) máy đặt NGOÀI cửa kính nhìn xuyên rèm sáo gỗ, (2) góc cao sát trần nhìn xuống qua cánh quạt.
+   Giả định: lòng phòng 7.2 × 8.4 m, trần 3.5 m (khay trần giật cấp 0.28 m) — ước theo bàn giám đốc 2.3 × 1.05 m.
+   Gốc = tâm sàn. Ông chủ ngồi phía −Z nhìn về +Z; chàng trai đứng phía +Z nhìn về −Z.
+   +X = vách kính sát trần + rèm sáo gỗ, ngoài là hồ bơi.   −X = tủ kính trưng bày cúp, poster phim, máy quay cổ.
+   −Z = két sắt + kệ sách (sau lưng ông chủ), chậu cây ở góc gần cửa kính.   +Z = sofa da + cửa sổ vườn + cửa ra vào.
+   Tường/trần chỉ hiện mặt trong → đứng ngoài nhìn xuyên vào được. Hai nhân vật là rig có khớp, tách ra để đổi dáng.   */
+const OFC={wall:'#6d898c',wood:'#3a261d',wood2:'#4b3024',wood3:'#6a4329',desk:'#47271b',deskTop:'#5a3222',
+  ceil:'#d6d9d8',ceil2:'#b9bfbf',led:'#f4fbff',warm:'#ffe2b0',frame:'#17181b',glass:'#9fc3cc',
+  slat:'#6a4631',slat2:'#7a5238',slat3:'#553626',leather:'#4d2720',brass:'#b8923f',brass2:'#8e6f2e',
+  bronze:'#5f4b33',green:'#1f4a3a',lamp:'#3fdc7c',lampHi:'#d2ffe0',paper:'#f3f0e6',black:'#16161a',steel:'#8d9499',steel2:'#727a80',
+  gold:'#d9ad3b',gold2:'#b8892a',crystal:'#cfe9f2',pot:'#e9e6df',leaf:'#3f8a4a',leaf2:'#2f6e3c',stone:'#9aa0a0',bush:'#27523a',lawn:'#2d4a3a'};
+const OFR={w:7.2,d:8.4,h:3.5};
+const OF_DESK={x:0,z:-1.3,w:2.3,d:1.05,h:.8}, OF_SEAT=.53, OF_CHAIR={x:-.15,z:-2.12}, OF_FAN={x:-.3,z:.75,y:2.8}, OF_SON={x:-.35,z:.5};
+function ofTex(cv){const t=new THREE.CanvasTexture(cv);if(THREE.SRGBColorSpace)t.colorSpace=THREE.SRGBColorSpace;return t;}
+function ofPlane(w,h,c,basic){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),basic?new THREE.MeshBasicMaterial({color:c}):hbWallMat(c));
+  m.receiveShadow=!basic;return m;
+}
+function ofGlow(geo,c,x,y,z){const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:c}));m.position.set(x,y,z);return m;}
+function ofClear(geo,c,op){
+  const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:c,transparent:true,opacity:op,roughness:.08,metalness:.1,depthWrite:false}));
+  return m;
+}
+// trụ tròn nối 2 điểm (chân máy quay, cuống lá…)
+function ofSeg(a,b,r,c,r2){
+  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A);
+  const m=cyl(r2===undefined?r:r2,r,d.length(),c,8);m.position.copy(A).add(B).multiplyScalar(.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());return m;
+}
+function ofSub(g,label){const s=new THREE.Group();s.userData.partLabel=label;g.add(s);return s;}
+// độ cao khớp hông của nhân vật cố định (đỉnh khối chân) → để đặt mông đúng mặt nệm ghế
+function fixedHipY(id){return Math.max(...FIXED_CHARS[id].parts.filter(p=>p.part==='leg'&&!p.bone).map(partTop));}
+// nhân vật cố định dựng sẵn một dáng (vẫn là rig: tách khỏi khối rồi đổi tư thế / kéo khớp được)
+function posedChar(id,pose,poseName){
+  const c=FIXED_CHARS[id],g=buildRigFromParts(c.parts,pose);
+  g.userData.pose=Object.assign({},POSE_PRESETS.stand,pose);g.userData.poseName=poseName||'stand';
+  g.userData.fixedChar=id;g.userData.enName=c.en;g.userData.parts=JSON.parse(JSON.stringify(c.parts));
+  return g;
+}
+// đá marble xám trắng: 1 texture = 2 × 2 viên 1.2 m, vân loang + mạch gạch
+function ofMarbleTex(){
+  const cv=document.createElement('canvas');cv.width=cv.height=1024;const x=cv.getContext('2d'),R=rnd(7741);
+  x.fillStyle='#cfd2d4';x.fillRect(0,0,1024,1024);
+  for(let i=0;i<70;i++){
+    const px=R()*1024,py=R()*1024,r=60+R()*170,g=x.createRadialGradient(px,py,0,px,py,r),d=R()<.5;
+    g.addColorStop(0,d?'rgba(150,156,160,.22)':'rgba(240,242,243,.3)');g.addColorStop(1,'rgba(200,204,206,0)');
+    x.fillStyle=g;x.fillRect(px-r,py-r,r*2,r*2);
+  }
+  for(let i=0;i<52;i++){
+    let px=R()*1024,py=R()*1024,a=R()*6.283;x.beginPath();x.moveTo(px,py);
+    for(let k=0;k<16;k++){a+=(R()-.5)*.9;px+=Math.cos(a)*38;py+=Math.sin(a)*38;x.lineTo(px,py);}
+    const v=96+R()*46|0;x.strokeStyle='rgba('+v+','+(v+7)+','+(v+12)+','+(.1+R()*.26).toFixed(2)+')';x.lineWidth=.6+R()*2.4;x.stroke();
+  }
+  x.strokeStyle='rgba(112,118,122,.95)';x.lineWidth=4;
+  [0,512,1024].forEach(v=>{x.beginPath();x.moveTo(v,0);x.lineTo(v,1024);x.stroke();x.beginPath();x.moveTo(0,v);x.lineTo(1024,v);x.stroke();});
+  const t=ofTex(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;
+}
+// mặt nước hồ bơi xanh ngọc + vân sáng gợn
+function ofWaterTex(){
+  const cv=document.createElement('canvas');cv.width=cv.height=512;const x=cv.getContext('2d'),R=rnd(3319);
+  x.fillStyle='#17a6a8';x.fillRect(0,0,512,512);
+  for(let i=0;i<90;i++){
+    let px=R()*512,py=R()*512,a=R()*6.283;x.beginPath();x.moveTo(px,py);
+    for(let k=0;k<7;k++){a+=(R()-.5)*1.6;px+=Math.cos(a)*24;py+=Math.sin(a)*24;x.lineTo(px,py);}
+    x.strokeStyle='rgba(170,255,246,'+(.18+R()*.4).toFixed(2)+')';x.lineWidth=1.5+R()*3.5;x.stroke();
+  }
+  const t=ofTex(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;
+}
+// poster phim phiêu lưu tông nóng: trời chiều, núi, bóng người đội mũ, dải chữ giả (không có chữ thật)
+function ofPosterTex(seed){
+  const cv=document.createElement('canvas');cv.width=300;cv.height=420;const x=cv.getContext('2d'),R=rnd(seed);
+  const pal=[['#f0b24a','#b4502a','#2a130d'],['#e79a3c','#7c2f25','#1b0e10'],['#8c6fb8','#3d3470','#12101f'],['#f2c56a','#a35a2c','#24130c']][seed%4];
+  const g=x.createLinearGradient(0,0,0,420);g.addColorStop(0,pal[0]);g.addColorStop(.55,pal[1]);g.addColorStop(1,pal[2]);
+  x.fillStyle=g;x.fillRect(0,0,300,420);
+  x.fillStyle='rgba(255,236,170,.75)';x.beginPath();x.arc(90+R()*120,120+R()*40,34+R()*16,0,6.283);x.fill();
+  x.fillStyle=pal[2];x.beginPath();x.moveTo(0,300);
+  for(let i=0;i<=10;i++)x.lineTo(i*30,250+R()*55);
+  x.lineTo(300,420);x.lineTo(0,420);x.closePath();x.fill();
+  // 1–2 bóng người đội mũ rộng vành
+  const n=1+(seed%2);
+  for(let k=0;k<n;k++){
+    const cx=n===1?150:105+k*90,s=1+R()*.25,by=330;
+    x.fillStyle='#0c0706';
+    x.fillRect(cx-16*s,by-96*s,32*s,70*s);x.fillRect(cx-15*s,by-28*s,12*s,58*s);x.fillRect(cx+3*s,by-28*s,12*s,58*s);
+    x.beginPath();x.arc(cx,by-110*s,13*s,0,6.283);x.fill();
+    x.fillRect(cx-26*s,by-120*s,52*s,5*s);x.fillRect(cx-13*s,by-134*s,26*s,15*s);
+  }
+  x.fillStyle='rgba(250,226,170,.9)';x.fillRect(40,362,220,16);
+  x.fillStyle='rgba(250,226,170,.5)';[388,398].forEach(y=>x.fillRect(70,y,160,4));
+  return ofTex(cv);
+}
+// cúp / kỷ niệm chương: 0 cúp có quai · 1 tượng vàng · 2 pha lê tháp · 3 ngôi sao · 4 bằng khen đóng khung · 5 pha lê kim cương
+function ofTrophy(kind,s){
+  const g=new THREE.Group(),G=OFC.gold,B='#141416';
+  const put=(m,y)=>{m.position.y=y;g.add(m);return m;};
+  put(box(.09*s,.03*s,.09*s,B),.015*s);
+  if(kind===0){
+    put(cyl(.012*s,.022*s,.07*s,G,8),.065*s);
+    put(cyl(.055*s,.02*s,.1*s,G,12),.15*s);
+    [-1,1].forEach(sd=>{const h=sph(.022*s,OFC.gold2,6);h.position.set(sd*.06*s,.16*s,0);h.scale.set(.6,1.4,.4);g.add(h);});
+  }else if(kind===1){
+    put(cyl(.03*s,.035*s,.04*s,B,10),.05*s);
+    put(cyl(.018*s,.026*s,.2*s,G,8),.17*s);
+    put(sph(.026*s,G,8),.295*s);
+  }else if(kind===2){
+    const m=ofClear(new THREE.ConeGeometry(.045*s,.26*s,4),OFC.crystal,.6);put(m,.16*s);
+  }else if(kind===3){
+    put(cyl(.01*s,.016*s,.1*s,G,8),.08*s);
+    const m=new THREE.Mesh(new THREE.OctahedronGeometry(.055*s),mat(G));m.castShadow=true;m.scale.set(1,1,.4);put(m,.185*s);
+  }else if(kind===4){
+    const f=put(box(.2*s,.15*s,.015*s,OFC.wood3),.105*s);f.rotation.x=-.2;
+    const p=ofGlow(new THREE.PlaneGeometry(.16*s,.11*s),'#efe7d2',0,.105*s,.009*s);p.rotation.x=-.2;g.add(p);
+  }else{
+    const m=ofClear(new THREE.OctahedronGeometry(.06*s),OFC.crystal,.6);m.scale.set(1,1.5,1);put(m,.12*s);
+  }
+  return g;
+}
+// chậu cây lá to (chậu sứ trắng)
+function ofPlant(h){
+  const g=new THREE.Group(),R=rnd(Math.round(h*977));
+  const pot=cyl(.21,.16,.38,OFC.pot,14);pot.position.y=.19;g.add(pot);
+  const soil=cyl(.19,.19,.02,'#3a2c22',14);soil.position.y=.375;g.add(soil);
+  for(let k=0;k<11;k++){
+    const a=k/11*6.283+R()*.4,r=.18+R()*.3,y=.55+R()*(h-.55),tip=[Math.cos(a)*r,y,Math.sin(a)*r];
+    g.add(ofSeg([0,.38,0],tip,.008,OFC.leaf2));
+    const lf=sph(.2,k%2?OFC.leaf:OFC.leaf2,8);lf.scale.set(.42,.07,1);
+    lf.position.set(tip[0]*1.25,tip[1]+.03,tip[2]*1.25);lf.rotation.set(-.5-R()*.4,-a+Math.PI/2,0,'YXZ');g.add(lf);
+  }
+  return g;
+}
+
+/* ---- VỎ PHÒNG: sàn marble, 4 tường giấy dán xanh xám + ốp gỗ, cửa sổ vườn + cửa ra vào (tường +Z) ---- */
+function buildOfRoom(){
+  const g=new THREE.Group();const W=OFR.w/2,D=OFR.d/2,H=OFR.h,WS=.95;
+  const tex=ofMarbleTex();tex.repeat.set(OFR.w/2.4,OFR.d/2.4);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(OFR.w,OFR.d),new THREE.MeshStandardMaterial({map:tex,roughness:.2,metalness:.08}));
+  fl.rotation.x=-Math.PI/2;fl.position.y=.006;fl.receiveShadow=true;fl.userData.partLabel='Sàn đá marble xám trắng';g.add(fl);
+  const walls=ofSub(g,'4 tường giấy dán xanh xám + ốp gỗ chân tường');
+  // mỗi tường là 1 nhóm: x cục bộ chạy dọc tường, +z cục bộ hướng vào phòng
+  const wall=(len,ry,px,pz,holes,segs)=>{
+    const wg=new THREE.Group();wg.rotation.y=ry;wg.position.set(px,0,pz);
+    const w=hbWall(len,H,holes);w.material.color.set(OFC.wall);wg.add(w);
+    segs.forEach(([a,b])=>{
+      const L=b-a,cx=(a+b)/2;
+      const p=ofPlane(L,WS,OFC.wood);p.position.set(cx,WS/2,.012);wg.add(p);
+      const rail=bx(L,.05,.03,OFC.wood2,cx,WS,.02);rail.castShadow=false;wg.add(rail);
+      const sk=bx(L,.12,.025,OFC.wood2,cx,0,.018);sk.castShadow=false;wg.add(sk);
+      const n=Math.max(1,Math.round(L/.9));
+      for(let k=0;k<n;k++){const q=ofPlane(L/n-.16,WS-.36,OFC.wood2);q.position.set(a+(k+.5)*L/n,WS/2+.04,.016);wg.add(q);}
+    });
+    const cr=bx(len,.1,.05,OFC.wood,0,H-.1,.025);cr.castShadow=false;wg.add(cr);   // phào trần
+    walls.add(wg);
+  };
+  wall(OFR.w,0,0,-D,[],[[-W,W]]);                                              // −Z: sau lưng ông chủ
+  wall(OFR.w,Math.PI,0,D,[[-.2,WS,2.8,2.75],[-2.85,0,-1.9,2.25]],[[-W,-2.85],[-1.9,W]]);   // +Z: cửa sổ vườn + cửa ra vào (x cục bộ = −x)
+  wall(OFR.d,Math.PI/2,-W,0,[],[[-D,D]]);                                      // −X: tủ cúp + poster
+  wall(OFR.d,-Math.PI/2,W,0,[[-3.3,0,3.3,3.0]],[[-D,-3.3],[3.3,D]]);           // +X: vách kính (x cục bộ = z)
+  // cửa sổ nhìn ra vườn
+  const win=ofSub(g,'Cửa sổ vườn (tường +Z)');
+  const gw=hbGlass(3,1.8,.2);gw.position.set(-1.3,1.85,D+.03);win.add(gw);
+  [[-1.3,WS-.05,3.1,.06],[-1.3,2.75,3.1,.06]].forEach(([x,y,w,h])=>win.add(bx(w,h,.1,OFC.frame,x,y,D)));
+  [-2.82,-1.3,.22].forEach(x=>win.add(bx(.05,1.8,.08,OFC.frame,x,WS,D)));
+  win.add(bx(3.2,.04,.2,OFC.wood2,-1.3,WS-.09,D-.08));
+  // cửa gỗ ra vào + tay nắm đồng
+  const door=ofSub(g,'Cửa gỗ ra vào (tường +Z)');
+  door.add(bx(.93,2.23,.05,OFC.wood2,2.375,0,D-.01));
+  [[.25,.75],[1.15,.85]].forEach(([y,h])=>door.add(bx(.6,h,.02,OFC.wood,2.375,y,D-.045)));
+  [[1.88,0,.06,2.3],[2.87,0,.06,2.3]].forEach(([x,y,w,h])=>door.add(bx(w,h,.1,OFC.wood,x,y,D-.02)));
+  door.add(bx(1.05,.07,.1,OFC.wood,2.375,2.25,D-.02));
+  const kn=sph(.03,OFC.brass,8);kn.position.set(2.04,1.05,D-.08);door.add(kn);
+  g.userData.h=H;return g;
+}
+
+/* ---- TRẦN GIẬT CẤP: khay trần + LED hắt + dầm gỗ viền + đèn âm trần (tắt bộ phận này để quay từ trên xuống) ---- */
+function buildOfCeil(){
+  const g=new THREE.Group();const W=OFR.w/2,D=OFR.d/2,H=OFR.h,TW=4.6,TD=5.8,dr=.28,yl=H-dr;
+  const dn=(w,d,c,x,y,z)=>{const m=ofPlane(w,d,c,true);m.rotation.x=Math.PI/2;m.position.set(x,y,z);g.add(m);};
+  dn(TW,TD,OFC.ceil,0,H,0);
+  dn(OFR.w,D-TD/2,OFC.ceil2,0,yl,-(D+TD/2)/2);dn(OFR.w,D-TD/2,OFC.ceil2,0,yl,(D+TD/2)/2);
+  dn(W-TW/2,TD,OFC.ceil2,-(W+TW/2)/2,yl,0);dn(W-TW/2,TD,OFC.ceil2,(W+TW/2)/2,yl,0);
+  // thành khay
+  [[0,-TD/2,0,TW],[0,TD/2,Math.PI,TW],[-TW/2,0,Math.PI/2,TD],[TW/2,0,-Math.PI/2,TD]].forEach(([x,z,ry,L])=>{
+    const m=ofPlane(L,dr,'#c6cbca',true);m.rotation.y=ry;m.position.set(x,H-dr/2,z);g.add(m);});
+  // LED hắt trong khay
+  const led=ofSub(g,'LED hắt khay trần');
+  [-1,1].forEach(s=>{
+    led.add(ofGlow(new THREE.BoxGeometry(TW-.12,.035,.06),OFC.led,0,H-.07,s*(TD/2-.05)));
+    led.add(ofGlow(new THREE.BoxGeometry(.06,.035,TD-.12),OFC.led,s*(TW/2-.05),H-.07,0));
+  });
+  // dầm gỗ viền khay
+  const beam=ofSub(g,'Dầm gỗ viền khay trần');
+  [-1,1].forEach(s=>{
+    const a=bx(TW+.24,.1,.12,OFC.wood,0,yl-.1,s*(TD/2+.06)),b=bx(.12,.1,TD,OFC.wood,s*(TW/2+.06),yl-.1,0);
+    a.castShadow=b.castShadow=false;beam.add(a);beam.add(b);
+  });
+  // đèn âm trần trên vành hạ
+  const sp=[];
+  [-2.95,2.95].forEach(x=>[-3,-1,1,3].forEach(z=>sp.push({p:[x,yl-.006,z]})));
+  [-3.55,3.55].forEach(z=>[-1.5,0,1.5].forEach(x=>sp.push({p:[x,yl-.006,z]})));
+  const sm=hbInst(new THREE.CylinderGeometry(.055,.055,.012,10),sp,OFC.warm,true);sm.castShadow=false;sm.userData.partLabel='Đèn âm trần';g.add(sm);
+  g.userData.h=H;return g;
+}
+
+/* ---- QUẠT TRẦN 4 CÁNH GỖ Ø1.9 m (đồng thau cổ) — tiền cảnh của cú máy góc cao ---- */
+function buildOfFan(){
+  const g=new THREE.Group();const H=OFR.h,y0=OF_FAN.y,f=new THREE.Group();f.position.set(OF_FAN.x,0,OF_FAN.z);g.add(f);
+  const add=(m,y)=>{m.position.y=y;m.castShadow=false;f.add(m);return m;};
+  add(cyl(.06,.1,.09,OFC.bronze,14),H-.045);
+  add(cyl(.016,.016,H-.09-(y0+.2),OFC.bronze,8),(H-.09+y0+.2)/2);
+  add(cyl(.1,.15,.06,OFC.bronze,16),y0+.17);
+  add(cyl(.17,.17,.12,OFC.bronze,18),y0+.08);
+  add(cyl(.12,.07,.07,OFC.brass2,16),y0-.01);
+  const rotor=new THREE.Group();rotor.position.y=y0+.02;rotor.rotation.y=.42;rotor.userData.partLabel='Cánh quạt (xoay nhóm này)';f.add(rotor);
+  for(let k=0;k<4;k++){
+    const b=new THREE.Group();b.rotation.y=k*Math.PI/2;rotor.add(b);
+    const iron=box(.06,.012,.2,OFC.brass2);iron.position.set(0,0,.24);b.add(iron);
+    const bl=new THREE.Group();bl.position.set(0,0,.63);bl.rotation.z=.2;b.add(bl);
+    bl.add(box(.18,.014,.6,OFC.wood3));
+    const tip=cyl(.09,.09,.014,OFC.wood3,14);tip.position.z=.3;bl.add(tip);
+  }
+  g.userData.h=H;return g;
+}
+
+/* ---- VÁCH KÍNH SÁT TRẦN (+X): 3 ô kính 2.2 m, khung nhôm đen ---- */
+function buildOfWindows(){
+  const g=new THREE.Group();const W=OFR.w/2;
+  [-3.3,-1.1,1.1,3.3].forEach(z=>g.add(bx(.09,3.0,.09,OFC.frame,W,0,z)));
+  g.add(bx(.09,.08,6.69,OFC.frame,W,0,0));g.add(bx(.09,.09,6.69,OFC.frame,W,2.91,0));
+  [-2.2,0,2.2].forEach(z=>{const gl=hbGlass(2.11,2.83,.13);gl.rotation.y=-Math.PI/2;gl.position.set(W,1.495,z);g.add(gl);});
+  g.userData.h=3;return g;
+}
+
+/* ---- RÈM SÁO GỖ NGANG: 3 tấm, lá 62 mm mở ngang (nhìn xuyên được), dây thang + thanh đáy ---- */
+function buildOfBlinds(){
+  const g=new THREE.Group();const x=OFR.w/2-.17,R=rnd(5127),C=[OFC.slat,OFC.slat2,OFC.slat3,OFC.slat];
+  [-2.2,0,2.2].forEach((z,pi)=>{
+    const s=ofSub(g,'Rèm sáo gỗ — ô '+(pi+1));
+    const sl=[];
+    for(let y=.15;y<2.84;y+=.068)sl.push({p:[x,y,z],r:[0,0,-.16+(R()-.5)*.06],c:C[Math.floor(R()*4)]});
+    s.add(hbInst(new THREE.BoxGeometry(.062,.0045,2.06),sl));
+    s.add(bx(.08,.06,2.1,OFC.slat3,x,2.85,z));
+    s.add(bx(.062,.022,2.06,OFC.slat3,x,.1,z));
+    [-.82,0,.82].forEach(dz=>[-.034,.034].forEach(dx=>{const c=bx(.003,2.75,.006,OFC.slat3,x+dx,.11,z+dz);c.castShadow=false;s.add(c);}));
+    const wand=cyl(.006,.006,1.4,OFC.slat2,6);wand.position.set(x-.06,2.15,z+.96);wand.castShadow=false;s.add(wand);
+  });
+  g.userData.h=2.9;return g;
+}
+
+/* ---- BÀN GIÁM ĐỐC gỗ gụ 2.3 × 1.05 + đồ trên bàn: đèn chụp xanh, điện thoại quay số, giấy tờ, khung ảnh, ống bút ---- */
+function buildOfDesk(){
+  const g=new THREE.Group();const {x:cx,z:cz,w,d,h}=OF_DESK,R=rnd(6611);
+  const dk=ofSub(g,'Bàn gỗ gụ 2.3 × 1.05 m');
+  dk.add(bx(w,.06,d,OFC.deskTop,cx,h-.06,cz));
+  dk.add(bx(w-.08,.035,d-.08,OFC.desk,cx,h-.095,cz));
+  [-1,1].forEach(sd=>{
+    const px=cx+sd*(w/2-.36);
+    dk.add(bx(.62,h-.135,d-.1,OFC.desk,px,.04,cz));
+    dk.add(bx(.66,.04,d-.06,OFC.wood,px,0,cz));
+    dk.add(bx(.46,.5,.02,OFC.wood2,px,.13,cz+d/2-.045));                        // ô panel mặt khách
+    dk.add(bx(.02,.5,.72,OFC.wood2,px+sd*.31,.13,cz));                          // panel hông
+    [0,1,2].forEach(k=>{                                                        // 3 ngăn kéo phía ông chủ
+      dk.add(bx(.52,.18,.02,OFC.wood2,px,.07+k*.2,cz-d/2+.045));
+      const kb=sph(.014,OFC.brass,6);kb.position.set(px,.16+k*.2,cz-d/2+.03);dk.add(kb);
+    });
+  });
+  dk.add(bx(w-1.3,.58,.03,OFC.desk,cx,.13,cz+d/2-.13));                         // tấm chắn giữa hai hộc
+  dk.add(bx(.76,.38,.02,OFC.wood2,cx,.23,cz+d/2-.11));
+  // bìa da xanh + giấy tờ
+  const pp=ofSub(g,'Bìa da xanh + giấy tờ');
+  const pad=bx(1.0,.008,.56,OFC.green,cx-.08,h,cz-.16);pad.castShadow=false;pp.add(pad);
+  for(let k=0;k<7;k++){
+    const s=box(.21,.0025,.297,k%3?OFC.paper:'#e9e5d8');s.castShadow=false;
+    s.position.set(cx-.3+R()*.5,h+.011+k*.003,cz-.22+R()*.16);s.rotation.y=(R()-.5)*.7;pp.add(s);
+    for(let q=0;q<5;q++){const ln=box(.15,.0005,.004,'#9a9a9a');ln.castShadow=false;ln.position.set(0,.0016,-.1+q*.035);s.add(ln);}
+  }
+  pp.add(bx(.22,.07,.3,OFC.paper,cx-.58,h,cz-.02));
+  [.02,.045].forEach(y=>pp.add(bx(.224,.003,.304,'#bdb9ac',cx-.58,h+y,cz-.02)));
+  // điện thoại quay số đen (bên phải ông chủ = −X)
+  const ph=ofSub(g,'Điện thoại quay số đen');ph.position.set(cx-.9,h,cz-.08);ph.rotation.y=.25;
+  ph.add(bx(.2,.05,.2,OFC.black,0,0,0));
+  const up=box(.17,.05,.15,OFC.black);up.position.set(0,.065,.01);up.rotation.x=-.25;ph.add(up);
+  const dial=cyl(.055,.055,.012,'#2c2c31',16);dial.position.set(0,.088,-.03);dial.rotation.x=-.25;ph.add(dial);
+  const dc=cyl(.02,.02,.016,OFC.brass2,10);dc.position.set(0,.092,-.03);dc.rotation.x=-.25;ph.add(dc);
+  [-1,1].forEach(sd=>{ph.add(bx(.025,.04,.05,OFC.black,sd*.07,.07,.06));const e=sph(.033,OFC.black,8);e.position.set(sd*.1,.135,.06);e.scale.set(1,.8,1.1);ph.add(e);});
+  const hs=cyl(.02,.02,.2,OFC.black,8);hs.rotation.z=Math.PI/2;hs.position.set(0,.14,.06);ph.add(hs);
+  // đèn bàn chụp xanh kiểu ngân hàng (bên trái ông chủ = +X) — nguồn sáng xanh của cảnh
+  const lp=ofSub(g,'Đèn bàn chụp xanh (banker)');lp.position.set(cx+.86,h,cz+.14);
+  const base=cyl(.085,.1,.025,OFC.brass,16);base.position.y=.0125;lp.add(base);
+  const stem=cyl(.011,.011,.3,OFC.brass,8);stem.position.y=.175;lp.add(stem);
+  const bar=cyl(.008,.008,.42,OFC.brass,6);bar.rotation.z=Math.PI/2;bar.position.y=.325;lp.add(bar);
+  const shade=new THREE.Mesh(new THREE.SphereGeometry(.09,16,8,0,Math.PI*2,0,Math.PI/2),
+    new THREE.MeshStandardMaterial({color:OFC.lamp,emissive:OFC.lamp,emissiveIntensity:.85,roughness:.3,side:THREE.DoubleSide}));
+  shade.scale.set(2.05,.8,1);shade.position.y=.325;lp.add(shade);
+  lp.add(ofGlow(new THREE.BoxGeometry(.3,.012,.1),OFC.lampHi,0,.322,0));
+  const pl=new THREE.PointLight('#b9ffd0',1.1,2.3,2);pl.position.set(0,.27,0);lp.add(pl);
+  // khung ảnh + khay bút
+  const sm=ofSub(g,'Khung ảnh + khay bút');
+  const fr=box(.13,.17,.016,OFC.wood3);fr.position.set(cx+.5,h+.085,cz-.12);fr.rotation.set(.22,.5,0,'YXZ');sm.add(fr);
+  const pic=ofGlow(new THREE.PlaneGeometry(.1,.14),'#cfc4ad',0,0,-.009);pic.rotation.y=Math.PI;fr.add(pic);
+  sm.add(bx(.17,.025,.1,'#2a2b2f',cx+.42,h,cz+.3));
+  sm.add(bx(.06,.07,.06,OFC.steel,cx+.47,h+.025,cz+.3));
+  [[-.03,.3],[-.06,-.25],[.045,.12]].forEach(([dx,rz])=>{const p=cyl(.005,.005,.15,dx>0?OFC.steel:OFC.brass,6);p.position.set(cx+.42+dx,h+.085,cz+.3);p.rotation.z=rz;sm.add(p);});
+  g.userData.h=h+.42;return g;
+}
+
+/* ---- GHẾ DA CHẦN NÚT LƯNG CAO (ghế ông chủ) ---- */
+function buildOfChair(){
+  const g=new THREE.Group(),c=new THREE.Group();c.position.set(OF_CHAIR.x,0,OF_CHAIR.z);g.add(c);
+  const L=OFC.leather,L2='#331913';
+  for(let k=0;k<5;k++){const a=k/5*6.283,s=box(.05,.035,.32,OFC.wood);s.position.set(Math.sin(a)*.16,.07,Math.cos(a)*.16);s.rotation.y=a;c.add(s);
+    const w=sph(.03,OFC.black,6);w.position.set(Math.sin(a)*.31,.03,Math.cos(a)*.31);c.add(w);}
+  const col=cyl(.03,.03,.3,OFC.brass2,8);col.position.y=.22;c.add(col);
+  c.add(bx(.66,.14,.62,L,0,OF_SEAT-.14,0));
+  const lip=cyl(.07,.07,.66,L,10);lip.rotation.z=Math.PI/2;lip.position.set(0,OF_SEAT-.07,.3);c.add(lip);
+  const bk=new THREE.Group();bk.position.set(0,OF_SEAT-.06,-.3);bk.rotation.x=-.13;c.add(bk);
+  bk.add(bx(.68,1.02,.13,L,0,0,0));
+  const roll=cyl(.085,.085,.7,L,10);roll.rotation.z=Math.PI/2;roll.position.set(0,1.03,-.01);bk.add(roll);
+  [-1,1].forEach(sd=>bk.add(bx(.1,.52,.22,L,sd*.34,.5,.07)));
+  const tf=[];
+  for(let r=0;r<6;r++)for(let q=0;q<(r%2?3:4);q++)tf.push({p:[(q-(r%2?1:1.5))*.15,.18+r*.14,.068]});
+  bk.add(hbInst(new THREE.SphereGeometry(.014,6,5),tf,L2));
+  [-1,1].forEach(sd=>{
+    c.add(bx(.1,.24,.52,L,sd*.38,OF_SEAT-.06,-.02));
+    const r=cyl(.065,.065,.54,L,10);r.rotation.x=Math.PI/2;r.position.set(sd*.38,OF_SEAT+.2,-.02);c.add(r);
+    const e=sph(.07,L2,8);e.position.set(sd*.38,OF_SEAT+.2,.25);e.scale.set(1,1,.5);c.add(e);
+  });
+  g.userData.h=1.5;return g;
+}
+
+/* ---- TỦ KÍNH TRƯNG BÀY CÚP (tường −X): hộc gỗ dưới + khoang kính 2 đợt + đèn rọi ---- */
+function buildOfCabinet(){
+  const g=new THREE.Group();const W=OFR.w/2,x0=-W+.02,dp=.5,zc=.5,L=3.6,R=rnd(8423);
+  const cb=ofSub(g,'Tủ gỗ + khoang kính');
+  cb.add(bx(dp,.9,L,OFC.wood,x0+dp/2,0,zc));
+  cb.add(bx(dp+.04,.04,L+.04,OFC.wood2,x0+dp/2,.9,zc));
+  for(let k=0;k<6;k++){
+    const z=zc-L/2+(k+.5)*L/6;
+    cb.add(bx(.02,.66,L/6-.08,OFC.wood2,x0+dp+.005,.12,z));
+    const kb=sph(.016,OFC.brass,6);kb.position.set(x0+dp+.03,.62,z+(k%2?-1:1)*(L/12-.09));cb.add(kb);
+  }
+  cb.add(bx(.03,1.6,L,'#2f4448',x0+.015,.94,zc));
+  [0,1,2,3].forEach(k=>{const z=zc-L/2+.03+k*(L-.06)/3;cb.add(bx(.05,1.6,.05,OFC.wood,x0+dp-.025,.94,z));if(k%3===0)cb.add(bx(dp-.05,1.6,.03,OFC.wood,x0+dp/2,.94,z));});
+  cb.add(bx(dp+.03,.1,L+.04,OFC.wood,x0+dp/2,2.54,zc));
+  [1.45,2.0].forEach(y=>{const s=ofClear(new THREE.BoxGeometry(dp-.07,.012,L-.1),OFC.crystal,.35);s.position.set(x0+dp/2,y,zc);cb.add(s);});
+  const fg=hbGlass(L-.1,1.58,.1);fg.rotation.y=Math.PI/2;fg.position.set(x0+dp-.02,1.74,zc);cb.add(fg);
+  const sp=[];for(let k=0;k<6;k++)sp.push({p:[x0+dp/2,2.534,zc-L/2+(k+.5)*L/6]});
+  const sm=hbInst(new THREE.CylinderGeometry(.04,.04,.012,10),sp,OFC.warm,true);sm.castShadow=false;cb.add(sm);
+  // cúp vàng + pha lê + bằng khen trên 3 tầng
+  const tr=ofSub(g,'Cúp vàng · pha lê · bằng khen');
+  const K=[0,1,3,0,2,1, 4,0,5,1,3,0, 1,2,0,4,3,0];
+  [.94,1.462,2.012].forEach((y,lv)=>{
+    for(let k=0;k<6;k++){
+      const t=ofTrophy(K[lv*6+k],1.15+R()*.5);
+      t.position.set(x0+.2+R()*.1,y,zc-L/2+.32+k*(L-.64)/5+(R()-.5)*.12);t.rotation.y=Math.PI/2+(R()-.5)*.5;tr.add(t);
+    }
+  });
+  g.userData.h=2.64;return g;
+}
+
+/* ---- TƯỜNG SAU (−Z): két sắt thép + kệ sách gỗ + chậu cây góc cửa kính ---- */
+function buildOfBack(){
+  const g=new THREE.Group();const W=OFR.w/2,D=OFR.d/2,R=rnd(2917);
+  const sf=ofSub(g,'Két sắt thép');sf.position.set(-2.75,0,-D+.38);
+  sf.add(bx(.9,1.5,.7,OFC.steel,0,0,0));
+  sf.add(bx(.78,1.38,.03,OFC.steel2,0,.06,.36));
+  sf.add(bx(.03,.3,.04,OFC.black,.37,.2,.365));sf.add(bx(.03,.3,.04,OFC.black,.37,1.0,.365));
+  const hub=cyl(.05,.05,.04,OFC.steel,10);hub.rotation.x=Math.PI/2;hub.position.set(-.12,.8,.4);sf.add(hub);
+  for(let k=0;k<3;k++){const b=box(.02,.26,.02,'#c9ced2');b.position.set(-.12,.8,.425);b.rotation.z=k*Math.PI/3;sf.add(b);}
+  const dl=cyl(.045,.045,.03,OFC.black,14);dl.rotation.x=Math.PI/2;dl.position.set(.14,.95,.39);sf.add(dl);
+  // kệ sách: hộc dưới có cánh + 2 đợt sách hở + nóc
+  const sh=ofSub(g,'Kệ sách gỗ + sách + cúp');
+  const x0=-2.1,x1=2.5,dp=.45,z=-D+dp/2+.01,cx=(x0+x1)/2,L=x1-x0;
+  sh.add(bx(L,.85,dp,OFC.wood,cx,0,z));sh.add(bx(L+.04,.04,dp+.04,OFC.wood2,cx,.85,z));
+  for(let k=0;k<8;k++){
+    const x=x0+(k+.5)*L/8;sh.add(bx(L/8-.07,.62,.02,OFC.wood2,x,.11,z+dp/2+.005));
+    const kb=sph(.015,OFC.brass,6);kb.position.set(x+(k%2?-1:1)*(L/16-.08),.58,z+dp/2+.03);sh.add(kb);
+  }
+  sh.add(bx(L,1.5,.03,OFC.wood,cx,.89,-D+.025));
+  for(let k=0;k<=4;k++)sh.add(bx(.05,1.5,dp-.08,OFC.wood,x0+.025+k*(L-.05)/4,.89,z-.03));
+  [1.38,1.87].forEach(y=>sh.add(bx(L,.035,dp-.1,OFC.wood2,cx,y,z-.03)));
+  sh.add(bx(L+.06,.08,dp,OFC.wood,cx,2.39,z));
+  const bk=[],BC=['#6b2a22','#23405a','#2f5a43','#7a6a3a','#3b2f4d','#8a8478','#4a2d1c','#b9a57a'];
+  [.89,1.415,1.905].forEach((y,lv)=>{
+    for(let bay=0;bay<4;bay++){
+      const a=x0+.07+bay*(L-.05)/4,b=a+(L-.05)/4-.09;
+      if((bay+lv)%3===2){                                                       // ô để cúp thay sách
+        const t=ofTrophy((bay*2+lv)%6,1.2+R()*.4);t.position.set((a+b)/2,y,z-.02);sh.add(t);continue;
+      }
+      let x=a;const end=b-(R()<.5?.3:0);
+      while(x<end){const w=.028+R()*.03,h=.2+R()*.12;bk.push({p:[x+w/2,y+h/2,z-.04],s:[w,h,1],c:BC[Math.floor(R()*BC.length)]});x+=w+.003;}
+    }
+  });
+  sh.add(hbInst(new THREE.BoxGeometry(1,1,.2),bk));
+  [[-1.4,0],[.3,3],[1.9,1]].forEach(([x,k])=>{const t=ofTrophy(k,1.5);t.position.set(x,2.47,z);sh.add(t);});
+  const pt=ofPlant(1.25);pt.position.set(W-.62,0,-D+.62);pt.userData.partLabel='Chậu cây góc cửa kính';g.add(pt);
+  g.userData.h=2.5;return g;
+}
+
+/* ---- TRANG TRÍ: 4 poster phim đóng khung (tường −X), máy quay phim cổ trên chân gỗ, sofa da chần nút, chậu cây ---- */
+function buildOfDecor(){
+  const g=new THREE.Group();const W=OFR.w/2,D=OFR.d/2;
+  const po=ofSub(g,'4 poster phim đóng khung');
+  [[-1.85,1.6],[-2.6,2.38],[-2.6,1.42],[-3.35,1.95]].forEach(([z,y],k)=>{
+    const f=box(.035,.86,.62,k%2?OFC.gold2:OFC.wood3);f.position.set(-W+.03,y,z);f.castShadow=false;po.add(f);
+    const p=new THREE.Mesh(new THREE.PlaneGeometry(.54,.78),new THREE.MeshBasicMaterial({map:ofPosterTex(4101+k)}));
+    p.rotation.y=Math.PI/2;p.position.set(-W+.05,y,z);po.add(p);
+  });
+  // máy quay phim cổ: chân gỗ 3 càng + thân đen + 2 cuộn phim + ống kính
+  const cm=ofSub(g,'Máy quay phim cổ trên chân gỗ');cm.position.set(-2.55,0,-2.45);cm.rotation.y=.8;
+  for(let k=0;k<3;k++){const a=k/3*6.283+.5;cm.add(ofSeg([Math.sin(a)*.5,0,Math.cos(a)*.5],[Math.sin(a)*.04,1.26,Math.cos(a)*.04],.022,'#8a5a34',.018));}
+  const hd=cyl(.07,.08,.06,OFC.brass2,10);hd.position.y=1.28;cm.add(hd);
+  cm.add(bx(.2,.28,.4,OFC.black,0,1.31,0));
+  [-.1,.17].forEach(z=>{const r=cyl(.15,.15,.05,'#222226',16);r.rotation.z=Math.PI/2;r.position.set(0,1.7,z);cm.add(r);
+    const c=cyl(.03,.03,.06,OFC.steel,8);c.rotation.z=Math.PI/2;c.position.set(0,1.7,z);cm.add(c);});
+  const ln=cyl(.05,.06,.14,'#26262a',12);ln.rotation.x=Math.PI/2;ln.position.set(0,1.45,.27);cm.add(ln);
+  cm.add(bx(.17,.13,.05,OFC.black,0,1.385,.33));
+  const cr=cyl(.008,.008,.1,OFC.brass,6);cr.rotation.z=Math.PI/2;cr.position.set(.14,1.42,-.05);cm.add(cr);
+  // sofa da chần nút dưới cửa sổ vườn (quay mặt vào phòng)
+  const so=ofSub(g,'Sofa da chần nút');so.position.set(-1.4,0,D-.5);so.rotation.y=Math.PI;
+  const SL=2.1,L=OFC.leather,L2='#331913';
+  so.add(bx(SL,.3,.86,L,0,.08,0));
+  [-1,0,1].forEach(k=>so.add(bx(SL/3-.13,.13,.62,L,k*(SL/3-.1),.38,.08)));
+  so.add(bx(SL,.72,.2,L,0,.2,-.33));
+  const tf=[];for(let r=0;r<3;r++)for(let q=0;q<(r%2?9:10);q++)tf.push({p:[(q-(r%2?4:4.5))*.18,.56+r*.12,-.228]});
+  so.add(hbInst(new THREE.SphereGeometry(.016,6,5),tf,L2));
+  [-1,1].forEach(sd=>{
+    so.add(bx(.2,.5,.86,L,sd*(SL/2+.02),.12,0));
+    const r=cyl(.15,.15,.86,L,12);r.rotation.x=Math.PI/2;r.position.set(sd*(SL/2+.02),.66,0);so.add(r);
+    const e=sph(.15,L2,8);e.position.set(sd*(SL/2+.02),.66,.43);e.scale.set(1,1,.25);so.add(e);
+    [-.36,.36].forEach(z=>so.add(bx(.06,.08,.06,OFC.wood,sd*(SL/2-.05),0,z)));
+  });
+  const pt=ofPlant(1.05);pt.position.set(.75,0,D-.5);pt.userData.partLabel='Chậu cây cạnh sofa';g.add(pt);
+  g.userData.h=2.8;return g;
+}
+
+/* ---- NGOÀI CỬA KÍNH: lối lát đá + hồ bơi xanh ngọc + hàng cây; bãi cỏ + bụi cây ngoài cửa sổ vườn ---- */
+function buildOfPool(){
+  const g=new THREE.Group();const W=OFR.w/2,D=OFR.d/2,R=rnd(1553);
+  const dk=bx(1.0,.05,13,OFC.stone,W+.56,0,0);dk.castShadow=false;dk.userData.partLabel='Lối lát đá mép hồ';g.add(dk);
+  const tex=ofWaterTex();tex.repeat.set(3,6.5);
+  const wt=new THREE.Mesh(new THREE.PlaneGeometry(6,13),new THREE.MeshBasicMaterial({map:tex}));
+  wt.rotation.x=-Math.PI/2;wt.position.set(W+4.06,.03,0);wt.userData.partLabel='Mặt nước hồ bơi';g.add(wt);
+  const cp=ofSub(g,'Thành hồ');
+  [[W+7.16,0,.2,13.4],[W+4.06,-6.6,6.4,.2],[W+4.06,6.6,6.4,.2]].forEach(([x,z,w,d])=>{const c=bx(w,.06,d,OFC.stone,x,0,z);c.castShadow=false;cp.add(c);});
+  const bs=[];
+  for(let k=0;k<12;k++)bs.push({p:[W+7.9+R()*.5,.45+R()*.3,-6.2+k*1.13],s:[1+R()*.5,1+R()*.9,1+R()*.5],c:k%2?OFC.bush:OFC.leaf2});
+  for(let k=0;k<7;k++)bs.push({p:[-3.6+k*1.0+R()*.3,.4+R()*.25,D+1.5+R()*.7],s:[1+R()*.4,.9+R()*.7,1+R()*.4],c:k%2?OFC.bush:OFC.leaf2});
+  const bm=hbInst(new THREE.IcosahedronGeometry(.6,0),bs);bm.userData.partLabel='Hàng cây + bụi cây vườn';g.add(bm);
+  const lawn=bx(8.4,.012,3,OFC.lawn,-.6,0,D+1.55);lawn.castShadow=false;lawn.userData.partLabel='Bãi cỏ ngoài cửa sổ vườn';g.add(lawn);
+  g.userData.h=1;return g;
+}
+
+/* ---- KHOÁ HƯỚNG TRĂNG: xiên từ phía hồ bơi qua rèm sáo, cao 30° — bấm "☀ Khớp nắng" để có vệt sáng sọc trên sàn ---- */
+function buildOfMoon(){
+  const g=new THREE.Group(),mk=new THREE.Group();mk.position.set(OFR.w/2+2.2,0,3.2);mk.rotation.y=-Math.PI/2-.3;
+  const pole=cyl(.04,.04,2.4,EG.mark,6);pole.position.y=1.2;mk.add(pole);
+  const arrow=cone(.2,.7,'#cfe8ff',8);arrow.rotation.x=Math.PI/2;arrow.position.set(0,2.4,.6);mk.add(arrow);
+  const shaft=cyl(.05,.05,1.6,'#cfe8ff',6);shaft.rotation.x=Math.PI/2;shaft.position.set(0,2.4,-.5);mk.add(shaft);
+  mk.add(tag('TRĂNG xiên qua rèm sáo từ phía hồ bơi, cao 30° — bấm ☀ Khớp nắng',0,3.2,0,.6,'#cfe8ff'));
+  mk.traverse(o=>o.userData.__marker=true);g.add(mk);
+  const c=Math.cos(30*Math.PI/180);
+  g.userData.sunDir=[c*.95,Math.sin(30*Math.PI/180),c*.31];
+  g.userData.h=3.2;return g;
+}
+
+/* ---- NHÂN VẬT DỰNG SẴN DÁNG ---- */
+// ông chủ: ngồi ghế, chồm tới, tay trái chỉ thẳng mặt, tay phải nắm đấm đặt lên bàn, ngẩng mặt quát
+function buildOfBoss(){return posedChar('boss',{torsoLean:26,head:-24,hip:-90,knee:90,spread:10,shoulderF:-106,elbow:-6,shoulderF2:-61,elbow2:-70},'sit');}
+// chàng trai: đứng thẳng, hai tay buông, cúi gằm mặt
+function buildOfSon(){return posedChar('suitguy',{torsoLean:5,head:32,shoulder:4},'stand');}
+
+/* ---- CHÚ THÍCH + ZONE ---- */
+function buildOfZones(){
+  const g=new THREE.Group();const W=OFR.w/2,D=OFR.d/2;
+  const z=(r,x,zz,c)=>{const m=zoneRing(r,c);m.position.set(x,.03,zz);g.add(m);};
+  z(.45,OF_SON.x,OF_SON.z,EG.mark);z(.55,OF_CHAIR.x,OF_CHAIR.z,EG.warm);
+  g.add(tag('VĂN PHÒNG ÔNG CHỦ · lòng 7.2 × 8.4 m · trần 3.5 m',0,4.6,0,.9,EG.mark));
+  g.add(tag('+X · vách kính + rèm sáo gỗ — ngoài là hồ bơi',W-.3,3.9,0,.55));
+  g.add(tag('−X · tủ kính cúp + poster phim + máy quay cổ',-W+.3,3.9,0,.55));
+  g.add(tag('−Z · két sắt + kệ sách (sau lưng ông chủ)',0,3.9,-D+.4,.55,EG.warm));
+  g.add(tag('+Z · sofa da + cửa sổ vườn + cửa ra vào',0,3.9,D-.4,.55));
+  g.add(tag('ÔNG CHỦ — ngồi, chỉ tay quát',OF_CHAIR.x,2.3,OF_CHAIR.z,.5,EG.warm));
+  g.add(tag('CHÀNG TRAI — đứng cúi đầu',OF_SON.x,2.4,OF_SON.z,.5));
+  g.userData.h=0;return g;
+}
+
 /* ══════════ TẬP 4 · C2 · EXT. RỪNG VEN THỊ TRẤN — ĐÊM ══════════
    Thang đo: Pipo = Coppa = 1.0 m. Gốc = tâm ZONE A (bãi lùng sục 15 × 10 m). Rừng đi sâu về −Z.
    Camera mặc định ở +Z nhìn −Z: trái khung = −X. Lối mòn C chạy từ mép sau A tới gò E;
@@ -8617,6 +9288,21 @@ regPart('hb_desks','24 bàn đôi trắng + 48 ghế lưới hồng',buildHbDesk
 regPart('hb_students','Sinh viên ngồi (~80% ghế)',buildHbStudents);
 regPart('hb_banner','Banner CHÀO MỪNG TÂN SINH VIÊN',buildHbBanner);
 regPart('hb_zones','Chú thích + zone phòng học',buildHbZones);
+regPart('of_room','Vỏ phòng 7.2×8.4 · sàn marble · tường xanh ốp gỗ · cửa',buildOfRoom);
+regPart('of_ceil','Trần giật cấp + LED hắt + đèn âm trần (tắt để quay từ trên)',buildOfCeil);
+regPart('of_fan','Quạt trần 4 cánh gỗ',buildOfFan);
+regPart('of_windows','Vách kính sát trần (+X)',buildOfWindows);
+regPart('of_blinds','Rèm sáo gỗ ngang (3 tấm)',buildOfBlinds);
+regPart('of_desk','Bàn giám đốc + đèn chụp xanh + điện thoại + giấy tờ',buildOfDesk);
+regPart('of_chair','Ghế da chần nút lưng cao',buildOfChair);
+regPart('of_cabinet','Tủ kính trưng bày cúp (−X)',buildOfCabinet);
+regPart('of_back','Két sắt + kệ sách + chậu cây (−Z)',buildOfBack);
+regPart('of_decor','Poster phim · máy quay cổ · sofa da · chậu cây',buildOfDecor);
+regPart('of_pool','Hồ bơi + vườn ngoài cửa kính',buildOfPool);
+regPart('of_moon','Khoá hướng trăng xiên qua rèm (☀ Khớp nắng)',buildOfMoon);
+regPart('of_boss','Ông chủ — ngồi chồm tới, chỉ tay quát',buildOfBoss);
+regPart('of_son','Chàng trai vest — đứng cúi đầu',buildOfSon);
+regPart('of_zones','Chú thích + zone văn phòng',buildOfZones);
 regPart('rf_sky','Vòm trời đêm xanh lạnh',buildRfSky);
 regPart('rf_ground','Nền đất khô + bãi A 15×10',buildRfGround);
 regPart('rf_path','C · Lối mòn ngoằn ngoèo + rễ trồi',buildRfPath);
@@ -8952,6 +9638,41 @@ const SET_DEFS={
       {t:'E',n:'Ngang tầm mắt SV ngồi — giữa lớp',         p:[-1.4,1.15,2.2],tg:[-1.4,1.1,-7],f:35},
       {t:'F',n:'Lối đi cạnh cửa sổ',                       p:[-3.9,1.6,6.4], tg:[-2.6,1.2,-6],f:28},
       {t:'G',n:'Top-down sơ đồ chỗ ngồi',                  p:[0,19,.01],     tg:[0,0,0],      f:35}
+    ]
+  },
+  setOffice:{
+    label:'Văn phòng ông chủ · quát mắng sau rèm sáo',
+    note:'Phòng 7.2×8.4×3.5 m. Ông chủ ngồi bàn phía −Z, chàng trai đứng phía +Z. +X = vách kính + rèm sáo gỗ, ngoài là hồ bơi; −X = tủ kính cúp, poster, máy quay cổ; −Z = két sắt + kệ sách; +Z = sofa + cửa sổ vườn. Tường + trần chỉ hiện mặt trong. Hai nhân vật là rig: bấm ✂ ở dòng nhân vật để tách ra rồi đổi tư thế / kéo khớp (có cả Cúi/ngửa đầu). Tắt "Trần" khi cần quay từ trên xuống, tắt "Rèm sáo" khi cần khung sạch. Cảnh đêm: hạ nắng thấp + giảm sáng.',
+    small:true,
+    parts:[
+      {k:'of_room',   p:[0,0,0]},
+      {k:'of_ceil',   p:[0,0,0]},
+      {k:'of_fan',    p:[0,0,0]},
+      {k:'of_windows',p:[0,0,0]},
+      {k:'of_blinds', p:[0,0,0]},
+      {k:'of_desk',   p:[0,0,0]},
+      {k:'of_chair',  p:[0,0,0]},
+      {k:'of_cabinet',p:[0,0,0]},
+      {k:'of_back',   p:[0,0,0]},
+      {k:'of_decor',  p:[0,0,0]},
+      {k:'of_pool',   p:[0,0,0]},
+      {k:'of_moon',   p:[0,0,0]},
+      {k:'of_boss',   p:[OF_CHAIR.x,OF_SEAT+.08-fixedHipY('boss'),OF_CHAIR.z+.06]},
+      {k:'of_son',    p:[OF_SON.x,0,OF_SON.z], ry:Math.PI},
+      {k:'of_zones',  p:[0,0,0]}
+    ],
+    cams:[
+      {t:'—',n:'Tổng thể — đứng ngoài nhìn xuyên tường',        p:[8.5,7.5,10.5],  tg:[0,.9,-.4],     f:24},
+      {t:'A',n:'Ngoài cửa kính nhìn xuyên rèm sáo (ref 1)',      p:[5.3,1.4,-1.25], tg:[-.25,1.22,-.8], f:50},
+      {t:'B',n:'Góc cao sát trần qua cánh quạt (ref 2)',         p:[.25,3.42,2.6],  tg:[.35,.3,-.9],    f:18},
+      {t:'C',n:'Qua vai chàng trai — ông chủ chỉ tay quát',      p:[-.95,1.62,1.25],tg:[-.1,1.12,-2],   f:35},
+      {t:'D',n:'Qua vai ông chủ — chàng trai cúi đầu',           p:[.55,1.25,-2.75],tg:[-.35,1.45,.5],  f:35},
+      {t:'E',n:'Cận ông chủ quát (low angle)',                   p:[-1.0,1.02,-.9], tg:[-.1,1.16,-2.05],f:50},
+      {t:'F',n:'Cận chàng trai cúi mặt',                         p:[.25,1.42,-.55], tg:[-.35,1.6,.5],   f:65},
+      {t:'G',n:'Ngang hai người — nền tủ cúp',                   p:[3.1,1.3,-.5],   tg:[-1,1.15,-.75],  f:28},
+      {t:'H',n:'Insert đèn chụp xanh + ngón tay chỉ',            p:[1.75,1.12,-.55],tg:[.5,.98,-1.5],   f:50},
+      {t:'I',n:'Từ sofa nhìn về bàn — wide cả phòng',            p:[-1.6,1.35,3.35],tg:[0,1.1,-2],      f:24},
+      {t:'J',n:'Top-down sơ đồ phòng (tắt Trần)',                p:[0,13,.01],      tg:[0,0,0],         f:35}
     ]
   },
   setC7:{
@@ -9417,6 +10138,11 @@ const ASSETS={
     ['setHbClass','ĐH Hồng Bàng · Phòng học chào tân SV',ic('<rect x="3" y="3" width="18" height="8" rx="1"/><path d="M4 15h6M14 15h6M4 20h6M14 20h6M7 15v5M17 15v5"/>')],
     ['hb_banner','Banner chào tân SV',ic('<rect x="2" y="7" width="20" height="9" rx="1"/><path d="M5 4l1 3M19 4l-1 3M6 11.5h12"/>')],
   ],
+  grpSetOf:[
+    ['setOffice','Văn phòng ông chủ · quát mắng sau rèm sáo',ic('<path d="M3 20h18M5 20v-6h14v6M4 14h16M9 14v6M15 14v6M7 4h10v6H7zM12 10v4"/>')],
+    ['boss','Ông chủ (kính vàng, cardigan)',ic('<circle cx="12" cy="7" r="4"/><path d="M5 21c0-5 3-7 7-7s7 2 7 7M8 7h3M13 7h3M11 7h2M10 10h4"/>')],
+    ['suitguy','Chàng trai vest hoạ tiết vàng',ic('<circle cx="12" cy="5" r="3"/><path d="M8 21V11l4-2 4 2v10M12 9v5M10 4h4M9 13l2 2M15 16l-2 2"/>')],
+  ],
   grpSetXc:[
     ['setXiec','Gánh xiếc nửa đêm · Thung lũng rạp xiếc',ic('<path d="M2 21h20M3 21V10q1-6 9-7 8 1 9 7v11M7 21v-3l5-7 5 7v3M12 11V6.5l2.2 1-2.2 1"/>')],
     ['xc_tent','Lều mạng nhện Ø30 m',ic('<path d="M3 20l2.5-7L12 5l6.5 8L21 20zM12 5v15M8.5 20 12 15l3.5 5M12 5V1.5l2.2 1-2.2 1"/>')],
@@ -9869,6 +10595,10 @@ function renderInspector(){
       <input type="range" id="jTorso" min="-90" max="100" step="1" data-default="0" value="${u.pose.torsoLean||0}">
     </div>
     <div class="ctrl">
+      <label>Cúi/ngửa đầu <span class="val" id="vJHead">${Math.round(u.pose.head||0)}°</span></label>
+      <input type="range" id="jHead" min="-60" max="60" step="1" data-default="0" value="${u.pose.head||0}">
+    </div>
+    <div class="ctrl">
       <label>Gập hông (đùi) <span class="val" id="vJHip">${Math.round(u.pose.hip||0)}°</span></label>
       <input type="range" id="jHip" min="-160" max="90" step="1" data-default="0" value="${u.pose.hip||0}">
     </div>
@@ -10072,6 +10802,7 @@ function renderInspector(){
       updRange(s);
     };
     bindJoint('jTorso','torsoLean','vJTorso');
+    bindJoint('jHead','head','vJHead');
     bindJoint('jHip','hip','vJHip');
     bindJoint('jKnee','knee','vJKnee');
     bindJoint('jSh','shoulderF','vJSh');
